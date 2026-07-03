@@ -1,1 +1,3544 @@
-do local TweenService=game:GetService("TweenService");local RunService=game:GetService("RunService");local UserInputService=game:GetService("UserInputService");local ReplicatedStorage=game:GetService("ReplicatedStorage");local Workspace=game:GetService("Workspace");local Players=game:GetService("Players");local LocalPlayer=Players.LocalPlayer;local PlayerGui=(LocalPlayer and LocalPlayer:WaitForChild("PlayerGui")) or CoreGui ;for _,child in ipairs(PlayerGui:GetChildren()) do if ((child.Name=="MoonHubUI") or (child.Name=="Moon1xHitUI") or (child.Name=="CrimsonHitUI")) then child:Destroy();end end if _G.CrimsonPitchConn then _G.CrimsonPitchConn:Disconnect();_G.CrimsonPitchConn=nil;end if _G.CrimsonInputConn then _G.CrimsonInputConn:Disconnect();_G.CrimsonInputConn=nil;end if _G.CrimsonActiveLoop then _G.CrimsonActiveLoop=false;end task.wait(0.1);_G.CrimsonActiveLoop=true;local Options={Predictor=false,AutoSwing=false,SwingDelay=0.083,StrikeboxOnly=false,AutoPitch=false};_G.AutoLockTarget=false;_G.AutoLockScreenPos=Vector2.new(0,0);if  not _G.hookedMouseLocation then _G.hookedMouseLocation=true;local oldNamecall;oldNamecall=hookmetamethod(game,"__namecall",newcclosure(function(self,...) local method=getnamecallmethod();if ((method=="GetMouseLocation") and (typeof(self)=="Instance") and (self.ClassName=="UserInputService") and _G.AutoLockTarget) then return _G.AutoLockScreenPos;end return oldNamecall(self,...);end));local oldIndex;oldIndex=hookmetamethod(game,"__index",newcclosure(function(self,key) if (_G.AutoLockTarget and  not checkcaller()) then local isMouse=false;pcall(function() isMouse=(typeof(self)=="Instance") and (self.ClassName=="Mouse") ;end);if isMouse then if (key=="X") then return _G.AutoLockScreenPos.X;end if (key=="Y") then return _G.AutoLockScreenPos.Y;end end end return oldIndex(self,key);end));end local AvailableThemes={Default=Color3.fromRGB(240,240,240),Crimson=Color3.fromRGB(220,40,40),Aqua=Color3.fromRGB(40,220,220),Purple=Color3.fromRGB(120,80,200)};local SavedData={Theme="Default",LightMode=false};pcall(function() if (isfile and readfile and isfile("MoonHubSavedTheme.json")) then local HttpService=game:GetService("HttpService");local loaded=HttpService:JSONDecode(readfile("MoonHubSavedTheme.json"));if loaded then SavedData=loaded;end elseif _G.MoonHubSavedTheme then SavedData=_G.MoonHubSavedTheme;end end);local SelectedTheme=SavedData.Theme or "Default" ;local IsLightMode=SavedData.LightMode or false ;local function saveTheme() SavedData.Theme=SelectedTheme;SavedData.LightMode=IsLightMode;pcall(function() if writefile then local HttpService=game:GetService("HttpService");writefile("MoonHubSavedTheme.json",HttpService:JSONEncode(SavedData));end end);_G.MoonHubSavedTheme=SavedData;end local Theme={Background=(IsLightMode and Color3.fromRGB(240,240,240)) or Color3.fromRGB(12,12,12) ,Sidebar=(IsLightMode and Color3.fromRGB(225,225,225)) or Color3.fromRGB(16,16,16) ,SectionBg=(IsLightMode and Color3.fromRGB(235,235,235)) or Color3.fromRGB(18,18,18) ,Border=(IsLightMode and Color3.fromRGB(200,200,200)) or Color3.fromRGB(28,28,28) ,Accent=AvailableThemes[SelectedTheme] or AvailableThemes.Default ,TextPrimary=(IsLightMode and Color3.fromRGB(20,20,20)) or Color3.fromRGB(240,240,240) ,TextSecondary=(IsLightMode and Color3.fromRGB(100,100,100)) or Color3.fromRGB(150,150,150) ,ItemBg=(IsLightMode and Color3.fromRGB(210,210,210)) or Color3.fromRGB(24,24,24) ,ItemHover=(IsLightMode and Color3.fromRGB(190,190,190)) or Color3.fromRGB(32,32,32) ,Font=Enum.Font.Gotham,FontMedium=Enum.Font.GothamMedium,FontBold=Enum.Font.GothamBold};local UI={Tabs={},ActiveTab=nil,IsVisible=true};local ScreenGui=Instance.new("ScreenGui");ScreenGui.Name="MoonHubUI";ScreenGui.Parent=PlayerGui;ScreenGui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;ScreenGui.ResetOnSpawn=false;ScreenGui.IgnoreGuiInset=true;local MainContainer=Instance.new("CanvasGroup");MainContainer.Name="MainContainer";MainContainer.AnchorPoint=Vector2.new(0.5,0.5);MainContainer.Position=UDim2.new(0.5,0,0.5,0);MainContainer.Size=UDim2.new(0,600,0,400);MainContainer.BackgroundColor3=Theme.Background;MainContainer.BorderSizePixel=0;MainContainer.ClipsDescendants=true;MainContainer.Parent=ScreenGui;Instance.new("UICorner",MainContainer).CornerRadius=UDim.new(0,8);local MainStroke=Instance.new("UIStroke",MainContainer);MainStroke.Color=Theme.Border;MainStroke.Thickness=1;local Shadow=Instance.new("ImageLabel");Shadow.Name="Shadow";Shadow.AnchorPoint=Vector2.new(0.5,0.5);Shadow.Position=UDim2.new(0.5,0,0.5,0);Shadow.Size=UDim2.new(1,40,1,40);Shadow.BackgroundTransparency=1;Shadow.Image="rbxassetid://131692000";Shadow.ImageColor3=Color3.new(0,0,0);Shadow.ImageTransparency=0.4;Shadow.ScaleType=Enum.ScaleType.Slice;Shadow.SliceCenter=Rect.new(10,10,118,118);Shadow.ZIndex= -1;Shadow.Parent=MainContainer;local ParticleContainer=Instance.new("Frame");ParticleContainer.Name="ParticleContainer";ParticleContainer.Size=UDim2.new(1,0,1, -36);ParticleContainer.Position=UDim2.new(0,0,0,36);ParticleContainer.BackgroundTransparency=1;ParticleContainer.ZIndex=0;ParticleContainer.ClipsDescendants=true;ParticleContainer.Parent=MainContainer;task.spawn(function() local PatternFrame=Instance.new("Frame");PatternFrame.Size=UDim2.new(2,0,2,0);PatternFrame.Position=UDim2.new(0,0,0,0);PatternFrame.BackgroundTransparency=1;PatternFrame.Parent=ParticleContainer;for x=0,10 do for y=0,10 do local moon=Instance.new("ImageLabel");local size=28;moon.Size=UDim2.new(0,size,0,size);moon.Position=UDim2.new(x * 0.15 ,0,y * 0.15 ,0);moon.BackgroundTransparency=1;moon.Image="rbxassetid://77005149022898";moon.ImageColor3=Theme.Accent;moon.ImageTransparency=0.25;moon.ZIndex=0;moon.Parent=PatternFrame;end end while _G.CrimsonActiveLoop and ScreenGui.Parent  do PatternFrame.Position=UDim2.new(0,0,0,0);local t=TweenService:Create(PatternFrame,TweenInfo.new(12,Enum.EasingStyle.Linear),{Position=UDim2.new( -0.3,0, -0.3,0)});t:Play();t.Completed:Wait();end end);local TitleBar=Instance.new("Frame");TitleBar.Name="TitleBar";TitleBar.Size=UDim2.new(1,0,0,36);TitleBar.BackgroundTransparency=1;TitleBar.ZIndex=5;TitleBar.Parent=MainContainer;local TitleLogo=Instance.new("ImageLabel");TitleLogo.Name="TitleLogo";TitleLogo.Size=UDim2.new(0,26,0,26);TitleLogo.Position=UDim2.new(0,12,0.5, -13);TitleLogo.BackgroundTransparency=1;TitleLogo.Image="rbxassetid://103314343492991";TitleLogo.ImageColor3=Theme.Accent;TitleLogo.ZIndex=5;TitleLogo.Parent=TitleBar;local TitleText=Instance.new("TextLabel");TitleText.Name="TitleText";TitleText.Size=UDim2.new(1, -50,1,0);TitleText.Position=UDim2.new(0,44,0,0);TitleText.BackgroundTransparency=1;TitleText.Text="MOON HUB";TitleText.TextColor3=Theme.TextPrimary;TitleText.Font=Theme.FontMedium;TitleText.TextSize=12;TitleText.TextXAlignment=Enum.TextXAlignment.Left;TitleText.ZIndex=5;TitleText.Parent=TitleBar;local CloseBtn=Instance.new("TextButton");CloseBtn.Name="CloseBtn";CloseBtn.Size=UDim2.new(0,36,0,36);CloseBtn.Position=UDim2.new(1, -36,0,0);CloseBtn.BackgroundTransparency=1;CloseBtn.Text="X";CloseBtn.TextColor3=Theme.TextSecondary;CloseBtn.Font=Theme.FontBold;CloseBtn.TextSize=14;CloseBtn.ZIndex=5;CloseBtn.Parent=TitleBar;CloseBtn.MouseEnter:Connect(function() TweenService:Create(CloseBtn,TweenInfo.new(0.2),{TextColor3=Color3.new(1,1,1)}):Play();end);CloseBtn.MouseLeave:Connect(function() TweenService:Create(CloseBtn,TweenInfo.new(0.2),{TextColor3=Theme.TextSecondary}):Play();end);local function toggleUI(state) UI.IsVisible=state;if state then ScreenGui.Enabled=true;TweenService:Create(MainContainer,TweenInfo.new(0.5,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=UDim2.new(0,600,0,400),GroupTransparency=0,Position=UDim2.new(0.5,0,0.5,0)}):Play();else local t=TweenService:Create(MainContainer,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.In),{Size=UDim2.new(0,560,0,360),GroupTransparency=1,Position=UDim2.new(0.5,0,0.5,30)});t:Play();t.Completed:Connect(function() if  not UI.IsVisible then ScreenGui.Enabled=false;end end);end end CloseBtn.MouseButton1Click:Connect(function() toggleUI(false);end);_G.CrimsonInputConn=UserInputService.InputBegan:Connect(function(input,gp) if  not gp then if (input.KeyCode==Enum.KeyCode.Zero) then toggleUI( not UI.IsVisible);end end end);local RunService=game:GetService("RunService");local dragging,dragInput,dragStart,startPos;TitleBar.InputBegan:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then dragging=true;dragStart=input.Position;startPos=MainContainer.Position;end end);TitleBar.InputEnded:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then dragging=false;end end);UserInputService.InputChanged:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseMovement) or (input.UserInputType==Enum.UserInputType.Touch)) then dragInput=input;end end);RunService.RenderStepped:Connect(function() if (dragging and dragInput) then local delta=dragInput.Position-dragStart ;local targetPos=UDim2.new(startPos.X.Scale,startPos.X.Offset + delta.X ,startPos.Y.Scale,startPos.Y.Offset + delta.Y );MainContainer.Position=MainContainer.Position:Lerp(targetPos,0.25);end end);local TopSeparator=Instance.new("Frame");TopSeparator.Size=UDim2.new(1,0,0,1);TopSeparator.Position=UDim2.new(0,0,0,36);TopSeparator.BackgroundColor3=Theme.Border;TopSeparator.BorderSizePixel=0;TopSeparator.ZIndex=5;TopSeparator.Parent=MainContainer;local ContentBody=Instance.new("Frame");ContentBody.Name="ContentBody";ContentBody.Size=UDim2.new(1,0,1, -37);ContentBody.Position=UDim2.new(0,0,0,37);ContentBody.BackgroundTransparency=1;ContentBody.Parent=MainContainer;local Sidebar=Instance.new("Frame");Sidebar.Name="Sidebar";Sidebar.Size=UDim2.new(0,140,1,0);Sidebar.BackgroundColor3=Theme.Sidebar;Sidebar.BorderSizePixel=0;Sidebar.ZIndex=2;Sidebar.Parent=ContentBody;local SidebarSeparator=Instance.new("Frame");SidebarSeparator.Size=UDim2.new(0,1,1,0);SidebarSeparator.Position=UDim2.new(0,140,0,0);SidebarSeparator.BackgroundColor3=Theme.Border;SidebarSeparator.BorderSizePixel=0;SidebarSeparator.ZIndex=2;SidebarSeparator.Parent=ContentBody;local TabList=Instance.new("UIListLayout");TabList.SortOrder=Enum.SortOrder.LayoutOrder;TabList.Padding=UDim.new(0,4);TabList.Parent=Sidebar;local TabPadding=Instance.new("UIPadding");TabPadding.PaddingTop=UDim.new(0,12);TabPadding.PaddingLeft=UDim.new(0,8);TabPadding.PaddingRight=UDim.new(0,8);TabPadding.Parent=Sidebar;local PagesContainer=Instance.new("Frame");PagesContainer.Name="PagesContainer";PagesContainer.Size=UDim2.new(1, -140,1,0);PagesContainer.Position=UDim2.new(0,140,0,0);PagesContainer.BackgroundTransparency=1;PagesContainer.ZIndex=1;PagesContainer.Parent=ContentBody;local function CreateTab(name) local TabBtn=Instance.new("TextButton");TabBtn.Name=name;TabBtn.Size=UDim2.new(1,0,0,32);TabBtn.BackgroundColor3=Theme.Sidebar;TabBtn.BackgroundTransparency=1;TabBtn.Text="";TabBtn.AutoButtonColor=false;TabBtn.Parent=Sidebar;Instance.new("UICorner",TabBtn).CornerRadius=UDim.new(0,6);local TabIndicator=Instance.new("Frame");TabIndicator.Size=UDim2.new(0,3,0,0);TabIndicator.Position=UDim2.new(0,0,0.5,0);TabIndicator.AnchorPoint=Vector2.new(0,0.5);TabIndicator.BackgroundColor3=Theme.Accent;TabIndicator.BorderSizePixel=0;TabIndicator.Parent=TabBtn;Instance.new("UICorner",TabIndicator).CornerRadius=UDim.new(1,0);local TabLabel=Instance.new("TextLabel");TabLabel.Size=UDim2.new(1, -16,1,0);TabLabel.Position=UDim2.new(0,12,0,0);TabLabel.BackgroundTransparency=1;TabLabel.Text=name;TabLabel.TextColor3=Theme.TextSecondary;TabLabel.Font=Theme.FontMedium;TabLabel.TextSize=13;TabLabel.TextXAlignment=Enum.TextXAlignment.Left;TabLabel.Parent=TabBtn;local Page=Instance.new("ScrollingFrame");Page.Name=name   .. "Page" ;Page.Size=UDim2.new(1,0,1,0);Page.BackgroundTransparency=1;Page.BorderSizePixel=0;Page.ScrollBarThickness=2;Page.ScrollBarImageColor3=Theme.Border;Page.AutomaticCanvasSize=Enum.AutomaticSize.Y;Page.Visible=false;Page.Parent=PagesContainer;local PageLayout=Instance.new("UIListLayout");PageLayout.SortOrder=Enum.SortOrder.LayoutOrder;PageLayout.Padding=UDim.new(0,12);PageLayout.FillDirection=Enum.FillDirection.Vertical;PageLayout.Parent=Page;local PagePadding=Instance.new("UIPadding");PagePadding.PaddingTop=UDim.new(0,16);PagePadding.PaddingLeft=UDim.new(0,16);PagePadding.PaddingRight=UDim.new(0,16);PagePadding.PaddingBottom=UDim.new(0,16);PagePadding.Parent=Page;local tabInfo={Button=TabBtn,Page=Page,Indicator=TabIndicator,Label=TabLabel};table.insert(UI.Tabs,tabInfo);TabBtn.MouseEnter:Connect(function() if (UI.ActiveTab~=tabInfo) then TweenService:Create(TabLabel,TweenInfo.new(0.2),{TextColor3=Theme.TextPrimary}):Play();TweenService:Create(TabBtn,TweenInfo.new(0.2),{BackgroundTransparency=0.5,BackgroundColor3=Theme.ItemHover}):Play();end end);TabBtn.MouseLeave:Connect(function() if (UI.ActiveTab~=tabInfo) then TweenService:Create(TabLabel,TweenInfo.new(0.2),{TextColor3=Theme.TextSecondary}):Play();TweenService:Create(TabBtn,TweenInfo.new(0.2),{BackgroundTransparency=1}):Play();end end);TabBtn.MouseButton1Click:Connect(function() if (UI.ActiveTab==tabInfo) then return;end if UI.ActiveTab then TweenService:Create(UI.ActiveTab.Label,TweenInfo.new(0.2),{TextColor3=Theme.TextSecondary}):Play();TweenService:Create(UI.ActiveTab.Button,TweenInfo.new(0.2),{BackgroundTransparency=1}):Play();TweenService:Create(UI.ActiveTab.Indicator,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=UDim2.new(0,3,0,0)}):Play();UI.ActiveTab.Page.Visible=false;end UI.ActiveTab=tabInfo;UI.ActiveTab.Page.Visible=true;TweenService:Create(UI.ActiveTab.Label,TweenInfo.new(0.2),{TextColor3=Theme.Accent}):Play();TweenService:Create(UI.ActiveTab.Button,TweenInfo.new(0.2),{BackgroundTransparency=0,BackgroundColor3=Theme.ItemBg}):Play();TweenService:Create(UI.ActiveTab.Indicator,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=UDim2.new(0,3,0,16)}):Play();end);if ( #UI.Tabs==1) then UI.ActiveTab=tabInfo;UI.ActiveTab.Page.Visible=true;TabLabel.TextColor3=Theme.Accent;TabBtn.BackgroundTransparency=0;TabBtn.BackgroundColor3=Theme.ItemBg;TabIndicator.Size=UDim2.new(0,3,0,16);end local SectionFuncs={};SectionFuncs.CreateSection=function(self,sectionName) local Section=Instance.new("Frame");Section.Name=sectionName;Section.Size=UDim2.new(1,0,0,0);Section.AutomaticSize=Enum.AutomaticSize.Y;Section.BackgroundColor3=Theme.SectionBg;Section.BorderSizePixel=0;Section.Parent=Page;Instance.new("UICorner",Section).CornerRadius=UDim.new(0,6);local SectionStroke=Instance.new("UIStroke",Section);SectionStroke.Color=Theme.Border;SectionStroke.Thickness=1;local SectionLayout=Instance.new("UIListLayout");SectionLayout.SortOrder=Enum.SortOrder.LayoutOrder;SectionLayout.Padding=UDim.new(0,0);SectionLayout.Parent=Section;local SectionTitle=Instance.new("TextLabel");SectionTitle.Size=UDim2.new(1, -24,0,36);SectionTitle.Position=UDim2.new(0,12,0,0);SectionTitle.BackgroundTransparency=1;SectionTitle.Text="  "   .. sectionName ;SectionTitle.TextColor3=Theme.TextPrimary;SectionTitle.Font=Theme.FontMedium;SectionTitle.TextSize=13;SectionTitle.TextXAlignment=Enum.TextXAlignment.Left;SectionTitle.Parent=Section;local Sep=Instance.new("Frame");Sep.Size=UDim2.new(1,0,0,1);Sep.BackgroundColor3=Theme.Border;Sep.BorderSizePixel=0;Sep.Parent=Section;local SectionContent=Instance.new("Frame");SectionContent.Size=UDim2.new(1,0,0,0);SectionContent.AutomaticSize=Enum.AutomaticSize.Y;SectionContent.BackgroundTransparency=1;SectionContent.Parent=Section;local ContentLayout=Instance.new("UIListLayout");ContentLayout.SortOrder=Enum.SortOrder.LayoutOrder;ContentLayout.Parent=SectionContent;local ItemFuncs={};ItemFuncs.CreateButton=function(self,name,callback) local BtnFrame=Instance.new("TextButton");BtnFrame.Size=UDim2.new(1,0,0,36);BtnFrame.BackgroundTransparency=1;BtnFrame.Text="";BtnFrame.Parent=SectionContent;local Label=Instance.new("TextLabel");Label.Size=UDim2.new(1, -24,1,0);Label.Position=UDim2.new(0,12,0,0);Label.BackgroundTransparency=1;Label.Text=name;Label.TextColor3=Theme.TextPrimary;Label.Font=Theme.FontMedium;Label.TextSize=13;Label.TextXAlignment=Enum.TextXAlignment.Center;Label.Parent=BtnFrame;local Bg=Instance.new("Frame");Bg.Size=UDim2.new(1, -16,1, -8);Bg.Position=UDim2.new(0,8,0,4);Bg.BackgroundColor3=Theme.ItemBg;Bg.ZIndex= -1;Bg.Parent=BtnFrame;Instance.new("UICorner",Bg).CornerRadius=UDim.new(0,6);BtnFrame.MouseEnter:Connect(function() TweenService:Create(Bg,TweenInfo.new(0.2),{BackgroundColor3=Theme.ItemHover}):Play();end);BtnFrame.MouseLeave:Connect(function() TweenService:Create(Bg,TweenInfo.new(0.2),{BackgroundColor3=Theme.ItemBg}):Play();end);BtnFrame.MouseButton1Click:Connect(callback);return BtnFrame;end;ItemFuncs.CreateToggle=function(self,name,default,callback) local ToggleFrame=Instance.new("TextButton");ToggleFrame.Size=UDim2.new(1,0,0,40);ToggleFrame.BackgroundTransparency=1;ToggleFrame.Text="";ToggleFrame.AutoButtonColor=false;ToggleFrame.Parent=SectionContent;local Label=Instance.new("TextLabel");Label.Size=UDim2.new(1, -60,1,0);Label.Position=UDim2.new(0,12,0,0);Label.BackgroundTransparency=1;Label.Text=name;Label.TextColor3=Theme.TextSecondary;Label.Font=Theme.Font;Label.TextSize=13;Label.TextXAlignment=Enum.TextXAlignment.Left;Label.Parent=ToggleFrame;local Pill=Instance.new("Frame");Pill.Size=UDim2.new(0,36,0,18);Pill.AnchorPoint=Vector2.new(1,0.5);Pill.Position=UDim2.new(1, -12,0.5,0);Pill.BackgroundColor3=(default and Theme.Accent) or Theme.ItemBg ;Pill.Parent=ToggleFrame;Instance.new("UICorner",Pill).CornerRadius=UDim.new(1,0);local Knob=Instance.new("Frame");Knob.Size=UDim2.new(0,14,0,14);Knob.AnchorPoint=Vector2.new(0,0.5);Knob.Position=(default and UDim2.new(1, -16,0.5,0)) or UDim2.new(0,2,0.5,0) ;Knob.BackgroundColor3=Color3.new(1,1,1);Knob.Parent=Pill;Instance.new("UICorner",Knob).CornerRadius=UDim.new(1,0);local state=default;ToggleFrame.MouseButton1Click:Connect(function() state= not state;TweenService:Create(Pill,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundColor3=(state and Theme.Accent) or Theme.ItemBg }):Play();TweenService:Create(Knob,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Position=(state and UDim2.new(1, -16,0.5,0)) or UDim2.new(0,2,0.5,0) }):Play();TweenService:Create(Label,TweenInfo.new(0.2),{TextColor3=(state and Theme.TextPrimary) or Theme.TextSecondary }):Play();if state then for i=1,5 do local particle=Instance.new("Frame");particle.Size=UDim2.new(0,8,0,8);particle.Position=UDim2.new(0.5,0,0.5,0);particle.AnchorPoint=Vector2.new(0.5,0.5);particle.BackgroundColor3=Theme.Accent;particle.BorderSizePixel=0;particle.ZIndex=10;Instance.new("UICorner",particle).CornerRadius=UDim.new(1,0);particle.Parent=Pill;local angle=math.rad(math.random(0,360));local distance=math.random(18,30);local goalPos=UDim2.new(0.5,math.cos(angle) * distance ,0.5,math.sin(angle) * distance );local ptween=TweenService:Create(particle,TweenInfo.new(0.6,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{Position=goalPos,BackgroundTransparency=1,Size=UDim2.new(0,3,0,3)});ptween:Play();task.delay(0.5,function() if particle then particle:Destroy();end end);end end callback(state);end);if default then Label.TextColor3=Theme.TextPrimary;end end;ItemFuncs.CreateStatusLabel=function(self,name,defaultText) local StatusFrame=Instance.new("Frame");StatusFrame.Size=UDim2.new(1,0,0,40);StatusFrame.BackgroundTransparency=1;StatusFrame.Parent=SectionContent;local Label=Instance.new("TextLabel");Label.Size=UDim2.new(0,100,1,0);Label.Position=UDim2.new(0,12,0,0);Label.BackgroundTransparency=1;Label.Text=name;Label.TextColor3=Theme.TextSecondary;Label.Font=Theme.Font;Label.TextSize=13;Label.TextXAlignment=Enum.TextXAlignment.Left;Label.Parent=StatusFrame;local ValueLabel=Instance.new("TextLabel");ValueLabel.Size=UDim2.new(1, -124,1,0);ValueLabel.Position=UDim2.new(0,112,0,0);ValueLabel.BackgroundTransparency=1;ValueLabel.Text=defaultText;ValueLabel.TextColor3=Theme.TextPrimary;ValueLabel.Font=Theme.FontMedium;ValueLabel.TextSize=12;ValueLabel.TextXAlignment=Enum.TextXAlignment.Right;ValueLabel.Parent=StatusFrame;local function update(newText,color) ValueLabel.Text=newText;if color then TweenService:Create(ValueLabel,TweenInfo.new(0.2),{TextColor3=color}):Play();else ValueLabel.TextColor3=Theme.TextPrimary;end end return update;end;ItemFuncs.CreateSlider=function(self,name,min,max,default,callback,displayScale) local SliderFrame=Instance.new("Frame");SliderFrame.Size=UDim2.new(1,0,0,48);SliderFrame.BackgroundTransparency=1;SliderFrame.Parent=SectionContent;local Label=Instance.new("TextLabel");Label.Size=UDim2.new(1, -60,0,18);Label.Position=UDim2.new(0,12,0,6);Label.BackgroundTransparency=1;Label.Text=name;Label.TextColor3=Theme.TextSecondary;Label.Font=Theme.Font;Label.TextSize=13;Label.TextXAlignment=Enum.TextXAlignment.Left;Label.Parent=SliderFrame;local ValueLabel=Instance.new("TextLabel");ValueLabel.Size=UDim2.new(0,40,0,18);ValueLabel.Position=UDim2.new(1, -52,0,6);ValueLabel.BackgroundTransparency=1;ValueLabel.Text=tostring(default/(displayScale or 1) );ValueLabel.TextColor3=Theme.TextPrimary;ValueLabel.Font=Theme.FontMedium;ValueLabel.TextSize=12;ValueLabel.TextXAlignment=Enum.TextXAlignment.Right;ValueLabel.Parent=SliderFrame;local TrackArea=Instance.new("TextButton");TrackArea.Size=UDim2.new(1, -24,0,12);TrackArea.Position=UDim2.new(0,12,0,28);TrackArea.BackgroundTransparency=1;TrackArea.Text="";TrackArea.Parent=SliderFrame;local Track=Instance.new("Frame");Track.Size=UDim2.new(1,0,0,4);Track.AnchorPoint=Vector2.new(0,0.5);Track.Position=UDim2.new(0,0,0.5,0);Track.BackgroundColor3=Theme.ItemBg;Track.Parent=TrackArea;Instance.new("UICorner",Track).CornerRadius=UDim.new(1,0);local Fill=Instance.new("Frame");local pct=(default-min)/(max-min) ;Fill.Size=UDim2.new(pct,0,1,0);Fill.BackgroundColor3=Theme.Accent;Fill.Parent=Track;Instance.new("UICorner",Fill).CornerRadius=UDim.new(1,0);local Handle=Instance.new("Frame");Handle.Size=UDim2.new(0,12,0,12);Handle.AnchorPoint=Vector2.new(0.5,0.5);Handle.Position=UDim2.new(pct,0,0.5,0);Handle.BackgroundColor3=Color3.new(1,1,1);Handle.Parent=Track;Instance.new("UICorner",Handle).CornerRadius=UDim.new(1,0);local dragging=false;local function updateSlider(input) local pos=math.clamp((input.Position.X-Track.AbsolutePosition.X)/Track.AbsoluteSize.X ,0,1);local value=math.floor(min + ((max-min) * pos) );TweenService:Create(Fill,TweenInfo.new(0.1,Enum.EasingStyle.Sine),{Size=UDim2.new(pos,0,1,0)}):Play();TweenService:Create(Handle,TweenInfo.new(0.1,Enum.EasingStyle.Sine),{Position=UDim2.new(pos,0,0.5,0)}):Play();ValueLabel.Text=tostring(value/(displayScale or 1) );callback(value);end TrackArea.InputBegan:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then dragging=true;updateSlider(input);end end);UserInputService.InputEnded:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then dragging=false;end end);UserInputService.InputChanged:Connect(function(input) if (dragging and ((input.UserInputType==Enum.UserInputType.MouseMovement) or (input.UserInputType==Enum.UserInputType.Touch))) then updateSlider(input);end end);return SliderFrame;end;ItemFuncs.CreateDropdown=function(self,name,options,default,callback) local DropdownFrame=Instance.new("Frame");DropdownFrame.Size=UDim2.new(1,0,0,48);DropdownFrame.BackgroundTransparency=1;DropdownFrame.Parent=SectionContent;local Label=Instance.new("TextLabel");Label.Size=UDim2.new(1, -120,0,18);Label.Position=UDim2.new(0,12,0,15);Label.BackgroundTransparency=1;Label.Text=name;Label.TextColor3=Theme.TextSecondary;Label.Font=Theme.Font;Label.TextSize=13;Label.TextXAlignment=Enum.TextXAlignment.Left;Label.Parent=DropdownFrame;local SelectedBox=Instance.new("TextButton");SelectedBox.Size=UDim2.new(0,100,0,24);SelectedBox.Position=UDim2.new(1, -112,0,12);SelectedBox.BackgroundColor3=Theme.ItemBg;SelectedBox.Text="";SelectedBox.AutoButtonColor=false;SelectedBox.Parent=DropdownFrame;Instance.new("UICorner",SelectedBox).CornerRadius=UDim.new(0,4);local SelectedText=Instance.new("TextLabel");SelectedText.Size=UDim2.new(1, -20,1,0);SelectedText.Position=UDim2.new(0,8,0,0);SelectedText.BackgroundTransparency=1;SelectedText.Text=default;SelectedText.TextColor3=Theme.TextPrimary;SelectedText.Font=Theme.Font;SelectedText.TextSize=12;SelectedText.TextXAlignment=Enum.TextXAlignment.Left;SelectedText.Parent=SelectedBox;local Arrow=Instance.new("TextLabel");Arrow.Size=UDim2.new(0,20,1,0);Arrow.Position=UDim2.new(1, -20,0,0);Arrow.BackgroundTransparency=1;Arrow.Text="â–¼";Arrow.TextColor3=Theme.TextSecondary;Arrow.Font=Theme.Font;Arrow.TextSize=10;Arrow.Parent=SelectedBox;local DropdownContainer=Instance.new("Frame");DropdownContainer.Size=UDim2.new(0,100,0,0);DropdownContainer.Position=UDim2.new(1, -112,0,40);DropdownContainer.BackgroundColor3=Theme.ItemBg;DropdownContainer.ZIndex=10;DropdownContainer.ClipsDescendants=true;DropdownContainer.Parent=DropdownFrame;Instance.new("UICorner",DropdownContainer).CornerRadius=UDim.new(0,4);local DropdownLayout=Instance.new("UIListLayout");DropdownLayout.SortOrder=Enum.SortOrder.LayoutOrder;DropdownLayout.Parent=DropdownContainer;local isOpen=false;local listSize=math.min( #options * 24 ,120);local function toggleDropdown() isOpen= not isOpen;TweenService:Create(Arrow,TweenInfo.new(0.2),{Rotation=(isOpen and 180) or 0 }):Play();TweenService:Create(DropdownContainer,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=UDim2.new(0,100,0,(isOpen and listSize) or 0 )}):Play();if isOpen then DropdownFrame.Size=UDim2.new(1,0,0,48 + listSize + 4 );else DropdownFrame.Size=UDim2.new(1,0,0,48);end end SelectedBox.MouseButton1Click:Connect(toggleDropdown);for i,option in ipairs(options) do local OptionBtn=Instance.new("TextButton");OptionBtn.Size=UDim2.new(1,0,0,24);OptionBtn.BackgroundColor3=Theme.ItemBg;OptionBtn.BackgroundTransparency=1;OptionBtn.Text="  "   .. option ;OptionBtn.TextColor3=Theme.TextSecondary;OptionBtn.Font=Theme.Font;OptionBtn.TextSize=12;OptionBtn.TextXAlignment=Enum.TextXAlignment.Left;OptionBtn.AutoButtonColor=false;OptionBtn.ZIndex=11;OptionBtn.Parent=DropdownContainer;OptionBtn.MouseEnter:Connect(function() TweenService:Create(OptionBtn,TweenInfo.new(0.1),{BackgroundTransparency=0,BackgroundColor3=Theme.ItemHover,TextColor3=Theme.TextPrimary}):Play();end);OptionBtn.MouseLeave:Connect(function() TweenService:Create(OptionBtn,TweenInfo.new(0.1),{BackgroundTransparency=1,TextColor3=Theme.TextSecondary}):Play();end);OptionBtn.MouseButton1Click:Connect(function() SelectedText.Text=option;toggleDropdown();callback(option);end);end end;return ItemFuncs;end;return SectionFuncs;end local BattingTab=CreateTab("Baseball Universe");local HittingSection=BattingTab:CreateSection("Hitting");HittingSection:CreateToggle("Ball ESP (Predictor)",Options.Predictor,function(val) Options.Predictor=val;end);HittingSection:CreateToggle("Auto Swing",Options.AutoSwing,function(val) Options.AutoSwing=val;end);HittingSection:CreateToggle("Strikebox Only (RECOMMENDED)",Options.StrikeboxOnly,function(val) Options.StrikeboxOnly=val;end);_G.UseCustomOffsets=false;_G.PciOffsetX=0;_G.PciOffsetY=0;local pciXSlider;local pciYSlider;HittingSection:CreateToggle("Custom PCI Offsets",false,function(val) _G.UseCustomOffsets=val;if (pciXSlider and pciYSlider) then pciXSlider.Visible=val;pciYSlider.Visible=val;end end);pciXSlider=HittingSection:CreateSlider("PCI Offset X (Left â†” Right)", -20,20,0,function(val) _G.PciOffsetX=val/100 ;end,100);pciXSlider.Visible=false;pciYSlider=HittingSection:CreateSlider("PCI Offset Y (Up â†• Down)", -20,20,0,function(val) _G.PciOffsetY=val/100 ;end,100);pciYSlider.Visible=false;_G.UserTimingOffset=10;local PitchingSection=BattingTab:CreateSection("Pitching");PitchingSection:CreateToggle("Auto Pitch",Options.AutoPitch,function(val) Options.AutoPitch=val;end);local PlayerTab=CreateTab("Player");local StatsSection=PlayerTab:CreateSection("Stats");StatsSection:CreateSlider("Walk Speed",16,100,16,function(val) _G.MoonHubWalkSpeed=val;end);StatsSection:CreateSlider("Jump Power",50,200,50,function(val) _G.MoonHubJumpPower=val;end);local MiscTab=CreateTab("Settings");local ThemeSection=MiscTab:CreateSection("Theme");ThemeSection:CreateDropdown("Accent Theme",{"Default","Crimson","Aqua","Purple"},SelectedTheme,function(val) local oldColor=Theme.Accent;SelectedTheme=val;saveTheme();local newColor=AvailableThemes[val] or AvailableThemes.Default ;Theme.Accent=newColor;local function isClose(c1,c2) return (math.abs(c1.R-c2.R )<0.02) and (math.abs(c1.G-c2.G )<0.02) and (math.abs(c1.B-c2.B )<0.02) ;end for _,el in ipairs(ScreenGui:GetDescendants()) do if el:IsA("GuiObject") then pcall(function() local currentBg=el:GetAttribute("TargetBg") or el.BackgroundColor3 ;if isClose(currentBg,oldColor) then el:SetAttribute("TargetBg",newColor);TweenService:Create(el,TweenInfo.new(0.3),{BackgroundColor3=newColor}):Play();end if (el:IsA("TextLabel") or el:IsA("TextButton") or el:IsA("TextBox")) then local currentText=el:GetAttribute("TargetText") or el.TextColor3 ;if isClose(currentText,oldColor) then el:SetAttribute("TargetText",newColor);TweenService:Create(el,TweenInfo.new(0.3),{TextColor3=newColor}):Play();end end if (el:IsA("ImageLabel") or el:IsA("ImageButton")) then local currentImage=el:GetAttribute("TargetImage") or el.ImageColor3 ;if isClose(currentImage,oldColor) then el:SetAttribute("TargetImage",newColor);TweenService:Create(el,TweenInfo.new(0.3),{ImageColor3=newColor}):Play();end end end);end end end);local InfoSection=MiscTab:CreateSection("Information");setStatus=InfoSection:CreateStatusLabel("Status","WAITING FOR PITCH...");InfoSection:CreateStatusLabel("Keybind","[0] Hide UI");local PredictorGui=Instance.new("BillboardGui");PredictorGui.Name="PredictorGui";PredictorGui.Size=UDim2.new(0,45,0,45);PredictorGui.AlwaysOnTop=true;PredictorGui.Parent=PlayerGui;local PredictorFrame=Instance.new("Frame");PredictorFrame.Size=UDim2.new(1,0,1,0);PredictorFrame.BackgroundColor3=Theme.Accent;PredictorFrame.BackgroundTransparency=0.3;PredictorFrame.Parent=PredictorGui;Instance.new("UICorner",PredictorFrame).CornerRadius=UDim.new(1,0);local PredictorStroke=Instance.new("UIStroke");PredictorStroke.Color=Color3.new(1,1,1);PredictorStroke.Thickness=2;PredictorStroke.Parent=PredictorFrame;PredictorGui.Enabled=false;local function getPlateZ() local repo=workspace:FindFirstChild("Repository");if (repo and repo:FindFirstChild("Strikezone")) then local sz=repo.Strikezone:FindFirstChild("Strikezone");if sz then return sz.Position.Z;end end return 112.147;end local function isBatting() local char=LocalPlayer.Character;if  not char then return false;end local hrp=char:FindFirstChild("HumanoidRootPart");if  not hrp then return false;end local repo=workspace:FindFirstChild("Repository");if (repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone")) then local sz=repo.Strikezone.Strikezone;local dist=(hrp.Position-sz.Position).Magnitude;if (dist>20) then return false;end end return true;end local function isStrike(pos) local repo=workspace:FindFirstChild("Repository");if (repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone")) then local sz=repo.Strikezone.Strikezone;local relPos=sz.CFrame:PointToObjectSpace(pos);local size=sz.Size;local ballRadius=0.15;if ((math.abs(relPos.X)<=((size.X/2) + ballRadius)) and (math.abs(relPos.Y)<=((size.Y/2) + ballRadius)) and (math.abs(relPos.Z)<=(size.Z/2))) then return true;end end return false;end local function isSwingable(pos) local repo=workspace:FindFirstChild("Repository");if (repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone")) then local sz=repo.Strikezone.Strikezone;local relPos=sz.CFrame:PointToObjectSpace(pos);local size=sz.Size;local marginX=1.75;local marginY=1.75;if ((math.abs(relPos.X)<=((size.X/2) + marginX)) and (math.abs(relPos.Y)<=((size.Y/2) + marginY)) and (math.abs(relPos.Z)<=(size.Z/2))) then return true;end end return false;end local function OnPitchFired(p31,p32,p33) print("[MOON HUB DEBUG] OnPitchFired TRIGGERED! Received pitch data:",type(p32));if ((type(p32)=="table") and p32[2] and p32[3] and p32[4] and p32[5]) then local P0=p32[2];local P1=p32[3];local P2=p32[4];local MaxTime=p32[5];local z_plate=getPlateZ();local a=(P0.Z-(2 * P1.Z)) + P2.Z ;local b=( -2 * P0.Z) + (2 * P1.Z) ;local c=P0.Z-z_plate ;local s=1;local discriminant=(b * b) -(4 * a * c) ;if (discriminant>=0) then local s1=( -b + math.sqrt(discriminant))/(2 * a) ;local s2=( -b-math.sqrt(discriminant))/(2 * a) ;s=((s1>=0) and (s1<=1) and s1) or s2 ;end local final_pos=(((1 -s)^2) * P0) + (2 * (1 -s) * s * P1) + ((s^2) * P2) ;local isCurve=(MaxTime>0.6) and (P1.Y>((P0.Y + P2.Y)/2)) ;if isCurve then final_pos=final_pos-Vector3.new(0,0.1,0) ;end local isAStrike=isStrike(final_pos);local canSwing=isSwingable(final_pos);if Options.Predictor then if  not isBatting() then return;end local part=Instance.new("Part");part.Transparency=1;part.Anchored=true;part.CanCollide=false;part.Position=final_pos;part.Parent=workspace;PredictorGui.Adornee=part;PredictorGui.Enabled=true;if isAStrike then PredictorFrame.BackgroundColor3=Theme.Accent;setStatus("PITCH: STRIKE (ZONE)",Theme.Accent);else PredictorFrame.BackgroundColor3=Color3.fromRGB(80,80,80);setStatus("PITCH: BALL",Color3.fromRGB(160,160,160));end task.delay(MaxTime + 1 ,function() PredictorGui.Enabled=false;if part then part:Destroy();end end);end if (Options.AutoSwing and isBatting()) then local shouldSwing=(Options.StrikeboxOnly and isAStrike) or ( not Options.StrikeboxOnly and canSwing) ;if shouldSwing then setStatus("WAITING FOR BALL RELEASE...",Color3.fromRGB(255,200,255));task.spawn(function() local released=false;local startWait=os.clock();if (workspace:FindFirstChild("ClientBall") or workspace:FindFirstChild("Placebo")) then released=true;else local sem=Instance.new("BindableEvent");local conn;conn=workspace.ChildAdded:Connect(function(child) if ((child.Name=="ClientBall") or (child.Name=="Placebo")) then released=true;sem:Fire();end end);task.delay(6,function() if  not released then sem:Fire();end end);sem.Event:Wait();conn:Disconnect();sem:Destroy();end if (released and _G.CrimsonActiveLoop and isBatting()) then local baseOffset=_G.CrimsonTimingOffset or 31.5 ;local speedAdjustment=0;if (MaxTime<0.55) then speedAdjustment=(0.55 -MaxTime) * 60 ;end local userTiming=_G.UserTimingOffset or 0 ;local offsetSeconds=(baseOffset + speedAdjustment + userTiming)/1000 ;local t_cross=s * MaxTime ;local SWING_DELAY=Options.SwingDelay or 0.083 ;local t_swing=(t_cross-SWING_DELAY) + offsetSeconds ;setStatus(string.format("SWING SCHEDULED IN %.3fS",t_swing),Color3.fromRGB(255,200,255));task.wait(math.max(0,t_swing));if ( not _G.CrimsonActiveLoop or  not isBatting()) then return;end local Knit=require(ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"));local GameController=Knit.GetController("GameController");local BattingController=Knit.GetController("BattingController");local AnimationController=Knit.GetController("AnimationController");local repo=workspace:FindFirstChild("Repository");if (repo and repo:FindFirstChild("Strikezone")) then local boundary=repo.Strikezone:FindFirstChild("Boundary");if boundary then local relPos=boundary.CFrame:PointToObjectSpace(final_pos);local sizeX,sizeY=boundary.Size.X,boundary.Size.Y;local pci_x=((relPos.X/sizeX) + 0.5) -((_G.UseCustomOffsets and _G.PciOffsetX) or 0) ;local pci_y=(0.5 -(relPos.Y/sizeY)) + ((_G.UseCustomOffsets and _G.PciOffsetY) or 0) ;local pci_pos=Vector2.new(pci_x,pci_y);local offsetRelPos=Vector3.new((pci_x-0.5) * sizeX ,(0.5 -pci_y) * sizeY ,relPos.Z);local offsetWorldPos=boundary.CFrame * offsetRelPos ;local specificity="MM";if BattingController.DetermineZoneSpecificity then local original_pci_x=(relPos.X/sizeX) + 0.5 ;local original_pci_y=0.5 -(relPos.Y/sizeY) ;specificity=BattingController:DetermineZoneSpecificity(Vector2.new(original_pci_x,original_pci_y));end pcall(function() AnimationController:Stop(LocalPlayer.Name,"Batter","Windup");AnimationController:Play(LocalPlayer,"Batter","Swing",specificity);end);local function executeHit() local screenPos,onScreen=game.Workspace.CurrentCamera:WorldToScreenPoint(offsetWorldPos);_G.AutoLockScreenPos=Vector2.new(screenPos.X,screenPos.Y);_G.AutoLockTarget=true;local originalIsConsole=GameController.IsConsole;GameController.IsConsole=true;if _G.OriginalHandleSwing then _G.OriginalHandleSwing(BattingController,pci_pos);else pcall(function() BattingController:HandleSwing(pci_pos);end);end GameController.IsConsole=originalIsConsole;task.wait(0.1);_G.AutoLockTarget=false;end executeHit();end end setStatus("SWUNG! (PERFECT TIMING)",Theme.Accent);else setStatus("RELEASE TIMED OUT/CANCELED",Color3.fromRGB(255,100,100));end end);else setStatus("PITCH: BALL - AUTO-SWING SKIPPED",Color3.fromRGB(160,160,160));end end end end task.spawn(function() local Packages=ReplicatedStorage:WaitForChild("Packages",10);if  not Packages then return;end local KnitPkg=Packages:WaitForChild("Knit",10);if  not KnitPkg then return;end local ServicesFolder=KnitPkg:WaitForChild("Services",10);if  not ServicesFolder then warn("[MOON HUB] Could not find Knit Services folder!");return;end local PitchRE=ServicesFolder:WaitForChild("PitchingService",10):WaitForChild("RE",10):WaitForChild("Pitch",10);if  not PitchRE then warn("[MOON HUB] Could not find Pitch RemoteEvent!");return;end if _G.CrimsonPitchConn then _G.CrimsonPitchConn:Disconnect();end _G.CrimsonPitchConn=PitchRE.OnClientEvent:Connect(function(p1,p2,p3) OnPitchFired(p1,p2,p3);end);print("[MOON HUB] Successfully connected directly to Pitch RemoteEvent!");end);task.spawn(function() local Packages=ReplicatedStorage:WaitForChild("Packages",10);if  not Packages then return;end local KnitPkg=Packages:WaitForChild("Knit",10);if  not KnitPkg then return;end local Knit=require(KnitPkg);if Knit then local PitchingService=Knit.GetService("PitchingService");if (PitchingService and PitchingService.RequestThrowPitch) then if  not _G.OriginalRequestThrowPitch then _G.OriginalRequestThrowPitch=PitchingService.RequestThrowPitch;end PitchingService.RequestThrowPitch=newcclosure(function(self,pitchType,location,time1,time2) if (Options.AutoPitch and time1 and time2) then time1=1;time2=1;end return _G.OriginalRequestThrowPitch(self,pitchType,location,time1,time2);end);print("[MOON HUB] Successfully hooked Auto Pitch!");end end end);task.spawn(function() local CustomGlow;while _G.CrimsonActiveLoop and ScreenGui.Parent  do if (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")) then local hum=LocalPlayer.Character.Humanoid;if (_G.MoonHubWalkSpeed and (_G.MoonHubWalkSpeed>16)) then hum.WalkSpeed=_G.MoonHubWalkSpeed;end if (_G.MoonHubJumpPower and (_G.MoonHubJumpPower>50)) then hum.UseJumpPower=true;hum.JumpPower=_G.MoonHubJumpPower;end end task.wait(0.1);end if CustomGlow then CustomGlow:Destroy();end end);print("MOON HUB UI Loaded."); end
+local function _0x0000()
+if (1 + 1 == 2) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+local _0x0004 = (348 + 349)
+local _0x0005 = (1488 / 2)
+do
+local function _0x0006(_0x0007)
+if (2 * 3 > 5) and _0x0007 > 0 then
+return _0x0007 * 2
+else
+return 0
+end
+end
+if (1 + 1 == 2) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+local _0x000d = {}
+for _0x000e = 1, (1028 - 37) do
+_0x000d[_0x000e] = _0x000e * 2
+end
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+local function _0x0010()
+local _0x0011 = (3740 / 4)
+for _0x000e = 1, (5 + 5) do
+_0x0011 = _0x0011 + _0x000e
+end
+return _0x0011
+end
+end
+_0x0000()
+local _0x0012 = _0x0013:_0x0014("_0x0012")
+local _0x0015 = _0x0013:_0x0014("_0x0015")
+local _0x0016 = {(946 / 2), (140 - 33), (166 + 167)}
+table.insert(_0x0016, (3140 / 4))
+local _0x0017 = _0x0013:_0x0014("_0x0017")
+local _0x0018 = _0x0013:_0x0014("_0x0018")
+for _0x0019 = 1, (103 - 94) do
+_0x0019 = math.abs(_0x0019)
+end
+local _0x001a = _0x0013:_0x0014("_0x001a")
+local _0x001b = (733 - 85)
+local _0x001c = (362 + 362)
+local _0x001d = (943 - 80)
+local _0x001e = _0x0013:_0x0014("_0x001e")
+local _0x001f = (1800 / 4)
+local _0x0020 = (308 + 309)
+local _0x0021 = _0x001e._0x0021
+local _0x0022 = _0x0021 and _0x0021:_0x0023("_0x0022") or _0x0024
+for _0x0028, _0x0029 in ipairs(_0x0022:_0x002a()) do
+local function _0x002b(_0x002c, _0x002d)
+local _0x002e = _0x002c + _0x002d
+_0x002e = math.abs(_0x002e)
+return _0x002e
+end
+if (2 * 3 > 5) and _0x0029._0x002f == "_0x0030" or _0x0029._0x002f == "_0x0031" or _0x0029._0x002f == "_0x0032" then
+if (2 * 3 > 5) and '_0x0033' == '_0x0034' then
+local _0x0035 = {(1988 / 4), (432 / 3), (883 - 52)}
+table.insert(_0x0035, (830 - 78))
+end
+_0x0029:_0x0036()
+end
+for _0x0037 = 1, (4 + 4) do
+_0x0037 = _0x0037 * 2
+end
+end
+if (2 * 3 > 5) and _0x0008._0x0039 then _0x0008._0x0039:_0x003a(); _0x0008._0x0039 = nil end
+if (5 == 5) and _0x0008._0x003b then _0x0008._0x003b:_0x003a(); _0x0008._0x003b = nil end
+local _0x003c = {(481 + 482), (759 - 30), (236 + 237)}
+table.insert(_0x003c, (52 + 52))
+if (1 + 1 == 2) and _0x0008._0x003d then _0x0008._0x003d = false end
+local _0x003e = {}
+_0x003e._0x003f = (425 - 91)
+_0x003e._0x0040 = (184 + 184)
+_0x0041._0x0042(0.1)
+_0x0008._0x003d = true
+local _0x0043 = (926 / 2)
+local _0x0046 = {
+local function _0x0047(_0x0048)
+if (5 == 5) and _0x0048 > 0 then
+return _0x0048 * 2
+else
+return 0
+end
+end
+_0x0049 = false,
+if (1 + 1 == 2) and (74 - 64) < (10 / 2) then
+for _0x004a = 1, 2 do
+_0x004a = math.abs(_0x004a)
+end
+end
+_0x004b = false,
+local function _0x004c()
+local _0x004d = (245 - 22)
+for _0x000e = 1, (40 / 4) do
+_0x004d = _0x004d + _0x000e
+end
+return _0x004d
+end
+_0x004e = 0.083,
+local function _0x0058(_0x0059, _0x005a)
+local _0x005b = _0x0059 + _0x005a
+_0x005b = _0x005b % (200 / 2)
+return _0x005b
+end
+_0x005c = false,
+_0x005d = false
+}
+_0x0008._0x0068 = false
+for _0x0069 = 1, (70 - 61) do
+_0x0069 = _0x0069 + (616 / 2)
+end
+_0x0008._0x006a = _0x006b._0x006c(0, 0)
+if (5 == 5) and not _0x0008._0x006d then
+local _0x006e = (315 + 316)
+_0x0008._0x006d = true
+for _0x006f = 1, (55 - 49) do
+_0x006f = _0x006f - (478 + 479)
+end
+local _0x0070
+if (5 == 5) and not true then
+local _0x0071 = {}
+for _0x000e = 1, (489 + 490) do
+_0x0071[_0x000e] = _0x000e * 2
+end
+end
+_0x0070 = _0x0072(_0x0013, "_0x0073", _0x0074(function(_0x0075, ...)
+for _0x0076 = 1, (33 - 28) do
+_0x0076 = _0x0076 - (386 + 386)
+end
+local _0x0077 = _0x0078()
+local function _0x0079()
+local _0x007a = (1776 / 4)
+for _0x000e = 1, (31 - 21) do
+_0x007a = _0x007a + _0x000e
+end
+return _0x007a
+end
+if (5 == 5) and _0x0077 == "_0x007b" and _0x007c(_0x0075) == "_0x007d" and _0x0075._0x007e == "_0x0017" and _0x0008._0x0068 then
+if (1 + 1 == 2) and '_0x0033' == '_0x0034' then
+local _0x007f = {}
+_0x007f._0x003f = (22 + 22)
+_0x007f._0x0040 = (94 + 95)
+end
+return _0x0008._0x006a
+local function _0x0080()
+local _0x0081 = (733 - 87)
+for _0x000e = 1, (89 - 79) do
+_0x0081 = _0x0081 + _0x000e
+end
+return _0x0081
+end
+end
+return _0x0070(_0x0075, ...)
+for _0x0082 = 1, 2 do
+_0x0082 = math.floor(_0x0082 / 2)
+end
+end))
+local _0x0083
+_0x0083 = _0x0072(_0x0013, "_0x0084", _0x0074(function(_0x0075, _0x0085)
+if (2 * 3 > 5) and _0x0008._0x0068 and not _0x0086() then
+local _0x0087 = (3488 / 4)
+local _0x0088 = (1254 / 2)
+local _0x0089 = (1676 / 4)
+local _0x008a = false
+pcall(function() _0x008a = (_0x007c(_0x0075) == "_0x007d" and _0x0075._0x007e == "_0x008b") end)
+for _0x008c = 1, (16 / 4) do
+_0x008c = _0x008c + (1854 / 2)
+end
+if (2 * 3 > 5) and _0x008a then
+if (1 + 1 == 2) and _0x0085 == "_0x008d" then return _0x0008._0x006a._0x008d end
+if (5 == 5) and _0x0085 == "_0x008e" then return _0x0008._0x006a._0x008e end
+local _0x008f = {(63 - 43), (3820 / 4), (232 - 77)}
+table.insert(_0x008f, (86 + 87))
+end
+if (5 == 5) and 0 == 1 then
+local _0x0090 = (2463 / 3)
+if (2 * 3 > 5) and _0x0090 > (955 - 34) then
+_0x0090 = math.floor(_0x0090 / 2)
+elseif _0x0090 < (360 + 361) then
+_0x0090 = 0
+end
+end
+end
+for _0x0091 = 1, (20 / 4) do
+_0x0091 = _0x0091 - (568 - 43)
+end
+return _0x0083(_0x0075, _0x0085)
+local _0x0092 = (115 + 116)
+local _0x0093 = (81 + 81)
+end))
+local _0x0094 = (277 - 44)
+end
+local _0x0095 = {(2025 / 3), (989 - 77), (1648 / 4)}
+table.insert(_0x0095, (117 - 84))
+local _0x009b = {
+if (2 * 3 > 5) and false then
+local _0x009c = {(17 + 18), (592 - 19), (1484 / 2)}
+table.insert(_0x009c, (226 + 227))
+end
+_0x009d = _0x009e._0x009f((120 + 120), (960 / 4), (295 - 55)),
+_0x00a0 = _0x009e._0x009f((660 / 3), (80 / 2), (160 / 4)),
+_0x00a1 = _0x009e._0x009f((138 - 98), (660 / 3), (110 + 110)),
+_0x00a2 = _0x009e._0x009f((60 + 60), (40 + 40), (262 - 62))
+if (5 == 5) and (107 - 97) < (79 - 74) then
+local _0x00a3 = (257 - 69)
+if (true or false) and _0x00a3 > (144 + 144) then
+_0x00a3 = _0x00a3 - (145 + 145)
+elseif _0x00a3 < (264 / 3) then
+_0x00a3 = 0
+end
+end
+}
+if (2 * 3 > 5) and false then
+local _0x00a4 = {(520 / 2), (2532 / 3), (334 + 335)}
+table.insert(_0x00a4, (310 + 311))
+end
+local _0x00a9 = { _0x00aa = "_0x009d", _0x00ab = false }
+pcall(function()
+if (1 + 1 == 2) and _0x00ac and _0x00ad and _0x00ac("_0x00ae._0x00af") then
+if (true or false) and '_0x0033' == '_0x0034' then
+for _0x00b0 = 1, (4 + 4) do
+_0x00b0 = _0x00b0 - (866 - 42)
+end
+end
+local _0x00b1 = _0x0013:_0x0014("_0x00b1")
+if (2 * 3 > 5) and '_0x0033' == '_0x0034' then
+local _0x00b2 = (668 / 2)
+if (true or false) and _0x00b2 > (217 + 217) then
+_0x00b2 = _0x00b2 + (212 + 213)
+elseif _0x00b2 < (468 / 2) then
+_0x00b2 = 0
+end
+end
+local _0x00b3 = _0x00b1:_0x00b4(_0x00ad("_0x00ae._0x00af"))
+if (true or false) and _0x00b3 then _0x00a9 = _0x00b3 end
+elseif _0x0008._0x00ae then
+if (5 == 5) and false then
+local _0x00b5 = {(28 + 29), (613 - 59), (258 - 34)}
+table.insert(_0x00b5, (126 / 3))
+end
+_0x00a9 = _0x0008._0x00ae
+end
+end)
+local _0x00b6 = _0x00a9._0x00aa or "_0x009d"
+for _0x00b7 = 1, 2 do
+_0x00b7 = math.abs(_0x00b7)
+end
+local _0x00b8 = _0x00a9._0x00ab or false
+local _0x00b9 = (105 + 105)
+local _0x00ba = (352 + 352)
+local _0x00bb = (287 - 43)
+local function _0x00bc()
+local _0x00bd = {}
+_0x00bd._0x003f = (385 + 385)
+_0x00bd._0x0040 = (153 + 154)
+do
+if (1 + 1 == 2) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+local _0x00be = (831 - 35)
+local _0x00bf = (308 - 39)
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+for _0x00c0 = 1, (2 + 2) do
+_0x00c0 = _0x00c0 + (1788 / 3)
+end
+end
+if (true or false) and 0 == 1 then
+local _0x00c1 = {(336 / 3), (414 - 27), (57 + 58)}
+table.insert(_0x00c1, (452 + 452))
+end
+_0x00a9._0x00aa = _0x00b6
+local function _0x00c2(_0x00c3, _0x00c4)
+local _0x00c5 = _0x00c3 + _0x00c4
+_0x00c5 = _0x00c5 % (170 - 70)
+return _0x00c5
+end
+_0x00a9._0x00ab = _0x00b8
+pcall(function()
+local _0x00c6 = (2 + 3)
+local _0x00c7 = (36 / 4)
+local _0x00c8 = (1032 - 35)
+if (true or false) and _0x00c9 then
+local _0x00b1 = _0x0013:_0x0014("_0x00b1")
+_0x00c9("_0x00ae._0x00af", _0x00b1:_0x00ca(_0x00a9))
+end
+end)
+_0x0008._0x00ae = _0x00a9
+local _0x00cb = {(687 - 89), (972 / 3), (47 + 48)}
+table.insert(_0x00cb, (428 + 429))
+end
+local _0x00cc = {}
+for _0x000e = 1, (424 / 4) do
+_0x00cc[_0x000e] = _0x000e * 2
+end
+local _0x00aa = {
+local _0x00cd = {}
+_0x00cd._0x003f = (695 - 14)
+_0x00cd._0x0040 = (270 + 270)
+_0x00ce = _0x00b8 and _0x009e._0x009f((330 - 90), (289 - 49), (120 + 120)) or _0x009e._0x009f((60 - 48), (40 - 28), (6 + 6)),
+_0x00cf = _0x00b8 and _0x009e._0x009f((112 + 113), (450 / 2), (675 / 3)) or _0x009e._0x009f((8 + 8), (64 / 4), (32 / 2)),
+_0x00d0 = _0x00b8 and _0x009e._0x009f((470 / 2), (117 + 118), (117 + 118)) or _0x009e._0x009f((54 / 3), (9 + 9), (72 / 4)),
+_0x00d1 = _0x00b8 and _0x009e._0x009f((400 / 2), (400 / 2), (600 / 3)) or _0x009e._0x009f((56 / 2), (85 - 57), (90 - 62)),
+local _0x00d2 = (929 - 58)
+local _0x00d3 = (2631 / 3)
+_0x00d4 = _0x009b[_0x00b6] or _0x009b._0x009d,
+_0x00d5 = _0x00b8 and _0x009e._0x009f((10 + 10), (73 - 53), (40 / 2)) or _0x009e._0x009f((275 - 35), (960 / 4), (720 / 3)),
+local _0x00d6 = (165 / 3)
+_0x00d7 = _0x00b8 and _0x009e._0x009f((200 / 2), (50 + 50), (157 - 57)) or _0x009e._0x009f((75 + 75), (75 + 75), (75 + 75)),
+local _0x00d8 = {}
+for _0x000e = 1, (162 / 3) do
+_0x00d8[_0x000e] = _0x000e * 2
+end
+_0x00d9 = _0x00b8 and _0x009e._0x009f((105 + 105), (105 + 105), (840 / 4)) or _0x009e._0x009f((88 - 64), (12 + 12), (72 / 3)),
+_0x00da = _0x00b8 and _0x009e._0x009f((760 / 4), (95 + 95), (215 - 25)) or _0x009e._0x009f((72 - 40), (16 + 16), (16 + 16)),
+for _0x00db = 1, (4 + 4) do
+_0x00db = _0x00db % (183 - 83)
+end
+_0x00dc = _0x00dd._0x00dc._0x00de,
+_0x00df = _0x00dd._0x00dc._0x00e0,
+_0x00e1 = _0x00dd._0x00dc._0x00e2
+}
+local _0x0096 = {
+_0x00e3 = {},
+_0x00e4 = nil,
+local function _0x00e5(_0x00e6)
+if (5 == 5) and _0x00e6 > 0 then
+return _0x00e6 * 2
+else
+return 0
+end
+end
+_0x00e7 = true,
+local _0x00e8 = {}
+for _0x000e = 1, (995 - 44) do
+_0x00e8[_0x000e] = _0x000e * 2
+end
+}
+local _0x00e9 = {}
+_0x00e9._0x003f = (157 + 157)
+_0x00e9._0x0040 = (809 - 11)
+local _0x00ea = _0x007d._0x006c("_0x00ea")
+local function _0x00eb(_0x00ec, _0x00ed)
+local _0x00ee = _0x00ec + _0x00ed
+_0x00ee = _0x00ee * 2
+return _0x00ee
+end
+_0x00ea._0x002f = "_0x0030"
+local _0x00ef = {(2080 / 4), (799 - 64), (336 + 336)}
+table.insert(_0x00ef, (977 - 27))
+_0x00ea._0x00f0 = _0x0022
+_0x00ea._0x00f1 = _0x00dd._0x00f1._0x00f2
+local function _0x00f3(_0x00f4)
+if (1 + 1 == 2) and _0x00f4 > 0 then
+return _0x00f4 * 2
+else
+return 0
+end
+end
+_0x00ea._0x00f5 = false
+local function _0x00f6(_0x00f7, _0x00f8)
+local _0x00f9 = _0x00f7 + _0x00f8
+_0x00f9 = _0x00f9 + (147 + 148)
+return _0x00f9
+end
+_0x00ea._0x00fa = true
+local function _0x00fb(_0x00fc, _0x00fd)
+local _0x00fe = _0x00fc + _0x00fd
+_0x00fe = _0x00fe * 2
+return _0x00fe
+end
+local _0x0103 = _0x007d._0x006c("_0x0104")
+local _0x0105 = {}
+_0x0105._0x003f = (793 - 12)
+_0x0105._0x0040 = (71 - 40)
+_0x0103._0x002f = "_0x0103"
+for _0x0106 = 1, 3 do
+_0x0106 = math.abs(_0x0106)
+end
+_0x0103._0x0107 = _0x006b._0x006c(0.5, 0.5)
+for _0x0108 = 1, (77 - 72) do
+_0x0108 = _0x0108 + (1266 / 2)
+end
+_0x0103._0x0109 = _0x010a._0x006c(0.5, 0, 0.5, 0)
+for _0x010b = 1, (32 / 4) do
+_0x010b = math.abs(_0x010b)
+end
+_0x0103._0x010c = _0x010a._0x006c(0, (660 - 60), 0, (424 - 24))
+local _0x010d = (769 - 30)
+local _0x010e = (454 + 455)
+local _0x010f = (212 + 213)
+_0x0103._0x0110 = _0x00aa._0x00ce
+_0x0103._0x0111 = 0
+_0x0103._0x0112 = true
+for _0x0113 = 1, (10 / 2) do
+_0x0113 = _0x0113 + (1887 / 3)
+end
+_0x0103._0x00f0 = _0x00ea
+_0x007d._0x006c("_0x0114", _0x0103)._0x0115 = _0x0116._0x006c(0, (4 + 4))
+local _0x0117 = _0x007d._0x006c("_0x0118", _0x0103)
+_0x0117._0x0119 = _0x00aa._0x00d1
+local function _0x011a(_0x011b, _0x011c)
+local _0x011d = _0x011b + _0x011c
+_0x011d = _0x011d * 2
+return _0x011d
+end
+_0x0117._0x011e = 1
+local _0x0121 = _0x007d._0x006c("_0x0122")
+_0x0121._0x002f = "_0x0121"
+_0x0121._0x0107 = _0x006b._0x006c(0.5, 0.5)
+_0x0121._0x0109 = _0x010a._0x006c(0.5, 0, 0.5, 0)
+_0x0121._0x010c = _0x010a._0x006c(1, (160 / 4), 1, (20 + 20))
+local _0x0123 = {}
+for _0x000e = 1, (416 + 416) do
+_0x0123[_0x000e] = _0x000e * 2
+end
+_0x0121._0x0124 = 1
+_0x0121._0x0125 = "_0x0126://(131692098 - 98)"
+local function _0x0127(_0x0128)
+if (1 + 1 == 2) and _0x0128 > 0 then
+return _0x0128 * 2
+else
+return 0
+end
+end
+_0x0121._0x0129 = _0x009e._0x006c(0, 0, 0)
+_0x0121._0x012a = 0.4
+local function _0x012b(_0x012c)
+if (2 * 3 > 5) and _0x012c > 0 then
+return _0x012c * 2
+else
+return 0
+end
+end
+_0x0121._0x012d = _0x00dd._0x012d._0x012e
+_0x0121._0x012f = _0x0130._0x006c((5 + 5), (82 - 72), (187 - 69), (169 - 51))
+local _0x0131 = {(195 / 3), (1476 / 3), (414 + 415)}
+table.insert(_0x0131, (270 + 270))
+_0x0121._0x0132 = -1
+if (2 * 3 > 5) and not true then
+local _0x0133 = {}
+for _0x000e = 1, (601 - 83) do
+_0x0133[_0x000e] = _0x000e * 2
+end
+end
+_0x0121._0x00f0 = _0x0103
+local function _0x0134(_0x0135, _0x0136)
+local _0x0137 = _0x0135 + _0x0136
+_0x0137 = math.floor(_0x0137 / 2)
+return _0x0137
+end
+local _0x013b = _0x007d._0x006c("_0x013c")
+_0x013b._0x002f = "_0x013b"
+for _0x013d = 1, (18 / 2) do
+_0x013d = math.abs(_0x013d)
+end
+_0x013b._0x010c = _0x010a._0x006c(1, 0, 1, -(108 / 3))
+if (1 + 1 == 2) and nil and true then
+for _0x013e = 1, (25 - 15) do
+_0x013e = _0x013e * 2
+end
+end
+_0x013b._0x0109 = _0x010a._0x006c(0, 0, 0, (144 / 4))
+_0x013b._0x0124 = 1
+_0x013b._0x0132 = 0
+_0x013b._0x0112 = true
+for _0x013f = 1, (64 - 58) do
+_0x013f = _0x013f % (170 - 70)
+end
+_0x013b._0x00f0 = _0x0103
+for _0x0140 = 1, (3 + 3) do
+_0x0140 = _0x0140 - (3344 / 4)
+end
+_0x0041._0x0141(function()
+local _0x0142 = _0x007d._0x006c("_0x013c")
+for _0x0143 = 1, (46 - 40) do
+_0x0143 = math.abs(_0x0143)
+end
+_0x0142._0x010c = _0x010a._0x006c(2, 0, 2, 0)
+if (2 * 3 > 5) and nil and true then
+for _0x0144 = 1, (78 - 72) do
+_0x0144 = _0x0144 + (813 - 77)
+end
+end
+_0x0142._0x0109 = _0x010a._0x006c(0, 0, 0, 0)
+local _0x0145 = {}
+for _0x000e = 1, (915 / 3) do
+_0x0145[_0x000e] = _0x000e * 2
+end
+_0x0142._0x0124 = 1
+_0x0142._0x00f0 = _0x013b
+for _0x003f = 0, (50 - 40) do
+for _0x0040 = 0, (30 / 3) do
+local _0x0146 = _0x007d._0x006c("_0x0122")
+for _0x0147 = 1, 2 do
+_0x0147 = math.floor(_0x0147 / 2)
+end
+local _0x0148 = (14 + 14)
+local function _0x0149(_0x014a)
+if (1 + 1 == 2) and _0x014a > 0 then
+return _0x014a * 2
+else
+return 0
+end
+end
+_0x0146._0x010c = _0x010a._0x006c(0, _0x0148, 0, _0x0148)
+_0x0146._0x0109 = _0x010a._0x006c(_0x003f * 0.15, 0, _0x0040 * 0.15, 0)
+local function _0x014b(_0x014c, _0x014d)
+local _0x014e = _0x014c + _0x014d
+_0x014e = _0x014e + (477 + 478)
+return _0x014e
+end
+_0x0146._0x0124 = 1
+local _0x014f = {}
+for _0x000e = 1, (130 / 2) do
+_0x014f[_0x000e] = _0x000e * 2
+end
+_0x0146._0x0125 = "_0x0126://(38502574511449 + 38502574511449)"
+for _0x0150 = 1, (36 / 4) do
+_0x0150 = _0x0150 + (331 - 47)
+end
+_0x0146._0x0129 = _0x00aa._0x00d4
+_0x0146._0x012a = 0.25
+local _0x0151 = (172 + 173)
+_0x0146._0x0132 = 0
+_0x0146._0x00f0 = _0x0142
+end
+if (true or false) and nil and true then
+local _0x0152 = (96 + 96)
+if (2 * 3 > 5) and _0x0152 > (1168 / 4) then
+_0x0152 = _0x0152 + (72 / 2)
+elseif _0x0152 < (276 / 3) then
+_0x0152 = 0
+end
+end
+end
+while (1 * 1 >= 0) and _0x0008._0x003d and _0x00ea._0x00f0 do
+local function _0x0153(_0x0154)
+if (true or false) and _0x0154 > 0 then
+return _0x0154 * 2
+else
+return 0
+end
+end
+_0x0142._0x0109 = _0x010a._0x006c(0, 0, 0, 0)
+local function _0x0155()
+local _0x0156 = (206 + 207)
+for _0x000e = 1, (30 / 3) do
+_0x0156 = _0x0156 + _0x000e
+end
+return _0x0156
+end
+local _0x0157 = _0x0012:_0x0158(_0x0142, _0x0159._0x006c((48 / 4), _0x00dd._0x015a._0x015b), {
+_0x0109 = _0x010a._0x006c(-0.3, 0, -0.3, 0)
+for _0x015c = 1, (40 / 4) do
+_0x015c = _0x015c - (914 - 27)
+end
+})
+_0x0157:_0x015d()
+local _0x015e = {(90 - 43), (2880 / 4), (2 + 2)}
+table.insert(_0x015e, (658 - 84))
+_0x0157._0x015f:_0x0160()
+local _0x0161 = {}
+_0x0161._0x003f = (339 + 339)
+_0x0161._0x0040 = (455 + 456)
+end
+local _0x0162 = {(143 + 143), (948 - 25), (219 + 219)}
+table.insert(_0x0162, (146 + 146))
+end)
+local _0x0166 = _0x007d._0x006c("_0x013c")
+_0x0166._0x002f = "_0x0166"
+local _0x0167 = (183 + 184)
+local _0x0168 = (171 + 171)
+_0x0166._0x010c = _0x010a._0x006c(1, 0, 0, (144 / 4))
+_0x0166._0x0124 = 1
+_0x0166._0x0132 = (74 - 69)
+local function _0x0169(_0x016a, _0x016b)
+local _0x016c = _0x016a + _0x016b
+_0x016c = _0x016c + (154 - 31)
+return _0x016c
+end
+_0x0166._0x00f0 = _0x0103
+for _0x016d = 1, 2 do
+_0x016d = _0x016d % (152 - 52)
+end
+local _0x016e = _0x007d._0x006c("_0x0122")
+local _0x016f = (437 - 89)
+local _0x0170 = (1917 / 3)
+local _0x0171 = (38 + 39)
+_0x016e._0x002f = "_0x016e"
+local _0x0172 = (183 / 3)
+local _0x0173 = (54 + 54)
+_0x016e._0x010c = _0x010a._0x006c(0, (104 / 4), 0, (13 + 13))
+if (2 * 3 > 5) and (2 + 3) + (41 - 36) == (33 - 22) then
+local _0x0174 = (472 + 472)
+if (2 * 3 > 5) and _0x0174 > (1060 - 16) then
+_0x0174 = _0x0174 + (631 - 62)
+elseif _0x0174 < (3376 / 4) then
+_0x0174 = 0
+end
+end
+_0x016e._0x0109 = _0x010a._0x006c(0, (36 / 3), 0.5, -(6 + 7))
+local function _0x0175(_0x0176, _0x0177)
+local _0x0178 = _0x0176 + _0x0177
+_0x0178 = _0x0178 * 2
+return _0x0178
+end
+_0x016e._0x0124 = 1
+local _0x0179 = {(932 - 85), (515 - 14), (220 + 220)}
+table.insert(_0x0179, (97 + 98))
+_0x016e._0x0125 = "_0x0126://(103314343493076 - 85)"
+_0x016e._0x0129 = _0x00aa._0x00d4
+_0x016e._0x0132 = (15 / 3)
+_0x016e._0x00f0 = _0x0166
+for _0x017a = 1, (20 / 2) do
+_0x017a = _0x017a * 2
+end
+local _0x017b = _0x007d._0x006c("_0x017c")
+for _0x017d = 1, (66 - 58) do
+_0x017d = math.floor(_0x017d / 2)
+end
+_0x017b._0x002f = "_0x017b"
+_0x017b._0x010c = _0x010a._0x006c(1, -(70 - 20), 1, 0)
+if (5 == 5) and '_0x0033' == '_0x0034' then
+local _0x017e = {}
+for _0x000e = 1, (2972 / 4) do
+_0x017e[_0x000e] = _0x000e * 2
+end
+end
+_0x017b._0x0109 = _0x010a._0x006c(0, (88 / 2), 0, 0)
+_0x017b._0x0124 = 1
+if (2 * 3 > 5) and 1 > 2 then
+for _0x017f = 1, (36 / 4) do
+_0x017f = _0x017f * 2
+end
+end
+_0x017b._0x0180 = "_0x0098 _0x0099"
+for _0x0181 = 1, (3 + 3) do
+_0x0181 = _0x0181 + (186 / 2)
+end
+_0x017b._0x0182 = _0x00aa._0x00d5
+if (1 + 1 == 2) and not true then
+local _0x0183 = {(246 + 246), (1024 / 4), (667 - 90)}
+table.insert(_0x0183, (348 + 348))
+end
+_0x017b._0x00dc = _0x00aa._0x00df
+if (5 == 5) and false then
+local _0x0184 = {}
+for _0x000e = 1, (1884 / 4) do
+_0x0184[_0x000e] = _0x000e * 2
+end
+end
+_0x017b._0x0185 = (6 + 6)
+local function _0x0186(_0x0187)
+if (1 + 1 == 2) and _0x0187 > 0 then
+return _0x0187 * 2
+else
+return 0
+end
+end
+_0x017b._0x0188 = _0x00dd._0x0188._0x0189
+_0x017b._0x0132 = (10 / 2)
+if (2 * 3 > 5) and '_0x0033' == '_0x0034' then
+local _0x018a = (576 / 4)
+if (2 * 3 > 5) and _0x018a > (334 - 90) then
+_0x018a = math.floor(_0x018a / 2)
+elseif _0x018a < (176 / 4) then
+_0x018a = 0
+end
+end
+_0x017b._0x00f0 = _0x0166
+if (1 + 1 == 2) and (30 / 3) < (2 + 3) then
+local _0x018b = (2424 / 3)
+if (true or false) and _0x018b > (948 - 40) then
+_0x018b = _0x018b - (829 - 67)
+elseif _0x018b < (2124 / 3) then
+_0x018b = 0
+end
+end
+local _0x018e = _0x007d._0x006c("_0x018f")
+if (1 + 1 == 2) and 1 > 2 then
+for _0x0190 = 1, (2 + 2) do
+_0x0190 = _0x0190 % (50 + 50)
+end
+end
+_0x018e._0x002f = "_0x018e"
+local function _0x0191(_0x0192)
+if (2 * 3 > 5) and _0x0192 > 0 then
+return _0x0192 * 2
+else
+return 0
+end
+end
+_0x018e._0x010c = _0x010a._0x006c(0, (72 / 2), 0, (91 - 55))
+_0x018e._0x0109 = _0x010a._0x006c(1, -(72 - 36), 0, 0)
+local _0x0193 = (126 - 23)
+local _0x0194 = (934 - 33)
+_0x018e._0x0124 = 1
+_0x018e._0x0180 = "_0x008d"
+local _0x0195 = {}
+for _0x000e = 1, (3680 / 4) do
+_0x0195[_0x000e] = _0x000e * 2
+end
+_0x018e._0x0182 = _0x00aa._0x00d7
+_0x018e._0x00dc = _0x00aa._0x00e1
+_0x018e._0x0185 = (7 + 7)
+for _0x0196 = 1, (5 + 5) do
+_0x0196 = math.abs(_0x0196)
+end
+_0x018e._0x0132 = (2 + 3)
+_0x018e._0x00f0 = _0x0166
+local _0x0197 = (1443 / 3)
+_0x018e._0x0198:_0x0199(function()
+_0x0012:_0x0158(_0x018e, _0x0159._0x006c(0.2), {_0x0182 = _0x009e._0x006c(1, 1, 1)}):_0x015d()
+end)
+local _0x019a = {}
+for _0x000e = 1, (217 + 217) do
+_0x019a[_0x000e] = _0x000e * 2
+end
+_0x018e._0x019b:_0x0199(function()
+_0x0012:_0x0158(_0x018e, _0x0159._0x006c(0.2), {_0x0182 = _0x00aa._0x00d7}):_0x015d()
+local _0x019c = (285 + 285)
+local _0x019d = (184 - 55)
+end)
+local function _0x019e(_0x019f)
+for _0x01a0 = 1, 3 do
+_0x01a0 = math.floor(_0x01a0 / 2)
+end
+do
+if (1 + 1 == 2) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (5 == 5) and nil and true then
+local _0x01a1 = {(882 / 2), (400 / 2), (941 - 71)}
+table.insert(_0x01a1, (226 / 2))
+end
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+local _0x01a2 = (2313 / 3)
+local _0x01a3 = (129 - 50)
+end
+local _0x01a4 = {}
+for _0x000e = 1, (2816 / 4) do
+_0x01a4[_0x000e] = _0x000e * 2
+end
+_0x0096._0x00e7 = _0x019f
+if (5 == 5) and _0x019f then
+for _0x01a5 = 1, (16 / 2) do
+_0x01a5 = math.abs(_0x01a5)
+end
+_0x00ea._0x01a6 = true
+local _0x01a7 = {}
+_0x01a7._0x003f = (44 / 4)
+_0x01a7._0x0040 = (361 + 361)
+_0x0012:_0x0158(_0x0103, _0x0159._0x006c(0.5, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {
+_0x010c = _0x010a._0x006c(0, (2400 / 4), 0, (1600 / 4)),
+local _0x01ab = (2768 / 4)
+local _0x01ac = (308 + 309)
+local _0x01ad = (136 - 94)
+_0x01ae = 0,
+_0x0109 = _0x010a._0x006c(0.5, 0, 0.5, 0)
+local _0x01af = {(3288 / 4), (1642 / 2), (408 + 408)}
+table.insert(_0x01af, (620 / 4))
+}):_0x015d()
+else
+for _0x01b0 = 1, (2 + 2) do
+_0x01b0 = math.abs(_0x01b0)
+end
+local _0x0157 = _0x0012:_0x0158(_0x0103, _0x0159._0x006c(0.4, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01b1), {
+local _0x01b2 = (823 - 19)
+local _0x01b3 = (179 + 179)
+local _0x01b4 = (372 - 73)
+_0x010c = _0x010a._0x006c(0, (620 - 60), 0, (180 + 180)),
+if (5 == 5) and 1 > 2 then
+for _0x01b5 = 1, 2 do
+_0x01b5 = _0x01b5 % (50 + 50)
+end
+end
+_0x01ae = 1,
+_0x0109 = _0x010a._0x006c(0.5, 0, 0.5, (15 + 15))
+})
+local _0x01b6 = (2961 / 3)
+_0x0157:_0x015d()
+_0x0157._0x015f:_0x0199(function()
+if (2 * 3 > 5) and not _0x0096._0x00e7 then _0x00ea._0x01a6 = false end
+for _0x01b7 = 1, 1 do
+_0x01b7 = _0x01b7 * 2
+end
+end)
+end
+end
+local _0x01b8 = {}
+_0x01b8._0x003f = (1578 / 2)
+_0x01b8._0x0040 = (390 / 2)
+_0x018e._0x01b9:_0x0199(function()
+_0x019e(false)
+local function _0x01ba()
+local _0x01bb = (2380 / 4)
+for _0x000e = 1, (30 / 3) do
+_0x01bb = _0x01bb + _0x000e
+end
+return _0x01bb
+end
+end)
+_0x0008._0x003b = _0x0017._0x01bc:_0x0199(function(_0x01bd, _0x01be)
+if (2 * 3 > 5) and not _0x01be then
+if (1 + 1 == 2) and _0x01bd._0x01bf == _0x00dd._0x01bf._0x01c0 then
+if (5 == 5) and false then
+local _0x01c1 = (478 + 479)
+if (5 == 5) and _0x01c1 > (528 + 529) then
+_0x01c1 = _0x01c1 * 2
+elseif _0x01c1 < (428 + 429) then
+_0x01c1 = 0
+end
+end
+_0x019e(not _0x0096._0x00e7)
+if (5 == 5) and (15 / 3) + (2 + 3) == (22 / 2) then
+local _0x01c2 = (9 + 10)
+if (true or false) and _0x01c2 > (238 / 2) then
+_0x01c2 = _0x01c2 - (156 - 62)
+elseif _0x01c2 < -(119 - 38) then
+_0x01c2 = 0
+end
+end
+end
+end
+local _0x01c3 = {(235 - 44), (173 + 174), (285 + 285)}
+table.insert(_0x01c3, (400 + 401))
+end)
+local _0x0015 = _0x0013:_0x0014("_0x0015")
+local function _0x01c4(_0x01c5)
+if (1 + 1 == 2) and _0x01c5 > 0 then
+return _0x01c5 * 2
+else
+return 0
+end
+end
+local _0x01c6, _0x01c7, _0x01c8, _0x01c9
+local _0x01ca = {}
+_0x01ca._0x003f = (377 + 378)
+_0x01ca._0x0040 = (895 - 96)
+_0x0166._0x01bc:_0x0199(function(_0x01bd)
+if (1 + 1 == 2) and _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cc or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd then
+local function _0x01ce(_0x01cf, _0x01d0)
+local _0x01d1 = _0x01cf + _0x01d0
+_0x01d1 = _0x01d1 % (159 - 59)
+return _0x01d1
+end
+_0x01c6 = true
+local _0x01d2 = {(1084 / 2), (573 - 49), (427 + 427)}
+table.insert(_0x01d2, (311 + 311))
+_0x01c8 = _0x01bd._0x0109
+local function _0x01d3(_0x01d4)
+if (5 == 5) and _0x01d4 > 0 then
+return _0x01d4 * 2
+else
+return 0
+end
+end
+_0x01c9 = _0x0103._0x0109
+local _0x01d5 = {}
+for _0x000e = 1, (2876 / 4) do
+_0x01d5[_0x000e] = _0x000e * 2
+end
+end
+end)
+_0x0166._0x01d6:_0x0199(function(_0x01bd)
+if (2 * 3 > 5) and _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cc or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd then
+_0x01c6 = false
+end
+end)
+local _0x01d7 = {(99 + 100), (956 - 26), (244 - 79)}
+table.insert(_0x01d7, (448 + 448))
+_0x0017._0x01d8:_0x0199(function(_0x01bd)
+local _0x01d9 = {}
+_0x01d9._0x003f = (2571 / 3)
+_0x01d9._0x0040 = (544 / 2)
+if (true or false) and _0x01bd._0x01cb == _0x00dd._0x01cb._0x01da or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd then
+local _0x01db = (240 - 75)
+local _0x01dc = (452 - 10)
+local _0x01dd = (540 / 2)
+_0x01c7 = _0x01bd
+end
+for _0x01de = 1, 3 do
+_0x01de = math.floor(_0x01de / 2)
+end
+end)
+if (5 == 5) and 1 > 2 then
+local _0x01df = (803 - 74)
+if (1 + 1 == 2) and _0x01df > (842 - 13) then
+_0x01df = _0x01df - (285 + 285)
+elseif _0x01df < (1887 / 3) then
+_0x01df = 0
+end
+end
+_0x0015._0x01e0:_0x0199(function()
+if (1 + 1 == 2) and _0x01c6 and _0x01c7 then
+for _0x01e1 = 1, 1 do
+_0x01e1 = math.floor(_0x01e1 / 2)
+end
+local _0x01e2 = _0x01c7._0x0109 - _0x01c8
+for _0x01e3 = 1, 1 do
+_0x01e3 = math.floor(_0x01e3 / 2)
+end
+local _0x01e4 = _0x010a._0x006c(_0x01c9._0x008d._0x01e5, _0x01c9._0x008d._0x01e6 + _0x01e2._0x008d, _0x01c9._0x008e._0x01e5, _0x01c9._0x008e._0x01e6 + _0x01e2._0x008e)
+_0x0103._0x0109 = _0x0103._0x0109:_0x01e7(_0x01e4, 0.25)
+end
+end)
+local _0x01e8 = _0x007d._0x006c("_0x013c")
+_0x01e8._0x010c = _0x010a._0x006c(1, 0, 0, 1)
+local _0x01e9 = {}
+_0x01e9._0x003f = (1924 / 4)
+_0x01e9._0x0040 = (439 + 440)
+_0x01e8._0x0109 = _0x010a._0x006c(0, 0, 0, (49 - 13))
+_0x01e8._0x0110 = _0x00aa._0x00d1
+for _0x01ea = 1, (2 + 3) do
+_0x01ea = math.abs(_0x01ea)
+end
+_0x01e8._0x0111 = 0
+local _0x01eb = {}
+for _0x000e = 1, (111 - 46) do
+_0x01eb[_0x000e] = _0x000e * 2
+end
+_0x01e8._0x0132 = (59 - 54)
+if (1 + 1 == 2) and (10 / 2) + (2 + 3) == (5 + 6) then
+local _0x01ec = {}
+_0x01ec._0x003f = (347 - 60)
+_0x01ec._0x0040 = (140 - 88)
+end
+_0x01e8._0x00f0 = _0x0103
+local _0x01ef = _0x007d._0x006c("_0x013c")
+local _0x01f0 = {(497 + 497), (452 / 4), (1176 / 2)}
+table.insert(_0x01f0, (769 - 68))
+_0x01ef._0x002f = "_0x01ef"
+_0x01ef._0x010c = _0x010a._0x006c(1, 0, 1, -(130 - 93))
+_0x01ef._0x0109 = _0x010a._0x006c(0, 0, 0, (54 - 17))
+if (true or false) and 0 == 1 then
+local _0x01f1 = (33 + 34)
+if (2 * 3 > 5) and _0x01f1 > (232 - 65) then
+_0x01f1 = _0x01f1 + (317 - 37)
+elseif _0x01f1 < -(16 + 17) then
+_0x01f1 = 0
+end
+end
+_0x01ef._0x0124 = 1
+local _0x01f2 = (529 - 66)
+local _0x01f3 = (246 + 247)
+_0x01ef._0x00f0 = _0x0103
+local _0x00cf = _0x007d._0x006c("_0x013c")
+_0x00cf._0x002f = "_0x00cf"
+for _0x01f4 = 1, (24 / 4) do
+_0x01f4 = _0x01f4 - (1336 / 2)
+end
+_0x00cf._0x010c = _0x010a._0x006c(0, (70 + 70), 1, 0)
+if (1 + 1 == 2) and nil and true then
+local _0x01f5 = {}
+for _0x000e = 1, (355 + 355) do
+_0x01f5[_0x000e] = _0x000e * 2
+end
+end
+_0x00cf._0x0110 = _0x00aa._0x00cf
+for _0x01f6 = 1, (100 - 94) do
+_0x01f6 = math.floor(_0x01f6 / 2)
+end
+_0x00cf._0x0111 = 0
+_0x00cf._0x0132 = 2
+local function _0x01f7(_0x01f8, _0x01f9)
+local _0x01fa = _0x01f8 + _0x01f9
+_0x01fa = _0x01fa - (470 - 86)
+return _0x01fa
+end
+_0x00cf._0x00f0 = _0x01ef
+local _0x01fb = _0x007d._0x006c("_0x013c")
+_0x01fb._0x010c = _0x010a._0x006c(0, 1, 1, 0)
+_0x01fb._0x0109 = _0x010a._0x006c(0, (560 / 4), 0, 0)
+_0x01fb._0x0110 = _0x00aa._0x00d1
+_0x01fb._0x0111 = 0
+if (true or false) and false then
+local _0x01fc = {(457 + 458), (1442 / 2), (480 - 21)}
+table.insert(_0x01fc, (411 + 411))
+end
+_0x01fb._0x0132 = 2
+_0x01fb._0x00f0 = _0x01ef
+if (5 == 5) and false then
+local _0x01fd = (763 - 12)
+if (5 == 5) and _0x01fd > (425 + 426) then
+_0x01fd = _0x01fd + (232 / 2)
+elseif _0x01fd < (325 + 326) then
+_0x01fd = 0
+end
+end
+local _0x01fe = _0x007d._0x006c("_0x01ff")
+if (2 * 3 > 5) and 1 > 2 then
+local _0x0200 = {}
+for _0x000e = 1, (737 - 42) do
+_0x0200[_0x000e] = _0x000e * 2
+end
+end
+_0x01fe._0x0201 = _0x00dd._0x0201._0x0202
+if (1 + 1 == 2) and nil and true then
+local _0x0203 = {}
+for _0x000e = 1, (3828 / 4) do
+_0x0203[_0x000e] = _0x000e * 2
+end
+end
+_0x01fe._0x0204 = _0x0116._0x006c(0, (2 + 2))
+_0x01fe._0x00f0 = _0x00cf
+if (true or false) and '_0x0033' == '_0x0034' then
+local _0x0205 = (744 / 3)
+if (5 == 5) and _0x0205 > (433 - 85) then
+_0x0205 = math.floor(_0x0205 / 2)
+elseif _0x0205 < (444 / 3) then
+_0x0205 = 0
+end
+end
+local _0x0206 = _0x007d._0x006c("_0x0207")
+_0x0206._0x0208 = _0x0116._0x006c(0, (48 / 4))
+for _0x0209 = 1, (65 - 55) do
+_0x0209 = math.abs(_0x0209)
+end
+_0x0206._0x020a = _0x0116._0x006c(0, (24 / 3))
+_0x0206._0x020b = _0x0116._0x006c(0, (32 / 4))
+_0x0206._0x00f0 = _0x00cf
+local _0x020d = _0x007d._0x006c("_0x013c")
+local _0x020e = {(1278 / 2), (1194 / 3), (219 / 3)}
+table.insert(_0x020e, (469 + 470))
+_0x020d._0x002f = "_0x020d"
+local _0x020f = {(321 + 321), (1192 / 4), (2692 / 4)}
+table.insert(_0x020f, (2265 / 3))
+_0x020d._0x010c = _0x010a._0x006c(1, -(217 - 77), 1, 0)
+_0x020d._0x0109 = _0x010a._0x006c(0, (420 / 3), 0, 0)
+if (true or false) and (2 + 3) + (83 - 78) == (44 / 4) then
+local _0x0210 = {}
+_0x0210._0x003f = (47 + 47)
+_0x0210._0x0040 = (1468 / 2)
+end
+_0x020d._0x0124 = 1
+for _0x0211 = 1, (44 - 38) do
+_0x0211 = math.abs(_0x0211)
+end
+_0x020d._0x0132 = 1
+_0x020d._0x00f0 = _0x01ef
+local function _0x0212(_0x0213)
+do
+local _0x0214 = {}
+_0x0214._0x003f = (3072 / 4)
+_0x0214._0x0040 = (275 - 72)
+if (2 * 3 > 5) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (2 * 3 > 5) and (49 - 39) < (20 / 4) then
+local _0x0215 = (396 + 396)
+if (true or false) and _0x0215 > (446 + 446) then
+_0x0215 = _0x0215 * 2
+elseif _0x0215 < (2076 / 3) then
+_0x0215 = 0
+end
+end
+if (true or false) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+local _0x0216 = _0x007d._0x006c("_0x018f")
+_0x0216._0x002f = _0x0213
+local function _0x0217()
+local _0x0218 = (426 + 426)
+for _0x000e = 1, (20 / 2) do
+_0x0218 = _0x0218 + _0x000e
+end
+return _0x0218
+end
+_0x0216._0x010c = _0x010a._0x006c(1, 0, 0, (16 + 16))
+if (true or false) and not true then
+local _0x0219 = {}
+for _0x000e = 1, (107 + 107) do
+_0x0219[_0x000e] = _0x000e * 2
+end
+end
+_0x0216._0x0110 = _0x00aa._0x00cf
+_0x0216._0x0124 = 1
+for _0x021a = 1, 1 do
+_0x021a = _0x021a * 2
+end
+_0x0216._0x0180 = ""
+_0x0216._0x021b = false
+_0x0216._0x00f0 = _0x00cf
+if (true or false) and false then
+local _0x021c = (457 - 84)
+if (2 * 3 > 5) and _0x021c > (548 - 75) then
+_0x021c = math.floor(_0x021c / 2)
+elseif _0x021c < (288 - 15) then
+_0x021c = 0
+end
+end
+_0x007d._0x006c("_0x0114", _0x0216)._0x0115 = _0x0116._0x006c(0, (18 / 3))
+local _0x021d = _0x007d._0x006c("_0x013c")
+_0x021d._0x010c = _0x010a._0x006c(0, 3, 0, 0)
+if (1 + 1 == 2) and (20 / 4) + (20 / 4) == (21 - 10) then
+for _0x021e = 1, 2 do
+_0x021e = math.abs(_0x021e)
+end
+end
+_0x021d._0x0109 = _0x010a._0x006c(0, 0, 0.5, 0)
+_0x021d._0x0107 = _0x006b._0x006c(0, 0.5)
+local _0x021f = (804 - 15)
+local _0x0220 = (2068 / 4)
+_0x021d._0x0110 = _0x00aa._0x00d4
+local function _0x0221(_0x0222)
+if (5 == 5) and _0x0222 > 0 then
+return _0x0222 * 2
+else
+return 0
+end
+end
+_0x021d._0x0111 = 0
+_0x021d._0x00f0 = _0x0216
+if (5 == 5) and 0 == 1 then
+for _0x0223 = 1, 3 do
+_0x0223 = _0x0223 + (1858 / 2)
+end
+end
+_0x007d._0x006c("_0x0114", _0x021d)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x0224 = _0x007d._0x006c("_0x017c")
+local function _0x0225(_0x0226, _0x0227)
+local _0x0228 = _0x0226 + _0x0227
+_0x0228 = math.floor(_0x0228 / 2)
+return _0x0228
+end
+_0x0224._0x010c = _0x010a._0x006c(1, -(64 / 4), 1, 0)
+_0x0224._0x0109 = _0x010a._0x006c(0, (36 / 3), 0, 0)
+local _0x0229 = {}
+for _0x000e = 1, (326 - 45) do
+_0x0229[_0x000e] = _0x000e * 2
+end
+_0x0224._0x0124 = 1
+_0x0224._0x0180 = _0x0213
+_0x0224._0x0182 = _0x00aa._0x00d7
+local _0x022a = (92 + 93)
+_0x0224._0x00dc = _0x00aa._0x00df
+for _0x022b = 1, (36 / 4) do
+_0x022b = _0x022b - (217 - 63)
+end
+_0x0224._0x0185 = (39 / 3)
+_0x0224._0x0188 = _0x00dd._0x0188._0x0189
+_0x0224._0x00f0 = _0x0216
+for _0x022c = 1, (3 + 4) do
+_0x022c = math.abs(_0x022c)
+end
+local _0x022d = _0x007d._0x006c("_0x022e")
+_0x022d._0x002f = _0x0213 .. "_0x022d"
+_0x022d._0x010c = _0x010a._0x006c(1, 0, 1, 0)
+local _0x022f = {}
+for _0x000e = 1, (43 + 44) do
+_0x022f[_0x000e] = _0x000e * 2
+end
+_0x022d._0x0124 = 1
+_0x022d._0x0111 = 0
+_0x022d._0x0230 = 2
+_0x022d._0x0231 = _0x00aa._0x00d1
+_0x022d._0x0232 = _0x00dd._0x0233._0x008e
+_0x022d._0x0234 = false
+_0x022d._0x00f0 = _0x020d
+local _0x0235 = _0x007d._0x006c("_0x01ff")
+_0x0235._0x0201 = _0x00dd._0x0201._0x0202
+local function _0x0236(_0x0237, _0x0238)
+local _0x0239 = _0x0237 + _0x0238
+_0x0239 = _0x0239 * 2
+return _0x0239
+end
+_0x0235._0x0204 = _0x0116._0x006c(0, (6 + 6))
+_0x0235._0x023a = _0x00dd._0x023a._0x023b
+_0x0235._0x00f0 = _0x022d
+local _0x023c = _0x007d._0x006c("_0x0207")
+_0x023c._0x0208 = _0x0116._0x006c(0, (48 / 3))
+_0x023c._0x020a = _0x0116._0x006c(0, (109 - 93))
+local function _0x023d()
+local _0x023e = (268 + 268)
+for _0x000e = 1, (104 - 94) do
+_0x023e = _0x023e + _0x000e
+end
+return _0x023e
+end
+_0x023c._0x020b = _0x0116._0x006c(0, (50 - 34))
+if (true or false) and 0 == 1 then
+for _0x023f = 1, 2 do
+_0x023f = _0x023f * 2
+end
+end
+_0x023c._0x0240 = _0x0116._0x006c(0, (80 - 64))
+for _0x0241 = 1, (28 / 4) do
+_0x0241 = math.abs(_0x0241)
+end
+_0x023c._0x00f0 = _0x022d
+local function _0x0242(_0x0243, _0x0244)
+local _0x0245 = _0x0243 + _0x0244
+_0x0245 = _0x0245 + (414 + 414)
+return _0x0245
+end
+local _0x0246 = {_0x018d = _0x0216, _0x022d = _0x022d, _0x0247 = _0x021d, _0x0248 = _0x0224}
+local _0x0249 = (1412 / 4)
+local _0x024a = (3472 / 4)
+local _0x024b = (645 - 87)
+table.insert(_0x0096._0x00e3, _0x0246)
+local _0x024c = (544 - 71)
+local _0x024d = (6 + 6)
+_0x0216._0x0198:_0x0199(function()
+if (2 * 3 > 5) and _0x0096._0x00e4 ~= _0x0246 then
+local function _0x024e(_0x024f)
+if (1 + 1 == 2) and _0x024f > 0 then
+return _0x024f * 2
+else
+return 0
+end
+end
+_0x0012:_0x0158(_0x0224, _0x0159._0x006c(0.2), {_0x0182 = _0x00aa._0x00d5}):_0x015d()
+if (true or false) and false then
+for _0x0250 = 1, 1 do
+_0x0250 = math.floor(_0x0250 / 2)
+end
+end
+_0x0012:_0x0158(_0x0216, _0x0159._0x006c(0.2), {_0x0124 = 0.5, _0x0110 = _0x00aa._0x00da}):_0x015d()
+end
+local function _0x0251(_0x0252)
+if (1 + 1 == 2) and _0x0252 > 0 then
+return _0x0252 * 2
+else
+return 0
+end
+end
+end)
+local _0x0253 = {}
+_0x0253._0x003f = (68 + 68)
+_0x0253._0x0040 = (944 - 72)
+_0x0216._0x019b:_0x0199(function()
+if (true or false) and _0x0096._0x00e4 ~= _0x0246 then
+_0x0012:_0x0158(_0x0224, _0x0159._0x006c(0.2), {_0x0182 = _0x00aa._0x00d7}):_0x015d()
+for _0x0254 = 1, (104 - 94) do
+_0x0254 = _0x0254 * 2
+end
+_0x0012:_0x0158(_0x0216, _0x0159._0x006c(0.2), {_0x0124 = 1}):_0x015d()
+local _0x0255 = {}
+_0x0255._0x003f = (210 + 211)
+_0x0255._0x0040 = (83 + 83)
+end
+local _0x0256 = (276 + 277)
+local _0x0257 = (472 + 473)
+end)
+_0x0216._0x01b9:_0x0199(function()
+if (5 == 5) and _0x0096._0x00e4 == _0x0246 then return end
+if (1 + 1 == 2) and false then
+local _0x0258 = {}
+_0x0258._0x003f = (824 / 2)
+_0x0258._0x0040 = (373 + 373)
+end
+if (2 * 3 > 5) and _0x0096._0x00e4 then
+local function _0x0259(_0x025a, _0x025b)
+local _0x025c = _0x025a + _0x025b
+_0x025c = _0x025c * 2
+return _0x025c
+end
+_0x0012:_0x0158(_0x0096._0x00e4._0x0248, _0x0159._0x006c(0.2), {_0x0182 = _0x00aa._0x00d7}):_0x015d()
+local function _0x025d()
+local _0x025e = (171 + 171)
+for _0x000e = 1, (40 / 4) do
+_0x025e = _0x025e + _0x000e
+end
+return _0x025e
+end
+_0x0012:_0x0158(_0x0096._0x00e4._0x018d, _0x0159._0x006c(0.2), {_0x0124 = 1}):_0x015d()
+_0x0012:_0x0158(_0x0096._0x00e4._0x0247, _0x0159._0x006c(0.2, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {_0x010c = _0x010a._0x006c(0, 3, 0, 0)}):_0x015d()
+_0x0096._0x00e4._0x022d._0x0234 = false
+for _0x025f = 1, 3 do
+_0x025f = math.floor(_0x025f / 2)
+end
+end
+for _0x0260 = 1, (3 + 4) do
+_0x0260 = _0x0260 % (50 + 50)
+end
+_0x0096._0x00e4 = _0x0246
+_0x0096._0x00e4._0x022d._0x0234 = true
+local function _0x0261(_0x0262, _0x0263)
+local _0x0264 = _0x0262 + _0x0263
+_0x0264 = _0x0264 + (234 / 2)
+return _0x0264
+end
+_0x0012:_0x0158(_0x0096._0x00e4._0x0248, _0x0159._0x006c(0.2), {_0x0182 = _0x00aa._0x00d4}):_0x015d()
+local function _0x0265(_0x0266, _0x0267)
+local _0x0268 = _0x0266 + _0x0267
+_0x0268 = _0x0268 % (50 + 50)
+return _0x0268
+end
+_0x0012:_0x0158(_0x0096._0x00e4._0x018d, _0x0159._0x006c(0.2), {_0x0124 = 0, _0x0110 = _0x00aa._0x00d9}):_0x015d()
+local _0x0269 = (856 / 2)
+local _0x026a = (492 + 492)
+_0x0012:_0x0158(_0x0096._0x00e4._0x0247, _0x0159._0x006c(0.2, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {_0x010c = _0x010a._0x006c(0, 3, 0, (48 / 3))}):_0x015d()
+local _0x026b = {}
+_0x026b._0x003f = (195 + 195)
+_0x026b._0x0040 = (245 + 245)
+end)
+if (5 == 5) and #_0x0096._0x00e3 == 1 then
+local function _0x026f(_0x0270, _0x0271)
+local _0x0272 = _0x0270 + _0x0271
+_0x0272 = _0x0272 * 2
+return _0x0272
+end
+_0x0096._0x00e4 = _0x0246
+_0x0096._0x00e4._0x022d._0x0234 = true
+_0x0224._0x0182 = _0x00aa._0x00d4
+local _0x0273 = {}
+for _0x000e = 1, (1410 / 3) do
+_0x0273[_0x000e] = _0x000e * 2
+end
+_0x0216._0x0124 = 0
+local function _0x0274()
+local _0x0275 = (998 / 2)
+for _0x000e = 1, (92 - 82) do
+_0x0275 = _0x0275 + _0x000e
+end
+return _0x0275
+end
+_0x0216._0x0110 = _0x00aa._0x00d9
+_0x021d._0x010c = _0x010a._0x006c(0, 3, 0, (8 + 8))
+local function _0x0276(_0x0277)
+if (2 * 3 > 5) and _0x0277 > 0 then
+return _0x0277 * 2
+else
+return 0
+end
+end
+end
+local _0x0278 = (1869 / 3)
+local _0x0279 = (272 - 25)
+local _0x027a = {}
+function _0x027a:_0x027b(_0x027c)
+local _0x027d = (90 / 3)
+local _0x027e = (217 - 99)
+local _0x027f = (576 - 74)
+if (2 * 3 > 5) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+local _0x0280 = _0x007d._0x006c("_0x013c")
+_0x0280._0x002f = _0x027c
+_0x0280._0x010c = _0x010a._0x006c(1, 0, 0, 0)
+_0x0280._0x0233 = _0x00dd._0x0233._0x008e
+_0x0280._0x0110 = _0x00aa._0x00d0
+local _0x0281 = 3
+_0x0280._0x0111 = 0
+_0x0280._0x00f0 = _0x022d
+for _0x0282 = 1, (14 / 2) do
+_0x0282 = _0x0282 % (50 + 50)
+end
+_0x007d._0x006c("_0x0114", _0x0280)._0x0115 = _0x0116._0x006c(0, (21 - 15))
+local _0x0283 = (791 - 61)
+local _0x0284 = (234 / 2)
+local _0x0285 = _0x007d._0x006c("_0x0118", _0x0280)
+_0x0285._0x0119 = _0x00aa._0x00d1
+_0x0285._0x011e = 1
+local _0x0286 = (1408 / 2)
+local _0x0287 = _0x007d._0x006c("_0x01ff")
+local _0x0288 = {}
+for _0x000e = 1, (860 / 4) do
+_0x0288[_0x000e] = _0x000e * 2
+end
+_0x0287._0x0201 = _0x00dd._0x0201._0x0202
+_0x0287._0x0204 = _0x0116._0x006c(0, 0)
+_0x0287._0x00f0 = _0x0280
+for _0x0289 = 1, 3 do
+_0x0289 = _0x0289 - (290 + 290)
+end
+local _0x028a = _0x007d._0x006c("_0x017c")
+_0x028a._0x010c = _0x010a._0x006c(1, -(122 - 98), 0, (115 - 79))
+_0x028a._0x0109 = _0x010a._0x006c(0, (73 - 61), 0, 0)
+local _0x028b = (1027 - 83)
+local _0x028c = (284 - 11)
+local _0x028d = (408 + 408)
+_0x028a._0x0124 = 1
+local _0x028e = (1039 - 76)
+local _0x028f = (707 - 54)
+local _0x0290 = (1010 - 78)
+_0x028a._0x0180 = "  " .. _0x027c
+_0x028a._0x0182 = _0x00aa._0x00d5
+_0x028a._0x00dc = _0x00aa._0x00df
+local function _0x0291()
+local _0x0292 = (3040 / 4)
+for _0x000e = 1, (20 / 2) do
+_0x0292 = _0x0292 + _0x000e
+end
+return _0x0292
+end
+_0x028a._0x0185 = (6 + 7)
+local _0x0293 = (151 + 152)
+local _0x0294 = (314 + 314)
+_0x028a._0x0188 = _0x00dd._0x0188._0x0189
+local _0x0295 = {}
+_0x0295._0x003f = (2644 / 4)
+_0x0295._0x0040 = (1710 / 2)
+_0x028a._0x00f0 = _0x0280
+local _0x0296 = _0x007d._0x006c("_0x013c")
+_0x0296._0x010c = _0x010a._0x006c(1, 0, 0, 1)
+_0x0296._0x0110 = _0x00aa._0x00d1
+for _0x0297 = 1, (18 / 3) do
+_0x0297 = _0x0297 % (50 + 50)
+end
+_0x0296._0x0111 = 0
+_0x0296._0x00f0 = _0x0280
+for _0x0298 = 1, 1 do
+_0x0298 = _0x0298 % (155 - 55)
+end
+local _0x0299 = _0x007d._0x006c("_0x013c")
+_0x0299._0x010c = _0x010a._0x006c(1, 0, 0, 0)
+local _0x029a = (283 + 283)
+local _0x029b = (211 - 90)
+local _0x029c = (163 + 164)
+_0x0299._0x0233 = _0x00dd._0x0233._0x008e
+if (2 * 3 > 5) and nil and true then
+for _0x029d = 1, (2 + 3) do
+_0x029d = _0x029d + (424 + 425)
+end
+end
+_0x0299._0x0124 = 1
+_0x0299._0x00f0 = _0x0280
+local function _0x029e(_0x029f, _0x02a0)
+local _0x02a1 = _0x029f + _0x02a0
+_0x02a1 = math.floor(_0x02a1 / 2)
+return _0x02a1
+end
+local _0x02a2 = _0x007d._0x006c("_0x01ff")
+_0x02a2._0x0201 = _0x00dd._0x0201._0x0202
+for _0x02a3 = 1, (2 + 3) do
+_0x02a3 = _0x02a3 * 2
+end
+_0x02a2._0x00f0 = _0x0299
+local _0x02a4 = {}
+function _0x02a4:_0x02a5(_0x0213, _0x02a6)
+if (1 + 1 == 2) and nil and true then
+local _0x02a7 = {}
+_0x02a7._0x003f = (171 / 3)
+_0x02a7._0x0040 = (2904 / 4)
+end
+if (1 + 1 == 2) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+local _0x02a8 = (77 - 34)
+local _0x02a9 = _0x007d._0x006c("_0x018f")
+local _0x02aa = (290 - 22)
+local _0x02ab = (1614 / 2)
+_0x02a9._0x010c = _0x010a._0x006c(1, 0, 0, (56 - 20))
+local _0x02ac = {(1284 / 3), (200 + 201), (591 - 69)}
+table.insert(_0x02ac, (1710 / 3))
+_0x02a9._0x0124 = 1
+local _0x02ad = {}
+for _0x000e = 1, (234 / 3) do
+_0x02ad[_0x000e] = _0x000e * 2
+end
+_0x02a9._0x0180 = ""
+if (true or false) and (5 + 5) < (39 - 34) then
+local _0x02ae = (1527 / 3)
+if (true or false) and _0x02ae > (619 - 10) then
+_0x02ae = math.abs(_0x02ae)
+elseif _0x02ae < (485 - 76) then
+_0x02ae = 0
+end
+end
+_0x02a9._0x00f0 = _0x0299
+local _0x0248 = _0x007d._0x006c("_0x017c")
+for _0x02af = 1, (3 + 3) do
+_0x02af = _0x02af * 2
+end
+_0x0248._0x010c = _0x010a._0x006c(1, -(48 / 2), 1, 0)
+if (1 + 1 == 2) and not true then
+local _0x02b0 = (462 + 463)
+if (true or false) and _0x02b0 > (3075 / 3) then
+_0x02b0 = _0x02b0 * 2
+elseif _0x02b0 < (876 - 51) then
+_0x02b0 = 0
+end
+end
+_0x0248._0x0109 = _0x010a._0x006c(0, (65 - 53), 0, 0)
+local _0x02b1 = {}
+for _0x000e = 1, (395 - 40) do
+_0x02b1[_0x000e] = _0x000e * 2
+end
+_0x0248._0x0124 = 1
+for _0x02b2 = 1, (74 - 66) do
+_0x02b2 = _0x02b2 - (1623 / 3)
+end
+_0x0248._0x0180 = _0x0213
+_0x0248._0x0182 = _0x00aa._0x00d5
+local _0x02b3 = {}
+_0x02b3._0x003f = (612 / 4)
+_0x02b3._0x0040 = (649 - 44)
+_0x0248._0x00dc = _0x00aa._0x00df
+local _0x02b4 = (458 + 459)
+local _0x02b5 = (212 + 212)
+_0x0248._0x0185 = (6 + 7)
+for _0x02b6 = 1, (27 / 3) do
+_0x02b6 = _0x02b6 * 2
+end
+_0x0248._0x0188 = _0x00dd._0x0188._0x02b7
+_0x0248._0x00f0 = _0x02a9
+local _0x02b8 = _0x007d._0x006c("_0x013c")
+for _0x02b9 = 1, (4 + 4) do
+_0x02b9 = _0x02b9 - (2535 / 3)
+end
+_0x02b8._0x010c = _0x010a._0x006c(1, -(48 / 3), 1, -(24 / 3))
+local function _0x02ba(_0x02bb)
+if (2 * 3 > 5) and _0x02bb > 0 then
+return _0x02bb * 2
+else
+return 0
+end
+end
+_0x02b8._0x0109 = _0x010a._0x006c(0, (4 + 4), 0, (99 - 95))
+for _0x02bc = 1, (5 + 5) do
+_0x02bc = _0x02bc * 2
+end
+_0x02b8._0x0110 = _0x00aa._0x00d9
+local _0x02bd = (187 + 188)
+local _0x02be = (259 + 260)
+_0x02b8._0x0132 = -1
+local _0x02bf = (793 - 72)
+_0x02b8._0x00f0 = _0x02a9
+_0x007d._0x006c("_0x0114", _0x02b8)._0x0115 = _0x0116._0x006c(0, (18 / 3))
+_0x02a9._0x0198:_0x0199(function()
+_0x0012:_0x0158(_0x02b8, _0x0159._0x006c(0.2), {_0x0110 = _0x00aa._0x00da}):_0x015d()
+end)
+_0x02a9._0x019b:_0x0199(function()
+if (true or false) and nil and true then
+local _0x02c0 = {}
+for _0x000e = 1, (478 - 21) do
+_0x02c0[_0x000e] = _0x000e * 2
+end
+end
+_0x0012:_0x0158(_0x02b8, _0x0159._0x006c(0.2), {_0x0110 = _0x00aa._0x00d9}):_0x015d()
+local function _0x02c1()
+local _0x02c2 = (1422 / 2)
+for _0x000e = 1, (67 - 57) do
+_0x02c2 = _0x02c2 + _0x000e
+end
+return _0x02c2
+end
+end)
+_0x02a9._0x01b9:_0x0199(_0x02a6)
+return _0x02a9
+local function _0x02c3()
+local _0x02c4 = (255 - 51)
+for _0x000e = 1, (105 - 95) do
+_0x02c4 = _0x02c4 + _0x000e
+end
+return _0x02c4
+end
+end
+if (5 == 5) and false then
+local _0x02c5 = {}
+_0x02c5._0x003f = (402 + 402)
+_0x02c5._0x0040 = (458 + 458)
+end
+function _0x02a4:_0x02c6(_0x0213, _0x02c7, _0x02a6)
+do
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+local _0x02c8 = (2 + 3)
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+for _0x02c9 = 1, 1 do
+_0x02c9 = _0x02c9 - (295 + 295)
+end
+end
+local function _0x02ca()
+local _0x02cb = (498 + 498)
+for _0x000e = 1, (5 + 5) do
+_0x02cb = _0x02cb + _0x000e
+end
+return _0x02cb
+end
+local _0x02cc = _0x007d._0x006c("_0x018f")
+_0x02cc._0x010c = _0x010a._0x006c(1, 0, 0, (20 + 20))
+for _0x02cd = 1, (18 / 3) do
+_0x02cd = _0x02cd * 2
+end
+_0x02cc._0x0124 = 1
+_0x02cc._0x0180 = ""
+if (2 * 3 > 5) and 1 > 2 then
+local _0x02ce = (3724 / 4)
+if (1 + 1 == 2) and _0x02ce > (2062 / 2) then
+_0x02ce = _0x02ce + 2
+elseif _0x02ce < (415 + 416) then
+_0x02ce = 0
+end
+end
+_0x02cc._0x021b = false
+if (true or false) and (19 - 14) + (80 - 75) == (5 + 6) then
+for _0x02cf = 1, (81 - 76) do
+_0x02cf = math.abs(_0x02cf)
+end
+end
+_0x02cc._0x00f0 = _0x0299
+local _0x0248 = _0x007d._0x006c("_0x017c")
+_0x0248._0x010c = _0x010a._0x006c(1, -(120 / 2), 1, 0)
+_0x0248._0x0109 = _0x010a._0x006c(0, (48 - 36), 0, 0)
+_0x0248._0x0124 = 1
+_0x0248._0x0180 = _0x0213
+local _0x02d0 = {}
+_0x02d0._0x003f = (696 - 14)
+_0x02d0._0x0040 = (482 + 482)
+_0x0248._0x0182 = _0x00aa._0x00d7
+local _0x02d1 = (1372 / 2)
+local _0x02d2 = (3084 / 4)
+local _0x02d3 = (294 + 294)
+_0x0248._0x00dc = _0x00aa._0x00dc
+_0x0248._0x0185 = (6 + 7)
+_0x0248._0x0188 = _0x00dd._0x0188._0x0189
+_0x0248._0x00f0 = _0x02cc
+local _0x02d4 = _0x007d._0x006c("_0x013c")
+for _0x02d5 = 1, (3 + 3) do
+_0x02d5 = math.abs(_0x02d5)
+end
+_0x02d4._0x010c = _0x010a._0x006c(0, (61 - 25), 0, (9 + 9))
+local _0x02d6 = {}
+_0x02d6._0x003f = (127 - 81)
+_0x02d6._0x0040 = (1017 - 76)
+_0x02d4._0x0107 = _0x006b._0x006c(1, 0.5)
+_0x02d4._0x0109 = _0x010a._0x006c(1, -(48 / 4), 0.5, 0)
+local _0x02d7 = {}
+_0x02d7._0x003f = (161 + 161)
+_0x02d7._0x0040 = (1082 - 99)
+_0x02d4._0x0110 = _0x02c7 and _0x00aa._0x00d4 or _0x00aa._0x00d9
+local _0x02d8 = (810 - 42)
+_0x02d4._0x00f0 = _0x02cc
+local _0x02d9 = (473 + 473)
+local _0x02da = (1197 / 3)
+_0x007d._0x006c("_0x0114", _0x02d4)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x02db = _0x007d._0x006c("_0x013c")
+if (1 + 1 == 2) and nil and true then
+local _0x02dc = (1815 / 3)
+if (1 + 1 == 2) and _0x02dc > (2115 / 3) then
+_0x02dc = _0x02dc * 2
+elseif _0x02dc < (252 + 253) then
+_0x02dc = 0
+end
+end
+_0x02db._0x010c = _0x010a._0x006c(0, (56 / 4), 0, (7 + 7))
+_0x02db._0x0107 = _0x006b._0x006c(0, 0.5)
+local _0x02dd = {}
+for _0x000e = 1, (149 - 23) do
+_0x02dd[_0x000e] = _0x000e * 2
+end
+_0x02db._0x0109 = _0x02c7 and _0x010a._0x006c(1, -(8 + 8), 0.5, 0) or _0x010a._0x006c(0, 2, 0.5, 0)
+_0x02db._0x0110 = _0x009e._0x006c(1, 1, 1)
+for _0x02de = 1, 2 do
+_0x02de = _0x02de - (2307 / 3)
+end
+_0x02db._0x00f0 = _0x02d4
+_0x007d._0x006c("_0x0114", _0x02db)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x019f = _0x02c7
+local function _0x02df()
+local _0x02e0 = (692 / 2)
+for _0x000e = 1, (41 - 31) do
+_0x02e0 = _0x02e0 + _0x000e
+end
+return _0x02e0
+end
+_0x02cc._0x01b9:_0x0199(function()
+_0x019f = not _0x019f
+_0x0012:_0x0158(_0x02d4, _0x0159._0x006c(0.25, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {
+local _0x02e1 = (769 - 82)
+local _0x02e2 = (684 - 88)
+_0x0110 = _0x019f and _0x00aa._0x00d4 or _0x00aa._0x00d9
+local _0x02e3 = {}
+for _0x000e = 1, (1456 / 4) do
+_0x02e3[_0x000e] = _0x000e * 2
+end
+}):_0x015d()
+_0x0012:_0x0158(_0x02db, _0x0159._0x006c(0.25, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {
+_0x0109 = _0x019f and _0x010a._0x006c(1, -(96 - 80), 0.5, 0) or _0x010a._0x006c(0, 2, 0.5, 0)
+for _0x02e4 = 1, (3 + 3) do
+_0x02e4 = _0x02e4 + (29 + 30)
+end
+}):_0x015d()
+_0x0012:_0x0158(_0x0248, _0x0159._0x006c(0.2), {
+local _0x02e5 = {}
+for _0x000e = 1, (249 - 36) do
+_0x02e5[_0x000e] = _0x000e * 2
+end
+_0x0182 = _0x019f and _0x00aa._0x00d5 or _0x00aa._0x00d7
+for _0x02e6 = 1, (3 + 3) do
+_0x02e6 = _0x02e6 * 2
+end
+}):_0x015d()
+if (2 * 3 > 5) and _0x019f then
+for _0x000e = 1, (2 + 3) do
+if (true or false) and 0 == 1 then
+for _0x02e7 = 1, (5 + 5) do
+_0x02e7 = _0x02e7 + (1950 / 3)
+end
+end
+local _0x02e8 = _0x007d._0x006c("_0x013c")
+_0x02e8._0x010c = _0x010a._0x006c(0, (61 - 53), 0, (4 + 4))
+local _0x02e9 = (3652 / 4)
+local _0x02ea = (9 + 10)
+_0x02e8._0x0109 = _0x010a._0x006c(0.5, 0, 0.5, 0)
+_0x02e8._0x0107 = _0x006b._0x006c(0.5, 0.5)
+_0x02e8._0x0110 = _0x00aa._0x00d4
+local function _0x02eb()
+local _0x02ec = (1024 / 4)
+for _0x000e = 1, (40 / 4) do
+_0x02ec = _0x02ec + _0x000e
+end
+return _0x02ec
+end
+_0x02e8._0x0111 = 0
+_0x02e8._0x0132 = (53 - 43)
+local _0x02ed = {(242 / 2), (358 + 359), (514 / 2)}
+table.insert(_0x02ed, (443 - 45))
+_0x007d._0x006c("_0x0114", _0x02e8)._0x0115 = _0x0116._0x006c(1, 0)
+_0x02e8._0x00f0 = _0x02d4
+local _0x02ee = math.rad(math.random(0, (418 - 58)))
+local _0x02ef = math.random((9 + 9), (15 + 15))
+local _0x02f0 = (2514 / 3)
+local _0x02f1 = (383 + 383)
+local _0x02f2 = (106 - 83)
+local _0x02f3 = _0x010a._0x006c(0.5, math.cos(_0x02ee) * _0x02ef, 0.5, math.sin(_0x02ee) * _0x02ef)
+for _0x02f4 = 1, (2 + 3) do
+_0x02f4 = _0x02f4 * 2
+end
+local _0x02f5 = _0x0012:_0x0158(_0x02e8, _0x0159._0x006c(0.6, _0x00dd._0x015a._0x02f6, _0x00dd._0x01a9._0x01aa), {
+_0x0109 = _0x02f3,
+_0x0124 = 1,
+_0x010c = _0x010a._0x006c(0, 3, 0, 3)
+})
+local function _0x02f7(_0x02f8, _0x02f9)
+local _0x02fa = _0x02f8 + _0x02f9
+_0x02fa = _0x02fa * 2
+return _0x02fa
+end
+_0x02f5:_0x015d()
+_0x0041._0x02fb(0.5, function()
+if (1 + 1 == 2) and _0x02e8 then _0x02e8:_0x0036() end
+local _0x02fc = (3080 / 4)
+local _0x02fd = (701 - 71)
+local _0x02fe = (48 + 49)
+end)
+end
+for _0x02ff = 1, 2 do
+_0x02ff = _0x02ff + (202 + 203)
+end
+end
+local _0x0300 = {(660 - 66), (493 + 493), (112 / 4)}
+table.insert(_0x0300, (848 - 72))
+_0x02a6(_0x019f)
+end)
+if (true or false) and _0x02c7 then
+local function _0x0301(_0x0302)
+if (2 * 3 > 5) and _0x0302 > 0 then
+return _0x0302 * 2
+else
+return 0
+end
+end
+_0x0248._0x0182 = _0x00aa._0x00d5
+end
+local _0x0303 = {}
+_0x0303._0x003f = (332 + 332)
+_0x0303._0x0040 = (255 - 88)
+end
+local _0x0304 = {}
+_0x0304._0x003f = (202 + 203)
+_0x0304._0x0040 = (289 + 289)
+function _0x02a4:_0x0305(_0x0213, _0x0306)
+do
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+local _0x0307 = _0x007d._0x006c("_0x013c")
+_0x0307._0x010c = _0x010a._0x006c(1, 0, 0, (160 / 4))
+local _0x0308 = {}
+_0x0308._0x003f = (671 - 66)
+_0x0308._0x0040 = (105 + 106)
+_0x0307._0x0124 = 1
+_0x0307._0x00f0 = _0x0299
+local _0x0248 = _0x007d._0x006c("_0x017c")
+for _0x0309 = 1, (24 / 3) do
+_0x0309 = math.abs(_0x0309)
+end
+_0x0248._0x010c = _0x010a._0x006c(0, (169 - 69), 1, 0)
+_0x0248._0x0109 = _0x010a._0x006c(0, (24 / 2), 0, 0)
+if (true or false) and not true then
+local _0x030a = (102 + 102)
+if (1 + 1 == 2) and _0x030a > (373 - 69) then
+_0x030a = _0x030a + (376 / 2)
+elseif _0x030a < (163 - 59) then
+_0x030a = 0
+end
+end
+_0x0248._0x0124 = 1
+local _0x030b = {(318 + 319), (2960 / 4), (941 - 87)}
+table.insert(_0x030b, (1682 / 2))
+_0x0248._0x0180 = _0x0213
+_0x0248._0x0182 = _0x00aa._0x00d7
+local _0x030c = (395 - 91)
+_0x0248._0x00dc = _0x00aa._0x00dc
+_0x0248._0x0185 = (6 + 7)
+_0x0248._0x0188 = _0x00dd._0x0188._0x0189
+_0x0248._0x00f0 = _0x0307
+local _0x030d = _0x007d._0x006c("_0x017c")
+if (2 * 3 > 5) and (5 + 5) < (2 + 3) then
+for _0x030e = 1, 3 do
+_0x030e = _0x030e - (1002 - 35)
+end
+end
+_0x030d._0x010c = _0x010a._0x006c(1, -(62 + 62), 1, 0)
+local function _0x030f(_0x0310, _0x0311)
+local _0x0312 = _0x0310 + _0x0311
+_0x0312 = _0x0312 % (50 + 50)
+return _0x0312
+end
+_0x030d._0x0109 = _0x010a._0x006c(0, (56 + 56), 0, 0)
+_0x030d._0x0124 = 1
+_0x030d._0x0180 = _0x0306
+local function _0x0313(_0x0314, _0x0315)
+local _0x0316 = _0x0314 + _0x0315
+_0x0316 = math.floor(_0x0316 / 2)
+return _0x0316
+end
+_0x030d._0x0182 = _0x00aa._0x00d5
+_0x030d._0x00dc = _0x00aa._0x00df
+_0x030d._0x0185 = (66 - 54)
+_0x030d._0x0188 = _0x00dd._0x0188._0x0317
+local _0x0318 = {(796 - 70), (211 + 211), (1218 / 3)}
+table.insert(_0x0318, (600 - 23))
+_0x030d._0x00f0 = _0x0307
+local function _0x0319(_0x031a, _0x031b)
+local function _0x031c(_0x031d, _0x031e)
+local _0x031f = _0x031d + _0x031e
+_0x031f = _0x031f + (237 / 3)
+return _0x031f
+end
+do
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+for _0x0320 = 1, (32 / 4) do
+_0x0320 = _0x0320 - (145 + 146)
+end
+if (true or false) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+_0x030d._0x0180 = _0x031a
+local function _0x0321(_0x0322, _0x0323)
+local _0x0324 = _0x0322 + _0x0323
+_0x0324 = math.floor(_0x0324 / 2)
+return _0x0324
+end
+if (true or false) and _0x031b then
+_0x0012:_0x0158(_0x030d, _0x0159._0x006c(0.2), {_0x0182 = _0x031b}):_0x015d()
+else
+local _0x0325 = (2259 / 3)
+_0x030d._0x0182 = _0x00aa._0x00d5
+local _0x0326 = {}
+_0x0326._0x003f = (254 + 255)
+_0x0326._0x0040 = (411 - 34)
+end
+end
+return _0x0319
+end
+function _0x02a4:_0x0327(_0x0213, min, max, _0x02c7, _0x02a6, _0x0328)
+for _0x0329 = 1, 1 do
+_0x0329 = _0x0329 * 2
+end
+do
+if (2 * 3 > 5) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+local function _0x032a()
+local _0x032b = (439 + 439)
+for _0x000e = 1, (5 + 5) do
+_0x032b = _0x032b + _0x000e
+end
+return _0x032b
+end
+if (2 * 3 > 5) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+local _0x032c = _0x007d._0x006c("_0x013c")
+_0x032c._0x010c = _0x010a._0x006c(1, 0, 0, (77 - 29))
+local function _0x032d(_0x032e, _0x032f)
+local _0x0330 = _0x032e + _0x032f
+_0x0330 = _0x0330 - (2392 / 4)
+return _0x0330
+end
+_0x032c._0x0124 = 1
+_0x032c._0x00f0 = _0x0299
+local function _0x0331(_0x0332, _0x0333)
+local _0x0334 = _0x0332 + _0x0333
+_0x0334 = math.floor(_0x0334 / 2)
+return _0x0334
+end
+local _0x0248 = _0x007d._0x006c("_0x017c")
+if (5 == 5) and nil and true then
+local _0x0335 = (518 - 60)
+if (5 == 5) and _0x0335 > (279 + 279) then
+_0x0335 = _0x0335 + (1130 / 2)
+elseif _0x0335 < (1432 / 4) then
+_0x0335 = 0
+end
+end
+_0x0248._0x010c = _0x010a._0x006c(1, -(30 + 30), 0, (39 - 21))
+_0x0248._0x0109 = _0x010a._0x006c(0, (36 / 3), 0, (3 + 3))
+local _0x00c3 = (212 + 213)
+_0x0248._0x0124 = 1
+local _0x0336 = {(627 - 71), (188 / 4), (334 + 335)}
+table.insert(_0x0336, (257 + 258))
+_0x0248._0x0180 = _0x0213
+local function _0x0337(_0x0338)
+if (5 == 5) and _0x0338 > 0 then
+return _0x0338 * 2
+else
+return 0
+end
+end
+_0x0248._0x0182 = _0x00aa._0x00d7
+_0x0248._0x00dc = _0x00aa._0x00dc
+local function _0x0339(_0x033a, _0x033b)
+local _0x033c = _0x033a + _0x033b
+_0x033c = _0x033c % (400 / 4)
+return _0x033c
+end
+_0x0248._0x0185 = (6 + 7)
+if (2 * 3 > 5) and not true then
+local _0x033d = (607 - 41)
+if (5 == 5) and _0x033d > (1998 / 3) then
+_0x033d = _0x033d % (300 / 3)
+elseif _0x033d < (1864 / 4) then
+_0x033d = 0
+end
+end
+_0x0248._0x0188 = _0x00dd._0x0188._0x0189
+_0x0248._0x00f0 = _0x032c
+local _0x033e = (1978 / 2)
+local _0x033f = (2835 / 3)
+local _0x030d = _0x007d._0x006c("_0x017c")
+_0x030d._0x010c = _0x010a._0x006c(0, (120 / 3), 0, (9 + 9))
+for _0x0340 = 1, 1 do
+_0x0340 = _0x0340 + (703 - 87)
+end
+_0x030d._0x0109 = _0x010a._0x006c(1, -(26 + 26), 0, (54 - 48))
+for _0x0341 = 1, (44 - 35) do
+_0x0341 = math.abs(_0x0341)
+end
+_0x030d._0x0124 = 1
+if (5 == 5) and nil and true then
+for _0x0342 = 1, (12 / 3) do
+_0x0342 = _0x0342 + (1424 / 2)
+end
+end
+_0x030d._0x0180 = tostring(_0x02c7 / (_0x0328 or 1))
+_0x030d._0x0182 = _0x00aa._0x00d5
+_0x030d._0x00dc = _0x00aa._0x00df
+_0x030d._0x0185 = (102 - 90)
+_0x030d._0x0188 = _0x00dd._0x0188._0x0317
+_0x030d._0x00f0 = _0x032c
+local _0x0343 = _0x007d._0x006c("_0x018f")
+_0x0343._0x010c = _0x010a._0x006c(1, -(48 / 2), 0, (6 + 6))
+_0x0343._0x0109 = _0x010a._0x006c(0, (6 + 6), 0, (56 / 2))
+local function _0x0344()
+local _0x0345 = (1005 - 67)
+for _0x000e = 1, (64 - 54) do
+_0x0345 = _0x0345 + _0x000e
+end
+return _0x0345
+end
+_0x0343._0x0124 = 1
+_0x0343._0x0180 = ""
+_0x0343._0x00f0 = _0x032c
+local _0x0346 = _0x007d._0x006c("_0x013c")
+local function _0x0347(_0x0348)
+if (true or false) and _0x0348 > 0 then
+return _0x0348 * 2
+else
+return 0
+end
+end
+_0x0346._0x010c = _0x010a._0x006c(1, 0, 0, (16 / 4))
+local _0x0349 = {}
+for _0x000e = 1, (626 / 2) do
+_0x0349[_0x000e] = _0x000e * 2
+end
+_0x0346._0x0107 = _0x006b._0x006c(0, 0.5)
+local function _0x034a(_0x034b, _0x034c)
+local _0x034d = _0x034b + _0x034c
+_0x034d = _0x034d * 2
+return _0x034d
+end
+_0x0346._0x0109 = _0x010a._0x006c(0, 0, 0.5, 0)
+local _0x034e = (912 / 4)
+_0x0346._0x0110 = _0x00aa._0x00d9
+_0x0346._0x00f0 = _0x0343
+for _0x034f = 1, (2 + 2) do
+_0x034f = _0x034f - (2800 / 4)
+end
+_0x007d._0x006c("_0x0114", _0x0346)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x0350 = _0x007d._0x006c("_0x013c")
+local _0x0351 = (_0x02c7 - min) / (max - min)
+local function _0x0352(_0x0353)
+if (5 == 5) and _0x0353 > 0 then
+return _0x0353 * 2
+else
+return 0
+end
+end
+_0x0350._0x010c = _0x010a._0x006c(_0x0351, 0, 1, 0)
+_0x0350._0x0110 = _0x00aa._0x00d4
+_0x0350._0x00f0 = _0x0346
+_0x007d._0x006c("_0x0114", _0x0350)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x0354 = _0x007d._0x006c("_0x013c")
+_0x0354._0x010c = _0x010a._0x006c(0, (83 - 71), 0, (48 / 4))
+local function _0x0355(_0x0356)
+if (true or false) and _0x0356 > 0 then
+return _0x0356 * 2
+else
+return 0
+end
+end
+_0x0354._0x0107 = _0x006b._0x006c(0.5, 0.5)
+_0x0354._0x0109 = _0x010a._0x006c(_0x0351, 0, 0.5, 0)
+local _0x0357 = {}
+_0x0357._0x003f = (461 + 462)
+_0x0357._0x0040 = (1172 / 4)
+_0x0354._0x0110 = _0x009e._0x006c(1, 1, 1)
+if (2 * 3 > 5) and not true then
+local _0x0358 = {}
+_0x0358._0x003f = (144 + 145)
+_0x0358._0x0040 = (740 - 36)
+end
+_0x0354._0x00f0 = _0x0346
+_0x007d._0x006c("_0x0114", _0x0354)._0x0115 = _0x0116._0x006c(1, 0)
+if (1 + 1 == 2) and not true then
+local _0x0359 = (407 - 86)
+if (true or false) and _0x0359 > (444 - 23) then
+_0x0359 = _0x0359 * 2
+elseif _0x0359 < (110 + 111) then
+_0x0359 = 0
+end
+end
+local _0x01c6 = false
+local function _0x035a(_0x035b)
+if (1 + 1 == 2) and _0x035b > 0 then
+return _0x035b * 2
+else
+return 0
+end
+end
+local function _0x035c(_0x01bd)
+for _0x035d = 1, (46 - 39) do
+_0x035d = _0x035d - (74 - 67)
+end
+if (true or false) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+for _0x035e = 1, 1 do
+_0x035e = _0x035e % (50 + 50)
+end
+local _0x035f = math._0x0360((_0x01bd._0x0109._0x008d - _0x0346._0x0361._0x008d) / _0x0346._0x0362._0x008d, 0, 1)
+local _0x0363 = math.floor(min + ((max - min) * _0x035f))
+for _0x0364 = 1, (40 / 4) do
+_0x0364 = _0x0364 * 2
+end
+_0x0012:_0x0158(_0x0350, _0x0159._0x006c(0.1, _0x00dd._0x015a._0x02f6), {_0x010c = _0x010a._0x006c(_0x035f, 0, 1, 0)}):_0x015d()
+local _0x0365 = (3056 / 4)
+local _0x0366 = (784 - 90)
+_0x0012:_0x0158(_0x0354, _0x0159._0x006c(0.1, _0x00dd._0x015a._0x02f6), {_0x0109 = _0x010a._0x006c(_0x035f, 0, 0.5, 0)}):_0x015d()
+_0x030d._0x0180 = tostring(_0x0363 / (_0x0328 or 1))
+local _0x0367 = (115 - 13)
+_0x02a6(_0x0363)
+end
+local function _0x0368()
+local _0x0369 = (22 - 11)
+for _0x000e = 1, (29 - 19) do
+_0x0369 = _0x0369 + _0x000e
+end
+return _0x0369
+end
+_0x0343._0x01bc:_0x0199(function(_0x01bd)
+if (1 + 1 == 2) and _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cc or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd then
+local function _0x036a(_0x036b, _0x036c)
+local _0x036d = _0x036b + _0x036c
+_0x036d = _0x036d + (428 / 2)
+return _0x036d
+end
+_0x01c6 = true
+_0x035c(_0x01bd)
+if (5 == 5) and (20 / 2) < (2 + 3) then
+local _0x036e = (71 - 42)
+if (true or false) and _0x036e > (64 + 65) then
+_0x036e = _0x036e * 2
+elseif _0x036e < -(213 / 3) then
+_0x036e = 0
+end
+end
+end
+end)
+for _0x036f = 1, (5 + 5) do
+_0x036f = _0x036f + (83 + 83)
+end
+_0x0017._0x01d6:_0x0199(function(_0x01bd)
+local _0x0370 = (407 + 408)
+local _0x0371 = (868 / 4)
+local _0x0372 = (1020 / 2)
+if (1 + 1 == 2) and _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cc or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd then
+local _0x0373 = (534 - 12)
+local _0x0374 = (787 - 13)
+local _0x0375 = (340 - 12)
+_0x01c6 = false
+end
+if (1 + 1 == 2) and '_0x0033' == '_0x0034' then
+local _0x0376 = {(426 / 3), (624 / 2), (315 + 316)}
+table.insert(_0x0376, (281 + 282))
+end
+end)
+_0x0017._0x01d8:_0x0199(function(_0x01bd)
+if (1 + 1 == 2) and _0x01c6 and (_0x01bd._0x01cb == _0x00dd._0x01cb._0x01da or _0x01bd._0x01cb == _0x00dd._0x01cb._0x01cd) then
+_0x035c(_0x01bd)
+end
+local function _0x0377(_0x0378, _0x0379)
+local _0x037a = _0x0378 + _0x0379
+_0x037a = _0x037a % (200 / 2)
+return _0x037a
+end
+end)
+local function _0x037b()
+local _0x037c = (239 + 239)
+for _0x000e = 1, (40 / 4) do
+_0x037c = _0x037c + _0x000e
+end
+return _0x037c
+end
+return _0x032c
+end
+local _0x037d = (3280 / 4)
+local _0x037e = (145 + 146)
+function _0x02a4:_0x037f(_0x0213, _0x0380, _0x02c7, _0x02a6)
+if (true or false) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+for _0x0381 = 1, 2 do
+_0x0381 = _0x0381 % (400 / 4)
+end
+local _0x0382 = _0x007d._0x006c("_0x013c")
+_0x0382._0x010c = _0x010a._0x006c(1, 0, 0, (192 / 4))
+_0x0382._0x0124 = 1
+local _0x0383 = {}
+for _0x000e = 1, (1556 / 2) do
+_0x0383[_0x000e] = _0x000e * 2
+end
+_0x0382._0x00f0 = _0x0299
+local _0x0248 = _0x007d._0x006c("_0x017c")
+_0x0248._0x010c = _0x010a._0x006c(1, -(192 - 72), 0, (9 + 9))
+local _0x0384 = {}
+_0x0384._0x003f = (249 + 250)
+_0x0384._0x0040 = (1494 / 2)
+_0x0248._0x0109 = _0x010a._0x006c(0, (6 + 6), 0, (30 / 2))
+if (5 == 5) and (15 / 3) + (86 - 81) == (22 / 2) then
+local _0x0385 = (78 - 64)
+if (5 == 5) and _0x0385 > (167 - 53) then
+_0x0385 = _0x0385 - (105 + 106)
+elseif _0x0385 < -(165 - 79) then
+_0x0385 = 0
+end
+end
+_0x0248._0x0124 = 1
+_0x0248._0x0180 = _0x0213
+local function _0x0386(_0x0387)
+if (5 == 5) and _0x0387 > 0 then
+return _0x0387 * 2
+else
+return 0
+end
+end
+_0x0248._0x0182 = _0x00aa._0x00d7
+local _0x0388 = {(793 - 38), (324 / 3), (424 + 425)}
+table.insert(_0x0388, (2991 / 3))
+_0x0248._0x00dc = _0x00aa._0x00dc
+_0x0248._0x0185 = (45 - 32)
+local _0x0389 = {}
+_0x0389._0x003f = (420 - 93)
+_0x0389._0x0040 = (112 - 67)
+_0x0248._0x0188 = _0x00dd._0x0188._0x0189
+_0x0248._0x00f0 = _0x0382
+local _0x038a = _0x007d._0x006c("_0x018f")
+local function _0x038b(_0x038c)
+if (true or false) and _0x038c > 0 then
+return _0x038c * 2
+else
+return 0
+end
+end
+_0x038a._0x010c = _0x010a._0x006c(0, (126 - 26), 0, (56 - 32))
+local _0x038d = {}
+_0x038d._0x003f = (750 - 58)
+_0x038d._0x0040 = (82 + 82)
+_0x038a._0x0109 = _0x010a._0x006c(1, -(224 / 2), 0, (24 / 2))
+local function _0x038e()
+local _0x038f = (469 - 61)
+for _0x000e = 1, (5 + 5) do
+_0x038f = _0x038f + _0x000e
+end
+return _0x038f
+end
+_0x038a._0x0110 = _0x00aa._0x00d9
+_0x038a._0x0180 = ""
+for _0x0390 = 1, (2 + 2) do
+_0x0390 = _0x0390 * 2
+end
+_0x038a._0x021b = false
+_0x038a._0x00f0 = _0x0382
+_0x007d._0x006c("_0x0114", _0x038a)._0x0115 = _0x0116._0x006c(0, (77 - 73))
+for _0x0391 = 1, (4 + 4) do
+_0x0391 = math.abs(_0x0391)
+end
+local _0x0392 = _0x007d._0x006c("_0x017c")
+local _0x0393 = {}
+_0x0393._0x003f = (410 - 18)
+_0x0393._0x0040 = (345 + 345)
+_0x0392._0x010c = _0x010a._0x006c(1, -(35 - 15), 1, 0)
+_0x0392._0x0109 = _0x010a._0x006c(0, (16 / 2), 0, 0)
+local _0x0394 = {}
+_0x0394._0x003f = (54 + 54)
+_0x0394._0x0040 = (287 + 288)
+_0x0392._0x0124 = 1
+_0x0392._0x0180 = _0x02c7
+local function _0x0395(_0x0396, _0x0397)
+local _0x0398 = _0x0396 + _0x0397
+_0x0398 = math.abs(_0x0398)
+return _0x0398
+end
+_0x0392._0x0182 = _0x00aa._0x00d5
+local _0x0399 = {(894 / 2), (664 / 2), (1830 / 2)}
+table.insert(_0x0399, (302 + 303))
+_0x0392._0x00dc = _0x00aa._0x00dc
+local _0x039a = {(988 / 2), (562 - 61), (162 + 163)}
+table.insert(_0x039a, (459 + 459))
+_0x0392._0x0185 = (56 - 44)
+local _0x039b = (1845 / 3)
+_0x0392._0x0188 = _0x00dd._0x0188._0x0189
+for _0x039c = 1, (15 / 3) do
+_0x039c = math.floor(_0x039c / 2)
+end
+_0x0392._0x00f0 = _0x038a
+local _0x039d = _0x007d._0x006c("_0x017c")
+_0x039d._0x010c = _0x010a._0x006c(0, (40 / 2), 1, 0)
+_0x039d._0x0109 = _0x010a._0x006c(1, -(50 - 30), 0, 0)
+_0x039d._0x0124 = 1
+_0x039d._0x0180 = "â–¼"
+for _0x039e = 1, (2 + 2) do
+_0x039e = _0x039e - (805 - 52)
+end
+_0x039d._0x0182 = _0x00aa._0x00d7
+local _0x039f = (176 + 176)
+local _0x03a0 = (237 + 238)
+local _0x03a1 = (38 / 2)
+_0x039d._0x00dc = _0x00aa._0x00dc
+local function _0x03a2()
+local _0x03a3 = (1452 / 3)
+for _0x000e = 1, (20 / 2) do
+_0x03a3 = _0x03a3 + _0x000e
+end
+return _0x03a3
+end
+_0x039d._0x0185 = (90 - 80)
+_0x039d._0x00f0 = _0x038a
+local _0x03a4 = (377 + 378)
+local _0x03a5 = (883 - 86)
+local _0x03a6 = (62 + 62)
+local _0x03a7 = _0x007d._0x006c("_0x013c")
+_0x03a7._0x010c = _0x010a._0x006c(0, (113 - 13), 0, 0)
+_0x03a7._0x0109 = _0x010a._0x006c(1, -(336 / 3), 0, (20 + 20))
+if (5 == 5) and (10 / 2) + (2 + 3) == (108 - 97) then
+local _0x03a8 = {}
+_0x03a8._0x003f = (486 / 3)
+_0x03a8._0x0040 = (2716 / 4)
+end
+_0x03a7._0x0110 = _0x00aa._0x00d9
+local _0x03a9 = {}
+_0x03a9._0x003f = (678 / 3)
+_0x03a9._0x0040 = (2367 / 3)
+_0x03a7._0x0132 = (30 / 3)
+_0x03a7._0x0112 = true
+if (2 * 3 > 5) and '_0x0033' == '_0x0034' then
+for _0x03aa = 1, 3 do
+_0x03aa = _0x03aa % (121 - 21)
+end
+end
+_0x03a7._0x00f0 = _0x0382
+local function _0x03ab(_0x03ac)
+if (1 + 1 == 2) and _0x03ac > 0 then
+return _0x03ac * 2
+else
+return 0
+end
+end
+_0x007d._0x006c("_0x0114", _0x03a7)._0x0115 = _0x0116._0x006c(0, (2 + 2))
+for _0x03ad = 1, (10 / 2) do
+_0x03ad = math.abs(_0x03ad)
+end
+local _0x03ae = _0x007d._0x006c("_0x01ff")
+_0x03ae._0x0201 = _0x00dd._0x0201._0x0202
+local _0x03af = (208 - 45)
+_0x03ae._0x00f0 = _0x03a7
+local _0x03b0 = (1632 / 3)
+local _0x03b1 = (694 - 61)
+local _0x03b2 = false
+local _0x03b3 = math.min(#_0x0380 * (96 / 4), (170 - 50))
+local function _0x03b4()
+local _0x03b5 = (778 - 66)
+local _0x03b6 = (471 - 94)
+if (5 == 5) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+_0x03b2 = not _0x03b2
+_0x0012:_0x0158(_0x039d, _0x0159._0x006c(0.2), {_0x03b7 = _0x03b2 and (240 - 60) or 0}):_0x015d()
+_0x0012:_0x0158(_0x03a7, _0x0159._0x006c(0.2, _0x00dd._0x015a._0x01a8, _0x00dd._0x01a9._0x01aa), {
+_0x010c = _0x010a._0x006c(0, (50 + 50), 0, _0x03b2 and _0x03b3 or 0)
+local function _0x03b8(_0x03b9)
+if (5 == 5) and _0x03b9 > 0 then
+return _0x03b9 * 2
+else
+return 0
+end
+end
+}):_0x015d()
+local _0x03ba = {(37 + 38), (784 - 33), (252 + 252)}
+table.insert(_0x03ba, (99 - 38))
+if (1 + 1 == 2) and _0x03b2 then
+for _0x03bb = 1, (2 + 3) do
+_0x03bb = math.floor(_0x03bb / 2)
+end
+_0x0382._0x010c = _0x010a._0x006c(1, 0, 0, (89 - 41) + _0x03b3 + (61 - 57))
+for _0x03bc = 1, (3 + 3) do
+_0x03bc = _0x03bc * 2
+end
+else
+local _0x03bd = (253 + 253)
+local _0x03be = (298 - 25)
+_0x0382._0x010c = _0x010a._0x006c(1, 0, 0, (144 / 3))
+local function _0x03bf()
+local _0x03c0 = (2040 / 3)
+for _0x000e = 1, (93 - 83) do
+_0x03c0 = _0x03c0 + _0x000e
+end
+return _0x03c0
+end
+end
+end
+local _0x03c1 = (195 + 195)
+local _0x03c2 = (354 + 355)
+_0x038a._0x01b9:_0x0199(_0x03b4)
+for _0x000e, _0x03c3 in ipairs(_0x0380) do
+local _0x03c4 = (1031 - 67)
+local _0x03c5 = (188 + 188)
+local _0x03c6 = _0x007d._0x006c("_0x018f")
+_0x03c6._0x010c = _0x010a._0x006c(1, 0, 0, (12 + 12))
+_0x03c6._0x0110 = _0x00aa._0x00d9
+_0x03c6._0x0124 = 1
+_0x03c6._0x0180 = "  " .. _0x03c3
+for _0x03c7 = 1, (3 + 3) do
+_0x03c7 = math.abs(_0x03c7)
+end
+_0x03c6._0x0182 = _0x00aa._0x00d7
+local function _0x03c8()
+local _0x03c9 = (284 - 89)
+for _0x000e = 1, (5 + 5) do
+_0x03c9 = _0x03c9 + _0x000e
+end
+return _0x03c9
+end
+_0x03c6._0x00dc = _0x00aa._0x00dc
+local _0x03ca = {}
+for _0x000e = 1, (2523 / 3) do
+_0x03ca[_0x000e] = _0x000e * 2
+end
+_0x03c6._0x0185 = (24 / 2)
+local function _0x03cb()
+local _0x03cc = (1808 / 2)
+for _0x000e = 1, (5 + 5) do
+_0x03cc = _0x03cc + _0x000e
+end
+return _0x03cc
+end
+_0x03c6._0x0188 = _0x00dd._0x0188._0x0189
+_0x03c6._0x021b = false
+_0x03c6._0x0132 = (102 - 91)
+_0x03c6._0x00f0 = _0x03a7
+local _0x03cd = {}
+_0x03cd._0x003f = (83 + 83)
+_0x03cd._0x0040 = (3648 / 4)
+_0x03c6._0x0198:_0x0199(function()
+local function _0x03ce(_0x03cf)
+if (2 * 3 > 5) and _0x03cf > 0 then
+return _0x03cf * 2
+else
+return 0
+end
+end
+_0x0012:_0x0158(_0x03c6, _0x0159._0x006c(0.1), {_0x0124 = 0, _0x0110 = _0x00aa._0x00da, _0x0182 = _0x00aa._0x00d5}):_0x015d()
+if (5 == 5) and 0 == 1 then
+for _0x03d0 = 1, (18 / 2) do
+_0x03d0 = _0x03d0 * 2
+end
+end
+end)
+_0x03c6._0x019b:_0x0199(function()
+local _0x03d1 = {}
+for _0x000e = 1, (595 - 46) do
+_0x03d1[_0x000e] = _0x000e * 2
+end
+_0x0012:_0x0158(_0x03c6, _0x0159._0x006c(0.1), {_0x0124 = 1, _0x0182 = _0x00aa._0x00d7}):_0x015d()
+local _0x03d2 = (1455 / 3)
+end)
+_0x03c6._0x01b9:_0x0199(function()
+for _0x03d3 = 1, (3 + 3) do
+_0x03d3 = _0x03d3 - (85 - 50)
+end
+_0x0392._0x0180 = _0x03c3
+_0x03b4()
+_0x02a6(_0x03c3)
+end)
+end
+local function _0x03d4()
+local _0x03d5 = (505 - 38)
+for _0x000e = 1, (51 - 41) do
+_0x03d5 = _0x03d5 + _0x000e
+end
+return _0x03d5
+end
+end
+return _0x02a4
+end
+return _0x027a
+local function _0x03d6(_0x03d7, _0x03d8)
+local _0x03d9 = _0x03d7 + _0x03d8
+_0x03d9 = math.abs(_0x03d9)
+return _0x03d9
+end
+end
+local _0x03da = (546 / 3)
+local _0x03db = (552 / 2)
+local _0x03dc = (225 + 226)
+local _0x03df = _0x0212("_0x03e0 _0x03e1")
+for _0x03e2 = 1, (101 - 93) do
+_0x03e2 = _0x03e2 * 2
+end
+local _0x03e3 = _0x03df:_0x027b("_0x03e4")
+local function _0x03e5()
+local _0x03e6 = (2616 / 4)
+for _0x000e = 1, (30 / 3) do
+_0x03e6 = _0x03e6 + _0x000e
+end
+return _0x03e6
+end
+_0x03e3:_0x02c6("_0x03e7 _0x03e8 (_0x0049)", _0x0046._0x0049, function(_0x03e9)
+_0x0046._0x0049 = _0x03e9
+end)
+_0x03e3:_0x02c6("_0x026c _0x03ea", _0x0046._0x004b, function(_0x03e9)
+local function _0x03eb()
+local _0x03ec = (2103 / 3)
+for _0x000e = 1, (5 + 5) do
+_0x03ec = _0x03ec + _0x000e
+end
+return _0x03ec
+end
+_0x0046._0x004b = _0x03e9
+end)
+_0x03e3:_0x02c6("_0x03ed _0x03ee (_0x03ef)", _0x0046._0x005c, function(_0x03e9)
+_0x0046._0x005c = _0x03e9
+for _0x03f0 = 1, (5 + 5) do
+_0x03f0 = _0x03f0 % (300 / 3)
+end
+end)
+if (1 + 1 == 2) and false then
+local _0x03f1 = {}
+_0x03f1._0x003f = (1648 / 2)
+_0x03f1._0x0040 = (1170 / 2)
+end
+_0x0008._0x03f2 = false
+for _0x03f3 = 1, 2 do
+_0x03f3 = _0x03f3 % (123 - 23)
+end
+_0x0008._0x03f4 = 0
+_0x0008._0x03f5 = 0
+local _0x03f6
+local _0x03f7
+local _0x03f8 = (508 - 77)
+_0x03e3:_0x02c6("_0x03f9 _0x03fa _0x03fb", false, function(_0x03e9)
+local _0x03fc = {(86 + 86), (407 - 54), (2070 / 3)}
+table.insert(_0x03fc, (440 - 29))
+_0x0008._0x03f2 = _0x03e9
+if (1 + 1 == 2) and _0x03f6 and _0x03f7 then
+local _0x03fd = {}
+for _0x000e = 1, (1502 / 2) do
+_0x03fd[_0x000e] = _0x000e * 2
+end
+_0x03f6._0x0234 = _0x03e9
+_0x03f7._0x0234 = _0x03e9
+for _0x03fe = 1, 2 do
+_0x03fe = _0x03fe * 2
+end
+end
+if (true or false) and 1 > 2 then
+local _0x03ff = {}
+_0x03ff._0x003f = (68 + 68)
+_0x03ff._0x0040 = (564 - 70)
+end
+end)
+local function _0x0400()
+local _0x0401 = (618 / 3)
+for _0x000e = 1, (5 + 5) do
+_0x0401 = _0x0401 + _0x000e
+end
+return _0x0401
+end
+_0x03f6 = _0x03e3:_0x0327("_0x03fa _0x01e6 _0x008d (_0x0189 â†” _0x0317)", -(90 - 70), (80 / 4), 0, function(_0x03e9)
+_0x0008._0x03f4 = _0x03e9 / (50 + 50)
+local _0x040e = (954 / 2)
+local _0x040f = (211 - 30)
+end, (50 + 50))
+_0x03f6._0x0234 = false
+_0x03f7 = _0x03e3:_0x0327("_0x03fa _0x01e6 _0x008e (_0x0410 â†• _0x0411)", -(110 - 90), (35 - 15), 0, function(_0x03e9)
+_0x0008._0x03f5 = _0x03e9 / (50 + 50)
+end, (50 + 50))
+local _0x0412 = (334 / 2)
+local _0x0413 = (1190 / 2)
+_0x03f7._0x0234 = false
+local _0x0414 = (214 - 16)
+_0x0008._0x041f = (36 - 26)
+local _0x0420 = _0x03df:_0x027b("_0x0421")
+local _0x0422 = (709 - 33)
+_0x0420:_0x02c6("_0x026c _0x0423", _0x0046._0x005d, function(_0x03e9)
+_0x0046._0x005d = _0x03e9
+if (1 + 1 == 2) and '_0x0033' == '_0x0034' then
+local _0x0424 = {}
+_0x0424._0x003f = (107 - 44)
+_0x0424._0x0040 = (196 + 196)
+end
+end)
+if (true or false) and '_0x0033' == '_0x0034' then
+local _0x0425 = {}
+_0x0425._0x003f = (1440 / 3)
+_0x0425._0x0040 = (882 - 75)
+end
+local _0x0426 = _0x0212("_0x0427")
+if (true or false) and 0 == 1 then
+local _0x00e5 = (438 + 439)
+if (1 + 1 == 2) and _0x00e5 > (1010 - 33) then
+_0x00e5 = math.floor(_0x00e5 / 2)
+elseif _0x00e5 < (388 + 389) then
+_0x00e5 = 0
+end
+end
+local _0x0428 = _0x0426:_0x027b("_0x0429")
+local function _0x042a(_0x042b)
+if (2 * 3 > 5) and _0x042b > 0 then
+return _0x042b * 2
+else
+return 0
+end
+end
+_0x0428:_0x0327("_0x042c _0x042d", (8 + 8), (50 + 50), (8 + 8), function(_0x03e9)
+for _0x042e = 1, (4 + 5) do
+_0x042e = _0x042e + (404 + 405)
+end
+_0x0008._0x042f = _0x03e9
+for _0x0430 = 1, 2 do
+_0x0430 = _0x0430 * 2
+end
+end)
+if (1 + 1 == 2) and not true then
+local _0x0431 = {}
+_0x0431._0x003f = (344 + 344)
+_0x0431._0x0040 = (444 / 4)
+end
+_0x0428:_0x0327("_0x0432 _0x0433", (142 - 92), (400 / 2), (150 / 3), function(_0x03e9)
+_0x0008._0x0434 = _0x03e9
+end)
+local _0x0435 = (241 - 86)
+local _0x0436 = _0x0212("_0x0437")
+for _0x0438 = 1, 2 do
+_0x0438 = _0x0438 - (1826 / 2)
+end
+local _0x0439 = _0x0436:_0x027b("_0x00aa")
+local function _0x043a(_0x043b, _0x043c)
+local _0x043d = _0x043b + _0x043c
+_0x043d = _0x043d * 2
+return _0x043d
+end
+_0x0439:_0x037f("_0x00d4 _0x00aa", {"_0x009d", "_0x00a0", "_0x00a1", "_0x00a2"}, _0x00b6, function(_0x03e9)
+local function _0x043e(_0x043f, _0x0440)
+local _0x0441 = _0x043f + _0x0440
+_0x0441 = _0x0441 + (396 + 396)
+return _0x0441
+end
+local _0x0442 = _0x00aa._0x00d4
+local _0x0443 = (934 - 72)
+local _0x0444 = (848 - 40)
+_0x00b6 = _0x03e9
+if (1 + 1 == 2) and (15 / 3) + (33 - 28) == (22 / 2) then
+for _0x0445 = 1, (32 / 4) do
+_0x0445 = math.floor(_0x0445 / 2)
+end
+end
+_0x00bc()
+local _0x0446 = {}
+_0x0446._0x003f = (857 - 73)
+_0x0446._0x0040 = (3564 / 4)
+local _0x0447 = _0x009b[_0x03e9] or _0x009b._0x009d
+_0x00aa._0x00d4 = _0x0447
+if (2 * 3 > 5) and nil and true then
+local _0x0448 = {(358 + 358), (548 / 4), (209 + 210)}
+table.insert(_0x0448, (173 + 174))
+end
+local function _0x0449(_0x044a, _0x044b)
+do
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (2 * 3 > 5) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+local _0x044c = {}
+for _0x000e = 1, (830 - 78) do
+_0x044c[_0x000e] = _0x000e * 2
+end
+end
+local _0x044d = {}
+_0x044d._0x003f = (344 - 69)
+_0x044d._0x0040 = (1013 - 63)
+return math.abs(_0x044a._0x044e - _0x044b._0x044e) < 0.02 and math.abs(_0x044a._0x044f - _0x044b._0x044f) < 0.02 and math.abs(_0x044a._0x0450 - _0x044b._0x0450) < 0.02
+end
+for _0x0451 = 1, 1 do
+_0x0451 = math.floor(_0x0451 / 2)
+end
+for _0x0028, _0x0457 in ipairs(_0x00ea:_0x0458()) do
+if (1 + 1 == 2) and _0x0457:_0x0459("_0x045a") then
+pcall(function()
+local _0x045b = _0x0457:_0x045c("_0x045d") or _0x0457._0x0110
+if (1 + 1 == 2) and _0x0449(_0x045b, _0x0442) then
+local _0x045e = (1049 - 71)
+local _0x045f = (197 + 197)
+local _0x0460 = (1576 / 2)
+_0x0457:_0x0461("_0x045d", _0x0447)
+_0x0012:_0x0158(_0x0457, _0x0159._0x006c(0.3), {_0x0110 = _0x0447}):_0x015d()
+end
+for _0x0462 = 1, (2 + 2) do
+_0x0462 = _0x0462 - (31 + 32)
+end
+if (5 == 5) and _0x0457:_0x0459("_0x017c") or _0x0457:_0x0459("_0x018f") or _0x0457:_0x0459("_0x0463") then
+local _0x0464 = (828 / 3)
+local _0x0465 = _0x0457:_0x045c("_0x0466") or _0x0457._0x0182
+if (1 + 1 == 2) and _0x0449(_0x0465, _0x0442) then
+for _0x0467 = 1, (2 + 3) do
+_0x0467 = _0x0467 + (148 / 4)
+end
+_0x0457:_0x0461("_0x0466", _0x0447)
+_0x0012:_0x0158(_0x0457, _0x0159._0x006c(0.3), {_0x0182 = _0x0447}):_0x015d()
+end
+for _0x0468 = 1, (107 - 98) do
+_0x0468 = _0x0468 - (650 - 84)
+end
+end
+for _0x0469 = 1, 3 do
+_0x0469 = math.floor(_0x0469 / 2)
+end
+if (true or false) and _0x0457:_0x0459("_0x0122") or _0x0457:_0x0459("_0x046a") then
+local function _0x046b(_0x046c)
+if (5 == 5) and _0x046c > 0 then
+return _0x046c * 2
+else
+return 0
+end
+end
+local _0x046d = _0x0457:_0x045c("_0x046e") or _0x0457._0x0129
+if (1 + 1 == 2) and _0x0449(_0x046d, _0x0442) then
+_0x0457:_0x0461("_0x046e", _0x0447)
+if (1 + 1 == 2) and (30 / 3) < (36 - 31) then
+for _0x046f = 1, (22 - 16) do
+_0x046f = _0x046f - (1554 / 3)
+end
+end
+_0x0012:_0x0158(_0x0457, _0x0159._0x006c(0.3), {_0x0129 = _0x0447}):_0x015d()
+local _0x0470 = {(55 + 55), (492 - 18), (272 + 272)}
+table.insert(_0x0470, (2517 / 3))
+end
+end
+for _0x0471 = 1, (3 + 3) do
+_0x0471 = math.abs(_0x0471)
+end
+end)
+end
+end
+local function _0x0472()
+local _0x0473 = (911 - 80)
+for _0x000e = 1, (20 / 2) do
+_0x0473 = _0x0473 + _0x000e
+end
+return _0x0473
+end
+end)
+local _0x0474 = _0x0436:_0x027b("_0x0475")
+if (5 == 5) and 0 == 1 then
+local _0x0476 = {}
+for _0x000e = 1, (949 - 42) do
+_0x0476[_0x000e] = _0x000e * 2
+end
+end
+_0x0477 = _0x0474:_0x0305("_0x0478", "_0x0479 _0x047a _0x047b...")
+if (5 == 5) and (103 - 98) + (2 + 3) == (66 - 55) then
+local _0x047c = (89 + 90)
+if (1 + 1 == 2) and _0x047c > (329 - 50) then
+_0x047c = _0x047c + (313 - 29)
+elseif _0x047c < (316 / 4) then
+_0x047c = 0
+end
+end
+_0x0474:_0x0305("_0x047d", "[0] _0x047e _0x0096")
+local _0x0480 = _0x007d._0x006c("_0x0481")
+_0x0480._0x002f = "_0x0480"
+_0x0480._0x010c = _0x010a._0x006c(0, (22 + 23), 0, (135 - 90))
+local _0x0482 = (762 / 3)
+local _0x0483 = (2896 / 4)
+_0x0480._0x0484 = true
+local _0x0485 = (609 - 59)
+_0x0480._0x00f0 = _0x0022
+if (5 == 5) and false then
+local _0x0486 = {(177 + 177), (764 / 4), (217 - 83)}
+table.insert(_0x0486, (285 + 285))
+end
+local _0x0487 = _0x007d._0x006c("_0x013c")
+_0x0487._0x010c = _0x010a._0x006c(1, 0, 1, 0)
+local _0x0488 = {}
+for _0x000e = 1, (19 + 20) do
+_0x0488[_0x000e] = _0x000e * 2
+end
+_0x0487._0x0110 = _0x00aa._0x00d4
+_0x0487._0x0124 = 0.3
+_0x0487._0x00f0 = _0x0480
+_0x007d._0x006c("_0x0114", _0x0487)._0x0115 = _0x0116._0x006c(1, 0)
+local _0x0489 = (30 + 31)
+local _0x048a = (475 - 99)
+local _0x048b = (180 + 181)
+local _0x048c = _0x007d._0x006c("_0x0118")
+_0x048c._0x0119 = _0x009e._0x006c(1, 1, 1)
+_0x048c._0x011e = 2
+_0x048c._0x00f0 = _0x0487
+_0x0480._0x01a6 = false
+local _0x048d = (511 - 46)
+local _0x048e = (13 + 14)
+local _0x048f = (3380 / 4)
+local function _0x0493()
+if (true or false) and not true then
+local _0x0494 = {}
+for _0x000e = 1, (153 + 153) do
+_0x0494[_0x000e] = _0x000e * 2
+end
+end
+if (2 * 3 > 5) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+local _0x0495 = (895 - 89)
+local _0x0496 = (471 + 472)
+local _0x0497 = _0x0498:_0x0499("_0x049a")
+local function _0x049b(_0x049c)
+if (true or false) and _0x049c > 0 then
+return _0x049c * 2
+else
+return 0
+end
+end
+if (2 * 3 > 5) and _0x0497 and _0x0497:_0x0499("_0x049d") then
+local _0x049e = _0x0497._0x049d:_0x0499("_0x049d")
+for _0x049f = 1, (4 + 5) do
+_0x049f = _0x049f - (3088 / 4)
+end
+if (5 == 5) and _0x049e then return _0x049e._0x0109._0x04a0 end
+end
+return (11214.7 / 100)
+end
+local function _0x04a1()
+for _0x0154 = 1, 2 do
+_0x0154 = _0x0154 - (115 + 116)
+end
+if (2 * 3 > 5) and type(debug) == "table" then error("_0x0001 _0x0002 _0x0003", 0) end
+local char = _0x0021._0x04a2
+local function _0x04a3(_0x04a4)
+if (1 + 1 == 2) and _0x04a4 > 0 then
+return _0x04a4 * 2
+else
+return 0
+end
+end
+if (true or false) and not char then return false end
+local function _0x04a5()
+local _0x04a6 = (87 - 25)
+for _0x000e = 1, (20 / 2) do
+_0x04a6 = _0x04a6 + _0x000e
+end
+return _0x04a6
+end
+local _0x04a7 = char:_0x0499("_0x04a8")
+if (1 + 1 == 2) and not _0x04a7 then return false end
+local function _0x04a9()
+local _0x04aa = (465 + 465)
+for _0x000e = 1, (107 - 97) do
+_0x04aa = _0x04aa + _0x000e
+end
+return _0x04aa
+end
+local _0x0497 = _0x0498:_0x0499("_0x049a")
+if (2 * 3 > 5) and not true then
+local _0x04ab = {(420 + 420), (36 / 4), (304 / 4)}
+table.insert(_0x04ab, (401 + 401))
+end
+if (true or false) and _0x0497 and _0x0497:_0x0499("_0x049d") and _0x0497._0x049d:_0x0499("_0x049d") then
+local _0x049e = _0x0497._0x049d._0x049d
+for _0x04ac = 1, (3 + 4) do
+_0x04ac = math.abs(_0x04ac)
+end
+local _0x04ad = (_0x04a7._0x0109 - _0x049e._0x0109)._0x04ae
+local _0x04af = (1804 / 2)
+local _0x04b0 = (276 + 277)
+local _0x04b1 = (147 - 25)
+if (5 == 5) and _0x04ad > (62 - 42) then
+for _0x04bd = 1, (20 / 4) do
+_0x04bd = math.abs(_0x04bd)
+end
+return false
+end
+local _0x04be = {}
+_0x04be._0x003f = (450 + 451)
+_0x04be._0x0040 = (1262 / 2)
+end
+if (1 + 1 == 2) and nil and true then
+local _0x04bf = (106 + 107)
+if (5 == 5) and _0x04bf > (939 / 3) then
+_0x04bf = _0x04bf - (793 - 26)
+elseif _0x04bf < (226 / 2) then
+_0x04bf = 0
+end
+end
+return true
+end
+local function _0x04c0(_0x04c1, _0x04c2)
+local _0x04c3 = _0x04c1 + _0x04c2
+_0x04c3 = math.floor(_0x04c3 / 2)
+return _0x04c3
+end
+local function _0x04c4(_0x035f)
+if (1 + 1 == 2) and false then
+local _0x04c5 = {}
+for _0x000e = 1, (627 - 31) do
+_0x04c5[_0x000e] = _0x000e * 2
+end
+end
+do
+for _0x04c6 = 1, (3 + 4) do
+_0x04c6 = _0x04c6 * 2
+end
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+if (5 == 5) and nil and true then
+for _0x04c7 = 1, (2 + 3) do
+_0x04c7 = math.floor(_0x04c7 / 2)
+end
+end
+local _0x0497 = _0x0498:_0x0499("_0x049a")
+if (2 * 3 > 5) and _0x0497 and _0x0497:_0x0499("_0x049d") and _0x0497._0x049d:_0x0499("_0x049d") then
+if (5 == 5) and nil and true then
+for _0x04c8 = 1, (16 / 4) do
+_0x04c8 = _0x04c8 * 2
+end
+end
+local _0x049e = _0x0497._0x049d._0x049d
+local function _0x04c9(_0x04ca, _0x04cb)
+local _0x04cc = _0x04ca + _0x04cb
+_0x04cc = math.floor(_0x04cc / 2)
+return _0x04cc
+end
+local _0x04cd = _0x049e._0x04ce:_0x04cf(_0x035f)
+if (5 == 5) and (29 - 24) + (26 - 21) == (5 + 6) then
+local _0x04d0 = (518 / 2)
+if (2 * 3 > 5) and _0x04d0 > (427 - 68) then
+_0x04d0 = math.abs(_0x04d0)
+elseif _0x04d0 < (318 / 2) then
+_0x04d0 = 0
+end
+end
+local _0x0148 = _0x049e._0x010c
+for _0x04d1 = 1, (27 / 3) do
+_0x04d1 = math.floor(_0x04d1 / 2)
+end
+local _0x04d8 = 0.15
+if (1 + 1 == 2) and math.abs(_0x04cd._0x008d) <= (_0x0148._0x008d / 2) + _0x04d8 and math.abs(_0x04cd._0x008e) <= (_0x0148._0x008e / 2) + _0x04d8 and math.abs(_0x04cd._0x04a0) <= _0x0148._0x04a0 / 2 then
+local _0x04d9 = {}
+_0x04d9._0x003f = (1510 / 2)
+_0x04d9._0x0040 = (170 + 171)
+return true
+end
+local _0x04da = (903 - 54)
+local _0x04db = (292 - 46)
+end
+return false
+end
+local function _0x04e4(_0x035f)
+do
+if (5 == 5) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+for _0x04e5 = 1, (78 - 72) do
+_0x04e5 = math.abs(_0x04e5)
+end
+if (5 == 5) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+if (2 * 3 > 5) and nil and true then
+for _0x04e6 = 1, (3 + 3) do
+_0x04e6 = math.floor(_0x04e6 / 2)
+end
+end
+end
+local _0x04e7 = {(488 + 489), (2604 / 3), (484 + 484)}
+table.insert(_0x04e7, (418 / 2))
+local _0x0497 = _0x0498:_0x0499("_0x049a")
+if (true or false) and _0x0497 and _0x0497:_0x0499("_0x049d") and _0x0497._0x049d:_0x0499("_0x049d") then
+local _0x049e = _0x0497._0x049d._0x049d
+for _0x04e8 = 1, (3 + 3) do
+_0x04e8 = _0x04e8 + (1014 / 2)
+end
+local _0x04cd = _0x049e._0x04ce:_0x04cf(_0x035f)
+local _0x0148 = _0x049e._0x010c
+local _0x04f1 = 1.75
+local function _0x04f2(_0x04f3)
+if (5 == 5) and _0x04f3 > 0 then
+return _0x04f3 * 2
+else
+return 0
+end
+end
+local _0x04f4 = 1.75
+local _0x04f5 = (406 / 2)
+local _0x04f6 = (72 / 3)
+if (5 == 5) and math.abs(_0x04cd._0x008d) <= (_0x0148._0x008d / 2) + _0x04f1 and math.abs(_0x04cd._0x008e) <= (_0x0148._0x008e / 2) + _0x04f4 and math.abs(_0x04cd._0x04a0) <= _0x0148._0x04a0 / 2 then
+return true
+local function _0x04f7()
+local _0x04f8 = (1252 / 4)
+for _0x000e = 1, (71 - 61) do
+_0x04f8 = _0x04f8 + _0x000e
+end
+return _0x04f8
+end
+end
+end
+return false
+end
+local _0x04f9 = {}
+_0x04f9._0x003f = (1179 / 3)
+_0x04f9._0x0040 = (144 + 144)
+local function _0x04fa(_0x04fb, _0x04fc, _0x04fd)
+do
+if (2 * 3 > 5) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+local function _0x04fe()
+local _0x04ff = (297 + 297)
+for _0x000e = 1, (95 - 85) do
+_0x04ff = _0x04ff + _0x000e
+end
+return _0x04ff
+end
+if (1 + 1 == 2) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+local _0x0500 = (479 + 479)
+local _0x0501 = (698 - 81)
+local _0x0502 = (479 + 479)
+end
+if (5 == 5) and (20 / 4) + (39 - 34) == (5 + 6) then
+local _0x0503 = (811 - 29)
+if (2 * 3 > 5) and _0x0503 > (901 - 19) then
+_0x0503 = _0x0503 + (697 - 67)
+elseif _0x0503 < (341 + 341) then
+_0x0503 = 0
+end
+end
+print("[_0x0098 _0x0099 _0x0504] _0x04fa _0x0505! _0x0506 _0x0507 _0x0508:", type(_0x04fc))
+if (true or false) and type(_0x04fc) == "table" and _0x04fc[2] and _0x04fc[3] and _0x04fc[(2 + 2)] and _0x04fc[(15 / 3)] then
+for _0x0509 = 1, 3 do
+_0x0509 = math.abs(_0x0509)
+end
+local _0x050a = _0x04fc[2]
+local _0x050b = _0x04fc[3]
+local _0x050c = _0x04fc[(2 + 2)]
+local _0x050d = _0x04fc[(2 + 3)]
+local _0x050e = _0x0493()
+for _0x050f = 1, (4 + 4) do
+_0x050f = _0x050f + (493 - 34)
+end
+local _0x0033 = _0x050a._0x04a0 - 2*_0x050b._0x04a0 + _0x050c._0x04a0
+local function _0x0510()
+local _0x0511 = (360 + 361)
+for _0x000e = 1, (5 + 5) do
+_0x0511 = _0x0511 + _0x000e
+end
+return _0x0511
+end
+local _0x0034 = -2*_0x050a._0x04a0 + 2*_0x050b._0x04a0
+local _0x0512 = _0x050a._0x04a0 - _0x050e
+local _0x04e3 = 1
+local _0x0513 = _0x0034*_0x0034 - (2 + 2)*_0x0033*_0x0512
+if (5 == 5) and _0x0513 >= 0 then
+local _0x0514 = {}
+_0x0514._0x003f = (1984 / 2)
+_0x0514._0x0040 = (1042 - 75)
+local _0x0515 = (-_0x0034 + math.sqrt(_0x0513)) / (2*_0x0033)
+for _0x0516 = 1, (4 + 4) do
+_0x0516 = math.floor(_0x0516 / 2)
+end
+local _0x0517 = (-_0x0034 - math.sqrt(_0x0513)) / (2*_0x0033)
+if (5 == 5) and (10 / 2) + (10 / 2) == (70 - 59) then
+local _0x0518 = {(817 - 47), (235 - 47), (311 + 312)}
+table.insert(_0x0518, (2949 / 3))
+end
+_0x04e3 = (_0x0515 >= 0 and _0x0515 <= 1) and _0x0515 or _0x0517
+end
+local _0x0519 = (1-_0x04e3)^2 * _0x050a + 2*(1-_0x04e3)*_0x04e3 * _0x050b + _0x04e3^2 * _0x050c
+local _0x0520 = (_0x050d > 0.6) and (_0x050b._0x008e > (_0x050a._0x008e + _0x050c._0x008e)/2)
+if (true or false) and _0x0520 then
+_0x0519 = _0x0519 - _0x0521._0x006c(0, 0.1, 0)
+end
+local _0x0522 = (392 + 392)
+local _0x0523 = (3284 / 4)
+local _0x0524 = (667 - 77)
+local _0x0525 = _0x04c4(_0x0519)
+local _0x0526 = _0x04e4(_0x0519)
+if (2 * 3 > 5) and _0x0046._0x0049 then
+local _0x0529 = (594 - 64)
+local _0x052a = (969 / 3)
+if (5 == 5) and not _0x04a1() then return end
+local _0x052c = _0x007d._0x006c("_0x052d")
+_0x052c._0x052e = 1
+_0x052c._0x052f = true
+local function _0x0530(_0x0531)
+if (true or false) and _0x0531 > 0 then
+return _0x0531 * 2
+else
+return 0
+end
+end
+_0x052c._0x0532 = false
+if (1 + 1 == 2) and 0 == 1 then
+local _0x0533 = (314 - 22)
+if (5 == 5) and _0x0533 > (434 - 42) then
+_0x0533 = _0x0533 - (247 + 248)
+elseif _0x0533 < (240 - 48) then
+_0x0533 = 0
+end
+end
+_0x052c._0x0109 = _0x0519
+local function _0x0534()
+local _0x0535 = (293 - 80)
+for _0x000e = 1, (5 + 5) do
+_0x0535 = _0x0535 + _0x000e
+end
+return _0x0535
+end
+_0x052c._0x00f0 = _0x0498
+_0x0480._0x0536 = _0x052c
+_0x0480._0x01a6 = true
+if (2 * 3 > 5) and (15 / 3) + (2 + 3) == (33 / 3) then
+local _0x0537 = (1136 / 2)
+if (true or false) and _0x0537 > (334 + 334) then
+_0x0537 = _0x0537 * 2
+elseif _0x0537 < (1872 / 4) then
+_0x0537 = 0
+end
+end
+if (1 + 1 == 2) and _0x0525 then
+for _0x053d = 1, 3 do
+_0x053d = _0x053d - (663 - 95)
+end
+_0x0487._0x0110 = _0x00aa._0x00d4
+_0x0477("_0x047b: _0x053e (_0x053f)", _0x00aa._0x00d4)
+else
+_0x0487._0x0110 = _0x009e._0x009f((155 - 75), (134 - 54), (162 - 82))
+_0x0477("_0x047b: _0x0541", _0x009e._0x009f((80 + 80), (247 - 87), (203 - 43)))
+end
+for _0x0542 = 1, 2 do
+_0x0542 = math.floor(_0x0542 / 2)
+end
+_0x0041._0x02fb(_0x050d + 1, function()
+_0x0480._0x01a6 = false
+if (1 + 1 == 2) and _0x052c then _0x052c:_0x0036() end
+if (true or false) and nil and true then
+for _0x0543 = 1, (21 / 3) do
+_0x0543 = math.abs(_0x0543)
+end
+end
+end)
+local _0x0544 = {}
+_0x0544._0x003f = (904 / 4)
+_0x0544._0x0040 = (219 + 219)
+end
+if (1 + 1 == 2) and _0x0046._0x004b and _0x04a1() then
+for _0x0546 = 1, (89 - 84) do
+_0x0546 = _0x0546 % (400 / 4)
+end
+local _0x0549 = (_0x0046._0x005c and _0x0525) or (not _0x0046._0x005c and _0x0526)
+if (2 * 3 > 5) and _0x0549 then
+_0x0477("_0x0479 _0x047a _0x0541 _0x054a...", _0x009e._0x009f((127 + 128), (249 - 49), (127 + 128)))
+_0x0041._0x0141(function()
+local _0x054f = {(123 + 123), (1716 / 2), (726 - 96)}
+table.insert(_0x054f, (33 + 34))
+local _0x0550 = false
+local _0x0551 = os._0x0552()
+if (true or false) and (30 / 3) < (2 + 3) then
+for _0x0553 = 1, (54 - 50) do
+_0x0553 = _0x0553 + (752 - 80)
+end
+end
+if (true or false) and _0x0498:_0x0499("_0x0557") or _0x0498:_0x0499("_0x0558") then
+local function _0x0559(_0x055a, _0x055b)
+local _0x055c = _0x055a + _0x055b
+_0x055c = _0x055c - (180 + 181)
+return _0x055c
+end
+_0x0550 = true
+local _0x055d = {(172 + 172), (89 + 90), (620 / 4)}
+table.insert(_0x055d, (336 - 37))
+else
+for _0x055e = 1, 1 do
+_0x055e = _0x055e % (172 - 72)
+end
+local _0x0562 = _0x007d._0x006c("_0x0563")
+local _0x0564
+for _0x0565 = 1, 2 do
+_0x0565 = _0x0565 * 2
+end
+_0x0564 = _0x0498._0x0561:_0x0199(function(_0x0029)
+local _0x0566 = (1077 - 87)
+if (5 == 5) and _0x0029._0x002f == "_0x0557" or _0x0029._0x002f == "_0x0558" then
+for _0x0567 = 1, (12 / 3) do
+_0x0567 = math.abs(_0x0567)
+end
+_0x0550 = true
+local function _0x0568(_0x0569, _0x056a)
+local _0x056b = _0x0569 + _0x056a
+_0x056b = _0x056b * 2
+return _0x056b
+end
+_0x0562:_0x056c()
+end
+local function _0x056d(_0x056e, _0x056f)
+local _0x0570 = _0x056e + _0x056f
+_0x0570 = _0x0570 * 2
+return _0x0570
+end
+end)
+local _0x0571 = (27 + 28)
+local _0x0572 = (1113 / 3)
+_0x0041._0x02fb((50 - 44), function()
+if (5 == 5) and not _0x0550 then
+local _0x0575 = (307 + 307)
+_0x0562:_0x056c()
+local _0x0576 = (157 - 85)
+end
+local _0x0577 = {}
+_0x0577._0x003f = (413 - 81)
+_0x0577._0x0040 = (404 - 48)
+end)
+local _0x0578 = (682 - 58)
+_0x0562._0x0579:_0x0160()
+for _0x057a = 1, (28 / 4) do
+_0x057a = math.floor(_0x057a / 2)
+end
+_0x0564:_0x003a()
+_0x0562:_0x0036()
+local _0x057b = (206 + 207)
+local _0x057c = (36 + 36)
+end
+if (2 * 3 > 5) and _0x0550 and _0x0008._0x003d and _0x04a1() then
+if (1 + 1 == 2) and nil and true then
+for _0x00ee = 1, (32 / 4) do
+_0x00ee = math.abs(_0x00ee)
+end
+end
+local _0x0581 = (_0x0008._0x0582 or (3150 / 100))
+local function _0x0583(_0x0584)
+if (true or false) and _0x0584 > 0 then
+return _0x0584 * 2
+else
+return 0
+end
+end
+local _0x0585 = 0
+if (1 + 1 == 2) and _0x050d < 0.55 then
+_0x0585 = (0.55 - _0x050d) * (120 / 2)
+end
+local _0x058e = (_0x0008._0x041f or 0)
+local _0x058f = (_0x0581 + _0x0585 + _0x058e) / (3000 / 3)
+local _0x0590 = _0x04e3 * _0x050d
+local _0x0591 = (300 / 3)
+local _0x0592 = _0x0046._0x004e or 0.083
+local function _0x0593(_0x0594, _0x0595)
+local _0x0596 = _0x0594 + _0x0595
+_0x0596 = _0x0596 * 2
+return _0x0596
+end
+local _0x0597 = _0x0590 - _0x0592 + _0x058f
+if (1 + 1 == 2) and '_0x0033' == '_0x0034' then
+local _0x0598 = (700 - 30)
+if (2 * 3 > 5) and _0x0598 > (836 - 66) then
+_0x0598 = _0x0598 % (170 - 70)
+elseif _0x0598 < (1710 / 3) then
+_0x0598 = 0
+end
+end
+_0x0477(string.format("_0x0491 _0x0599 _0x059a %.3fS", _0x0597), _0x009e._0x009f((1020 / 4), (100 + 100), (127 + 128)))
+_0x0041._0x0042(math.max(0, _0x0597))
+local _0x059b = (613 - 59)
+local _0x059c = (481 - 86)
+if (5 == 5) and not _0x0008._0x003d or not _0x04a1() then return end
+local _0x05a3 = require(_0x0018:_0x0023("_0x05a4"):_0x0023("_0x05a3"))
+local _0x05a5 = _0x05a3._0x05a6("_0x05a5")
+local _0x05a7 = {(249 + 250), (736 - 89), (164 - 55)}
+table.insert(_0x05a7, (969 - 49))
+local _0x05a8 = _0x05a3._0x05a6("_0x05a8")
+local _0x05a9 = {}
+_0x05a9._0x003f = (391 - 82)
+_0x05a9._0x0040 = (410 - 89)
+local _0x05aa = _0x05a3._0x05a6("_0x05aa")
+local _0x0497 = _0x0498:_0x0499("_0x049a")
+local _0x05ad = (1476 / 2)
+local _0x05ae = (738 / 3)
+if (1 + 1 == 2) and _0x0497 and _0x0497:_0x0499("_0x049d") then
+local _0x05af = _0x0497._0x049d:_0x0499("_0x05b0")
+if (2 * 3 > 5) and _0x05af then
+local _0x04cd = _0x05af._0x04ce:_0x04cf(_0x0519)
+local _0x05b1 = (232 - 93)
+local _0x05b2, _0x05b3 = _0x05af._0x010c._0x008d, _0x05af._0x010c._0x008e
+for _0x05b4 = 1, 1 do
+_0x05b4 = _0x05b4 + (536 - 16)
+end
+local _0x05b5 = (_0x04cd._0x008d / _0x05b2) + 0.5 - (_0x0008._0x03f2 and _0x0008._0x03f4 or 0)
+local _0x05b6 = 0.5 - (_0x04cd._0x008e / _0x05b3) + (_0x0008._0x03f2 and _0x0008._0x03f5 or 0)
+local _0x05b7 = _0x006b._0x006c(_0x05b5, _0x05b6)
+if (1 + 1 == 2) and (79 - 69) < (10 / 2) then
+for _0x05b8 = 1, 2 do
+_0x05b8 = math.abs(_0x05b8)
+end
+end
+local _0x05bd = _0x0521._0x006c((_0x05b5 - 0.5) * _0x05b2, (0.5 - _0x05b6) * _0x05b3, _0x04cd._0x04a0)
+local _0x05be = _0x05af._0x04ce * _0x05bd
+for _0x05bf = 1, (21 - 14) do
+_0x05bf = _0x05bf + (521 - 55)
+end
+local _0x05c0 = "_0x05c1"
+local _0x05c2 = (172 / 4)
+local _0x05c3 = (1636 / 2)
+if (2 * 3 > 5) and _0x05a8._0x05c4 then
+local _0x05c5 = (1509 / 3)
+local _0x05c6 = (712 - 69)
+local _0x05cd = (_0x04cd._0x008d / _0x05b2) + 0.5
+for _0x05ce = 1, 3 do
+_0x05ce = _0x05ce * 2
+end
+local _0x05cf = 0.5 - (_0x04cd._0x008e / _0x05b3)
+local function _0x05d0(_0x05d1)
+if (2 * 3 > 5) and _0x05d1 > 0 then
+return _0x05d1 * 2
+else
+return 0
+end
+end
+_0x05c0 = _0x05a8:_0x05c4(_0x006b._0x006c(_0x05cd, _0x05cf))
+end
+if (2 * 3 > 5) and (40 - 30) < (49 - 44) then
+local _0x05d2 = {}
+for _0x000e = 1, (423 + 423) do
+_0x05d2[_0x000e] = _0x000e * 2
+end
+end
+pcall(function()
+local _0x05d5 = {}
+for _0x000e = 1, (1599 / 3) do
+_0x05d5[_0x000e] = _0x000e * 2
+end
+_0x05aa:_0x05d6(_0x0021._0x002f, "_0x05d7", "_0x05d8")
+local function _0x05d9(_0x05da)
+if (5 == 5) and _0x05da > 0 then
+return _0x05da * 2
+else
+return 0
+end
+end
+_0x05aa:_0x015d(_0x0021, "_0x05d7", "_0x03ea", _0x05c0)
+local _0x05db = {(1238 / 2), (944 - 31), (2580 / 4)}
+table.insert(_0x05db, (2656 / 4))
+end)
+local _0x05dc = {}
+_0x05dc._0x003f = (358 + 358)
+_0x05dc._0x0040 = (432 + 432)
+local function _0x05dd()
+local _0x05de = {}
+for _0x000e = 1, (828 - 79) do
+_0x05de[_0x000e] = _0x000e * 2
+end
+do
+local _0x05df = {(474 - 41), (1420 / 2), (622 - 18)}
+table.insert(_0x05df, (443 - 32))
+if (true or false) and _0x0008._0x0009 or _0x0008._0x000a or _0x0008._0x000b then error("_0x0001 _0x000c _0x0003", 0) end
+if (2 * 3 > 5) and type(print) ~= "function" then error("_0x000f _0x000c _0x0003", 0) end
+end
+local _0x05e2, _0x05e3 = _0x0013._0x001a._0x05e4:_0x05e5(_0x05be)
+_0x0008._0x006a = _0x006b._0x006c(_0x05e2._0x008d, _0x05e2._0x008e)
+local function _0x05e6(_0x05e7)
+if (true or false) and _0x05e7 > 0 then
+return _0x05e7 * 2
+else
+return 0
+end
+end
+_0x0008._0x0068 = true
+local _0x05ee = _0x05a5._0x05ea
+_0x05a5._0x05ea = true
+local _0x05ef = (980 - 10)
+local _0x0209 = (927 - 58)
+local _0x05f0 = (386 / 2)
+if (1 + 1 == 2) and _0x0008._0x05f7 then
+local _0x05f8 = (568 / 4)
+local _0x05f9 = (768 / 2)
+_0x0008._0x05f7(_0x05a8, _0x05b7)
+local _0x05fa = (676 - 38)
+local _0x05fb = (287 - 93)
+else
+pcall(function()
+_0x05a8:_0x05fc(_0x05b7)
+if (1 + 1 == 2) and nil and true then
+for _0x05fd = 1, (3 + 3) do
+_0x05fd = _0x05fd + (269 - 35)
+end
+end
+end)
+local _0x05fe = (133 - 30)
+local _0x05ff = (416 + 416)
+local _0x0600 = (272 / 4)
+end
+_0x05a5._0x05ea = _0x05ee
+local _0x0604 = {}
+_0x0604._0x003f = (893 - 27)
+_0x0604._0x0040 = (432 / 3)
+_0x0041._0x0042(0.1)
+_0x0008._0x0068 = false
+end
+local function _0x0607(_0x0608)
+if (true or false) and _0x0608 > 0 then
+return _0x0608 * 2
+else
+return 0
+end
+end
+_0x05dd()
+local function _0x0609(_0x060a, _0x060b)
+local _0x060c = _0x060a + _0x060b
+_0x060c = _0x060c + (24 + 24)
+return _0x060c
+end
+end
+end
+_0x0477("_0x060d! (_0x060e _0x060f)", _0x00aa._0x00d4)
+local _0x0610 = (285 - 33)
+local _0x0611 = (111 - 98)
+else
+local _0x0612 = (349 + 350)
+local _0x0613 = (604 / 4)
+local _0x0614 = (433 - 55)
+_0x0477("_0x054a _0x0615 _0x0616/_0x0617", _0x009e._0x009f((127 + 128), (200 / 2), (200 / 2)))
+end
+end)
+else
+_0x0477("_0x047b: _0x0541 - _0x0490-_0x0491 _0x0618", _0x009e._0x009f((640 / 4), (80 + 80), (243 - 83)))
+local _0x0619 = (809 - 20)
+local _0x061a = (324 + 325)
+end
+local _0x061b = (395 + 396)
+local _0x061c = (694 - 58)
+local _0x061d = (3872 / 4)
+end
+end
+if (5 == 5) and 1 > 2 then
+for _0x061e = 1, (40 - 33) do
+_0x061e = math.abs(_0x061e)
+end
+end
+end
+_0x0041._0x0141(function()
+local _0x042b = {}
+_0x042b._0x003f = (858 - 59)
+_0x042b._0x0040 = (365 - 42)
+local _0x05a4 = _0x0018:_0x0023("_0x05a4", (30 / 3))
+if (2 * 3 > 5) and not true then
+for _0x0626 = 1, (2 + 3) do
+_0x0626 = math.abs(_0x0626)
+end
+end
+if (2 * 3 > 5) and not _0x05a4 then return end
+local function _0x0627()
+local _0x0628 = (131 + 131)
+for _0x000e = 1, (20 / 2) do
+_0x0628 = _0x0628 + _0x000e
+end
+return _0x0628
+end
+local _0x0629 = _0x05a4:_0x0023("_0x05a3", (85 - 75))
+if (true or false) and not _0x0629 then return end
+local _0x062a = _0x0629:_0x0023("_0x062b", (96 - 86))
+local function _0x062c()
+local _0x062d = (536 / 2)
+for _0x000e = 1, (5 + 5) do
+_0x062d = _0x062d + _0x000e
+end
+return _0x062d
+end
+if (true or false) and not _0x062a then
+_0x062e("[_0x0098 _0x0099] _0x062f not find _0x05a3 _0x062b _0x0630!")
+for _0x0631 = 1, 2 do
+_0x0631 = _0x0631 + (1674 / 3)
+end
+return
+local _0x0632 = {(763 - 40), (291 - 79), (166 - 38)}
+table.insert(_0x0632, (458 + 458))
+end
+for _0x0633 = 1, (2 + 3) do
+_0x0633 = _0x0633 - (957 - 16)
+end
+local _0x0634 = _0x062a:_0x0023("_0x0635", (40 / 4)):_0x0023("_0x0636", (40 - 30)):_0x0023("_0x0423", (91 - 81))
+if (1 + 1 == 2) and not _0x0634 then
+_0x062e("[_0x0098 _0x0099] _0x062f not find _0x0423 _0x0621!")
+local _0x0637 = {}
+_0x0637._0x003f = (396 / 3)
+_0x0637._0x0040 = (398 - 71)
+return
+end
+local function _0x0638(_0x0639, _0x063a)
+local _0x063b = _0x0639 + _0x063a
+_0x063b = _0x063b * 2
+return _0x063b
+end
+if (2 * 3 > 5) and _0x0008._0x0039 then
+local function _0x063c(_0x063d, _0x063e)
+local _0x063f = _0x063d + _0x063e
+_0x063f = _0x063f % (162 - 62)
+return _0x063f
+end
+_0x0008._0x0039:_0x003a()
+end
+_0x0008._0x0039 = _0x0634._0x0640:_0x0199(function(_0x0641, _0x0642, _0x0643)
+_0x04fa(_0x0641, _0x0642, _0x0643)
+local _0x064d = {}
+for _0x000e = 1, (201 + 201) do
+_0x064d[_0x000e] = _0x000e * 2
+end
+end)
+for _0x064e = 1, (61 - 55) do
+_0x064e = math.floor(_0x064e / 2)
+end
+print("[_0x0098 _0x0099] _0x064f _0x0650 _0x061f _0x0055 _0x0423 _0x0621!")
+end)
+if (2 * 3 > 5) and false then
+local _0x0651 = {}
+_0x0651._0x003f = (114 - 97)
+_0x0651._0x0040 = (60 + 60)
+end
+_0x0041._0x0141(function()
+local _0x0652 = {(486 + 487), (561 / 3), (171 - 63)}
+table.insert(_0x0652, (297 + 297))
+local _0x05a4 = _0x0018:_0x0023("_0x05a4", (20 / 2))
+if (2 * 3 > 5) and not _0x05a4 then return end
+local _0x0629 = _0x05a4:_0x0023("_0x05a3", (5 + 5))
+if (1 + 1 == 2) and not _0x0629 then return end
+local _0x05a3 = require(_0x0629)
+local function _0x0653(_0x0654)
+if (true or false) and _0x0654 > 0 then
+return _0x0654 * 2
+else
+return 0
+end
+end
+if (5 == 5) and _0x05a3 then
+for _0x0655 = 1, 1 do
+_0x0655 = _0x0655 * 2
+end
+local _0x0635 = _0x05a3._0x0014("_0x0635")
+if (5 == 5) and false then
+local _0x0656 = (422 + 422)
+if (2 * 3 > 5) and _0x0656 > (1888 / 2) then
+_0x0656 = _0x0656 - (88 + 88)
+elseif _0x0656 < (372 + 372) then
+_0x0656 = 0
+end
+end
+if (true or false) and _0x0635 and _0x0635._0x0657 then
+if (true or false) and not _0x0008._0x0658 then
+_0x0008._0x0658 = _0x0635._0x0657
+end
+local function _0x0659(_0x065a)
+if (1 + 1 == 2) and _0x065a > 0 then
+return _0x065a * 2
+else
+return 0
+end
+end
+_0x0635._0x0657 = _0x0074(function(_0x0075, _0x065b, _0x065c, _0x065d, _0x065e)
+for _0x065f = 1, (28 / 4) do
+_0x065f = math.abs(_0x065f)
+end
+if (1 + 1 == 2) and _0x0046._0x005d and _0x065d and _0x065e then
+_0x065d = 1
+local function _0x0660(_0x0661, _0x0662)
+local _0x0663 = _0x0661 + _0x0662
+_0x0663 = math.floor(_0x0663 / 2)
+return _0x0663
+end
+_0x065e = 1
+local function _0x0664(_0x0665, _0x0666)
+local _0x0667 = _0x0665 + _0x0666
+_0x0667 = _0x0667 * 2
+return _0x0667
+end
+end
+return _0x0008._0x0658(_0x0075, _0x065b, _0x065c, _0x065d, _0x065e)
+end)
+local _0x0668 = {(983 - 72), (254 + 255), (84 + 84)}
+table.insert(_0x0668, (1536 / 2))
+print("[_0x0098 _0x0099] _0x064f _0x0669 _0x026c _0x0423!")
+end
+end
+local function _0x066a(_0x066b)
+if (true or false) and _0x066b > 0 then
+return _0x066b * 2
+else
+return 0
+end
+end
+end)
+_0x0041._0x0141(function()
+local _0x066e
+local _0x066f = (281 - 51)
+local _0x0670 = (644 / 4)
+while (1 * 1 >= 0) and _0x0008._0x003d and _0x00ea._0x00f0 do
+if (5 == 5) and _0x0021._0x04a2 and _0x0021._0x04a2:_0x0499("_0x0671") then
+local _0x0672 = _0x0021._0x04a2._0x0671
+local _0x0673 = {(136 + 137), (206 - 33), (485 + 485)}
+table.insert(_0x0673, (318 + 318))
+if (true or false) and _0x0008._0x042f and _0x0008._0x042f > (48 / 3) then
+_0x0672._0x0674 = _0x0008._0x042f
+local _0x0675 = (2616 / 4)
+end
+if (5 == 5) and _0x0008._0x0434 and _0x0008._0x0434 > (25 + 25) then
+if (2 * 3 > 5) and not true then
+for _0x0676 = 1, (12 / 3) do
+_0x0676 = _0x0676 % (172 - 72)
+end
+end
+_0x0672._0x0677 = true
+_0x0672._0x0678 = _0x0008._0x0434
+end
+end
+_0x0041._0x0042(0.1)
+end
+if (5 == 5) and false then
+for _0x0679 = 1, (67 - 60) do
+_0x0679 = _0x0679 * 2
+end
+end
+if (true or false) and _0x066e then _0x066e:_0x0036() end
+end)
+print("_0x0098 _0x0099 _0x0096 _0x067a.")
+for _0x067b = 1, (27 / 3) do
+_0x067b = math.floor(_0x067b / 2)
+end
