@@ -1,1 +1,1437 @@
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+-- Fallback for free executors that don't support C closures
+local newcclosure = newcclosure or function(f) return f end
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer and LocalPlayer:WaitForChild("PlayerGui") or CoreGui
+
+--------------------------------------------------------------------
+-- CLEANUP OLD UIs
+--------------------------------------------------------------------
+for _, child in ipairs(PlayerGui:GetChildren()) do
+    if child.Name == "MoonHubUI" or child.Name == "MoonHubToggleUI" or child.Name == "Moon1xHitUI" or child.Name == "CrimsonHitUI" then
+        child:Destroy()
+    end
+end
+
+--------------------------------------------------------------------
+-- CLEANUP OLD CONNECTIONS
+--------------------------------------------------------------------
+if _G.CrimsonPitchConn then _G.CrimsonPitchConn:Disconnect(); _G.CrimsonPitchConn = nil end
+if _G.CrimsonInputConn then _G.CrimsonInputConn:Disconnect(); _G.CrimsonInputConn = nil end
+if _G.CrimsonActiveLoop then _G.CrimsonActiveLoop = false end
+
+task.wait(0.1)
+_G.CrimsonActiveLoop = true
+
+--------------------------------------------------------------------
+-- SETTINGS & HOOKS
+--------------------------------------------------------------------
+local Options = {
+    Predictor = false,
+    AutoSwing = false,
+    SwingDelay = 0.083, -- Exactly how long the animation takes to reach HitPoint (83ms)
+    StrikeboxOnly = false,
+    AutoPitch = false
+}
+
+-- Cursor Locking Hook with Jitter to bypass 'maiz' aimbot anti-cheat
+_G.AutoLockTarget = false
+_G.AutoLockScreenPos = Vector2.new(0, 0)
+if not _G.hookedMouseLocation then
+    _G.hookedMouseLocation = true
+    
+    local oldNamecall
+    oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if method == "GetMouseLocation" and typeof(self) == "Instance" and self.ClassName == "UserInputService" and _G.AutoLockTarget then
+            return _G.AutoLockScreenPos
+        end
+        
+        -- Prevent tail-call obfuscator bugs
+        local a, b, c, d, e = oldNamecall(self, ...)
+        return a, b, c, d, e
+    end))
+    
+    local oldIndex
+    oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
+        if _G.AutoLockTarget and not checkcaller() then
+            local isMouse = false
+            pcall(function() isMouse = (typeof(self) == "Instance" and self.ClassName == "Mouse") end)
+            if isMouse then
+                if key == "X" then return _G.AutoLockScreenPos.X end
+                if key == "Y" then return _G.AutoLockScreenPos.Y end
+            end
+        end
+        
+        -- Prevent tail-call obfuscator bugs
+        local result = oldIndex(self, key)
+        return result
+    end))
+end
+
+--------------------------------------------------------------------
+-- UI LIBRARY (MOON HUB THEME)
+--------------------------------------------------------------------
+local AvailableThemes = {
+    Default = Color3.fromRGB(240, 240, 240),
+    Crimson = Color3.fromRGB(220, 40, 40),
+    Aqua = Color3.fromRGB(40, 220, 220),
+    Purple = Color3.fromRGB(120, 80, 200)
+}
+
+-- Try to load saved theme
+local SavedData = { Theme = "Default", LightMode = false }
+pcall(function()
+    if isfile and readfile and isfile("MoonHubSavedTheme.json") then
+        local HttpService = game:GetService("HttpService")
+        local loaded = HttpService:JSONDecode(readfile("MoonHubSavedTheme.json"))
+        if loaded then SavedData = loaded end
+    elseif _G.MoonHubSavedTheme then
+        SavedData = _G.MoonHubSavedTheme
+    end
+end)
+
+local SelectedTheme = SavedData.Theme or "Default"
+local IsLightMode = SavedData.LightMode or false
+
+local function saveTheme()
+    SavedData.Theme = SelectedTheme
+    SavedData.LightMode = IsLightMode
+    pcall(function()
+        if writefile then
+            local HttpService = game:GetService("HttpService")
+            writefile("MoonHubSavedTheme.json", HttpService:JSONEncode(SavedData))
+        end
+    end)
+    _G.MoonHubSavedTheme = SavedData
+end
+
+local Theme = {
+    Background = IsLightMode and Color3.fromRGB(240, 240, 240) or Color3.fromRGB(12, 12, 12),
+    Sidebar = IsLightMode and Color3.fromRGB(225, 225, 225) or Color3.fromRGB(16, 16, 16),
+    SectionBg = IsLightMode and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(18, 18, 18),
+    Border = IsLightMode and Color3.fromRGB(200, 200, 200) or Color3.fromRGB(28, 28, 28),
+    Accent = AvailableThemes[SelectedTheme] or AvailableThemes.Default,
+    TextPrimary = IsLightMode and Color3.fromRGB(20, 20, 20) or Color3.fromRGB(240, 240, 240),
+    TextSecondary = IsLightMode and Color3.fromRGB(100, 100, 100) or Color3.fromRGB(150, 150, 150),
+    ItemBg = IsLightMode and Color3.fromRGB(210, 210, 210) or Color3.fromRGB(24, 24, 24),
+    ItemHover = IsLightMode and Color3.fromRGB(190, 190, 190) or Color3.fromRGB(32, 32, 32),
+    Font = Enum.Font.Gotham,
+    FontMedium = Enum.Font.GothamMedium,
+    FontBold = Enum.Font.GothamBold
+}
+
+local UI = {
+    Tabs = {},
+    ActiveTab = nil,
+    IsVisible = true,
+}
+
+local isMobile = true
+local defaultWidth = isMobile and 450 or 600
+local defaultHeight = isMobile and 280 or 400
+local hiddenWidth = isMobile and 410 or 560
+local hiddenHeight = isMobile and 240 or 360
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MoonHubUI"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+
+-- Main container (responsive scaling)
+local MainContainer = Instance.new("CanvasGroup")
+MainContainer.Name = "MainContainer"
+MainContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+MainContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainContainer.Size = UDim2.new(0, defaultWidth, 0, defaultHeight)
+MainContainer.BackgroundColor3 = Theme.Background
+MainContainer.BorderSizePixel = 0
+MainContainer.ClipsDescendants = true
+MainContainer.Parent = ScreenGui
+
+Instance.new("UICorner", MainContainer).CornerRadius = UDim.new(0, 8)
+local MainStroke = Instance.new("UIStroke", MainContainer)
+MainStroke.Color = Theme.Border
+MainStroke.Thickness = 1
+
+-- Drop shadow
+local Shadow = Instance.new("ImageLabel")
+Shadow.Name = "Shadow"
+Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+Shadow.Size = UDim2.new(1, 40, 1, 40)
+Shadow.BackgroundTransparency = 1
+Shadow.Image = "rbxassetid://131692000"
+Shadow.ImageColor3 = Color3.new(0, 0, 0)
+Shadow.ImageTransparency = 0.4
+Shadow.ScaleType = Enum.ScaleType.Slice
+Shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+Shadow.ZIndex = -1
+Shadow.Parent = MainContainer
+
+-- Ambient Moon Particles
+local ParticleContainer = Instance.new("Frame")
+ParticleContainer.Name = "ParticleContainer"
+ParticleContainer.Size = UDim2.new(1, 0, 1, -36)
+ParticleContainer.Position = UDim2.new(0, 0, 0, 36)
+ParticleContainer.BackgroundTransparency = 1
+ParticleContainer.ZIndex = 0
+ParticleContainer.ClipsDescendants = true
+ParticleContainer.Parent = MainContainer
+
+task.spawn(function()
+        local PatternFrame = Instance.new("Frame")
+        PatternFrame.Size = UDim2.new(2, 0, 2, 0)
+        PatternFrame.Position = UDim2.new(0, 0, 0, 0)
+        PatternFrame.BackgroundTransparency = 1
+        PatternFrame.Parent = ParticleContainer
+
+        for x = 0, 10 do
+            for y = 0, 10 do
+                local moon = Instance.new("ImageLabel")
+                local size = 28
+                moon.Size = UDim2.new(0, size, 0, size)
+                moon.Position = UDim2.new(x * 0.15, 0, y * 0.15, 0)
+                moon.BackgroundTransparency = 1
+                moon.Image = "rbxassetid://77005149022898"
+                moon.ImageColor3 = Theme.Accent
+                moon.ImageTransparency = 0.25
+                moon.ZIndex = 0
+                moon.Parent = PatternFrame
+            end
+        end
+        
+        while _G.CrimsonActiveLoop and ScreenGui.Parent do
+            PatternFrame.Position = UDim2.new(0, 0, 0, 0)
+            local t = TweenService:Create(PatternFrame, TweenInfo.new(12, Enum.EasingStyle.Linear), {
+                Position = UDim2.new(-0.3, 0, -0.3, 0)
+            })
+            t:Play()
+            t.Completed:Wait()
+        end
+end)
+
+-- Title Bar (Top)
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 36)
+TitleBar.BackgroundTransparency = 1
+TitleBar.ZIndex = 5
+TitleBar.Parent = MainContainer
+
+local TitleLogo = Instance.new("ImageLabel")
+TitleLogo.Name = "TitleLogo"
+TitleLogo.Size = UDim2.new(0, 26, 0, 26)
+TitleLogo.Position = UDim2.new(0, 12, 0.5, -13)
+TitleLogo.BackgroundTransparency = 1
+TitleLogo.Image = "rbxassetid://103314343492991"
+TitleLogo.ImageColor3 = Theme.Accent
+TitleLogo.ZIndex = 5
+TitleLogo.Parent = TitleBar
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Name = "TitleText"
+TitleText.Size = UDim2.new(1, -50, 1, 0)
+TitleText.Position = UDim2.new(0, 44, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "MOON HUB"
+TitleText.TextColor3 = Theme.TextPrimary
+TitleText.Font = Theme.FontMedium
+TitleText.TextSize = 12
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.ZIndex = 5
+TitleText.Parent = TitleBar
+
+-- Close Button
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Size = UDim2.new(0, 36, 0, 36)
+CloseBtn.Position = UDim2.new(1, -36, 0, 0)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Theme.TextSecondary
+CloseBtn.Font = Theme.FontBold
+CloseBtn.TextSize = 14
+CloseBtn.ZIndex = 5
+CloseBtn.Parent = TitleBar
+
+CloseBtn.MouseEnter:Connect(function()
+    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Color3.new(1, 1, 1)}):Play()
+end)
+CloseBtn.MouseLeave:Connect(function()
+    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
+end)
+
+local function toggleUI(state)
+    UI.IsVisible = state
+    if state then
+        ScreenGui.Enabled = true
+        TweenService:Create(MainContainer, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, defaultWidth, 0, defaultHeight),
+            GroupTransparency = 0,
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
+    else
+        local t = TweenService:Create(MainContainer, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, hiddenWidth, 0, hiddenHeight),
+            GroupTransparency = 1,
+            Position = UDim2.new(0.5, 0, 0.5, 30)
+        })
+        t:Play()
+        t.Completed:Connect(function()
+            if not UI.IsVisible then ScreenGui.Enabled = false end
+        end)
+    end
+end
+
+CloseBtn.MouseButton1Click:Connect(function()
+    toggleUI(false)
+end)
+
+if isMobile then
+    local ToggleGui = Instance.new("ScreenGui")
+    ToggleGui.Name = "MoonHubToggleUI"
+    ToggleGui.Parent = PlayerGui
+    ToggleGui.ResetOnSpawn = false
+    ToggleGui.IgnoreGuiInset = true
+
+    local MobileToggleBtn = Instance.new("ImageButton")
+    MobileToggleBtn.Name = "MobileToggleBtn"
+    MobileToggleBtn.Size = UDim2.new(0, 45, 0, 45)
+    MobileToggleBtn.Position = UDim2.new(0.5, -22, 0, 10)
+    MobileToggleBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
+    MobileToggleBtn.Image = "rbxassetid://103314343492991"
+    MobileToggleBtn.ImageColor3 = Theme.Accent
+    MobileToggleBtn.Active = true
+    MobileToggleBtn.Draggable = true
+    MobileToggleBtn.Parent = ToggleGui
+    
+    Instance.new("UICorner", MobileToggleBtn).CornerRadius = UDim.new(0, 8)
+    local stroke = Instance.new("UIStroke", MobileToggleBtn)
+    stroke.Color = Theme.Border
+    stroke.Thickness = 1
+    
+    MobileToggleBtn.MouseButton1Click:Connect(function()
+        toggleUI(not UI.IsVisible)
+    end)
+end
+
+_G.CrimsonInputConn = UserInputService.InputBegan:Connect(function(input, gp)
+    if not gp then
+        if input.KeyCode == Enum.KeyCode.Zero then
+            toggleUI(not UI.IsVisible)
+        end
+    end
+end)
+
+local RunService = game:GetService("RunService")
+local dragging, dragInput, dragStart, startPos
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainContainer.Position
+    end
+end)
+TitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+RunService.RenderStepped:Connect(function()
+    if dragging and dragInput then
+        local delta = dragInput.Position - dragStart
+        local targetPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        MainContainer.Position = MainContainer.Position:Lerp(targetPos, 0.25)
+    end
+end)
+
+local TopSeparator = Instance.new("Frame")
+TopSeparator.Size = UDim2.new(1, 0, 0, 1)
+TopSeparator.Position = UDim2.new(0, 0, 0, 36)
+TopSeparator.BackgroundColor3 = Theme.Border
+TopSeparator.BorderSizePixel = 0
+TopSeparator.ZIndex = 5
+TopSeparator.Parent = MainContainer
+
+-- Content Container
+local ContentBody = Instance.new("Frame")
+ContentBody.Name = "ContentBody"
+ContentBody.Size = UDim2.new(1, 0, 1, -37)
+ContentBody.Position = UDim2.new(0, 0, 0, 37)
+ContentBody.BackgroundTransparency = 1
+ContentBody.Parent = MainContainer
+
+-- Sidebar
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 140, 1, 0)
+Sidebar.BackgroundColor3 = Theme.Sidebar
+Sidebar.BorderSizePixel = 0
+Sidebar.ZIndex = 2
+Sidebar.Parent = ContentBody
+
+local SidebarSeparator = Instance.new("Frame")
+SidebarSeparator.Size = UDim2.new(0, 1, 1, 0)
+SidebarSeparator.Position = UDim2.new(0, 140, 0, 0)
+SidebarSeparator.BackgroundColor3 = Theme.Border
+SidebarSeparator.BorderSizePixel = 0
+SidebarSeparator.ZIndex = 2
+SidebarSeparator.Parent = ContentBody
+
+local TabList = Instance.new("UIListLayout")
+TabList.SortOrder = Enum.SortOrder.LayoutOrder
+TabList.Padding = UDim.new(0, 4)
+TabList.Parent = Sidebar
+
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 12)
+TabPadding.PaddingLeft = UDim.new(0, 8)
+TabPadding.PaddingRight = UDim.new(0, 8)
+TabPadding.Parent = Sidebar
+
+-- Pages Container
+local PagesContainer = Instance.new("Frame")
+PagesContainer.Name = "PagesContainer"
+PagesContainer.Size = UDim2.new(1, -140, 1, 0)
+PagesContainer.Position = UDim2.new(0, 140, 0, 0)
+PagesContainer.BackgroundTransparency = 1
+PagesContainer.ZIndex = 1
+PagesContainer.Parent = ContentBody
+
+local function CreateTab(name)
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Name = name
+    TabBtn.Size = UDim2.new(1, 0, 0, 32)
+    TabBtn.BackgroundColor3 = Theme.Sidebar
+    TabBtn.BackgroundTransparency = 1
+    TabBtn.Text = ""
+    TabBtn.AutoButtonColor = false
+    TabBtn.Parent = Sidebar
+    Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 6)
+
+    local TabIndicator = Instance.new("Frame")
+    TabIndicator.Size = UDim2.new(0, 3, 0, 0)
+    TabIndicator.Position = UDim2.new(0, 0, 0.5, 0)
+    TabIndicator.AnchorPoint = Vector2.new(0, 0.5)
+    TabIndicator.BackgroundColor3 = Theme.Accent
+    TabIndicator.BorderSizePixel = 0
+    TabIndicator.Parent = TabBtn
+    Instance.new("UICorner", TabIndicator).CornerRadius = UDim.new(1, 0)
+
+    local TabLabel = Instance.new("TextLabel")
+    TabLabel.Size = UDim2.new(1, -16, 1, 0)
+    TabLabel.Position = UDim2.new(0, 12, 0, 0)
+    TabLabel.BackgroundTransparency = 1
+    TabLabel.Text = name
+    TabLabel.TextColor3 = Theme.TextSecondary
+    TabLabel.Font = Theme.FontMedium
+    TabLabel.TextSize = 13
+    TabLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TabLabel.Parent = TabBtn
+
+    local Page = Instance.new("ScrollingFrame")
+    Page.Name = name .. "Page"
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.BorderSizePixel = 0
+    Page.ScrollBarThickness = 2
+    Page.ScrollBarImageColor3 = Theme.Border
+    Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    Page.Visible = false
+    Page.Parent = PagesContainer
+
+    local PageLayout = Instance.new("UIListLayout")
+    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    PageLayout.Padding = UDim.new(0, 12)
+    PageLayout.FillDirection = Enum.FillDirection.Vertical
+    PageLayout.Parent = Page
+
+    local PagePadding = Instance.new("UIPadding")
+    PagePadding.PaddingTop = UDim.new(0, 16)
+    PagePadding.PaddingLeft = UDim.new(0, 16)
+    PagePadding.PaddingRight = UDim.new(0, 16)
+    PagePadding.PaddingBottom = UDim.new(0, 16)
+    PagePadding.Parent = Page
+
+    local tabInfo = {Button = TabBtn, Page = Page, Indicator = TabIndicator, Label = TabLabel}
+    table.insert(UI.Tabs, tabInfo)
+
+    TabBtn.MouseEnter:Connect(function()
+        if UI.ActiveTab ~= tabInfo then
+            TweenService:Create(TabLabel, TweenInfo.new(0.2), {TextColor3 = Theme.TextPrimary}):Play()
+            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.5, BackgroundColor3 = Theme.ItemHover}):Play()
+        end
+    end)
+
+    TabBtn.MouseLeave:Connect(function()
+        if UI.ActiveTab ~= tabInfo then
+            TweenService:Create(TabLabel, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
+            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+        end
+    end)
+
+    TabBtn.MouseButton1Click:Connect(function()
+        if UI.ActiveTab == tabInfo then return end
+        
+        if UI.ActiveTab then
+            TweenService:Create(UI.ActiveTab.Label, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
+            TweenService:Create(UI.ActiveTab.Button, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(UI.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0, 0)}):Play()
+            UI.ActiveTab.Page.Visible = false
+        end
+
+        UI.ActiveTab = tabInfo
+        UI.ActiveTab.Page.Visible = true
+        TweenService:Create(UI.ActiveTab.Label, TweenInfo.new(0.2), {TextColor3 = Theme.Accent}):Play()
+        TweenService:Create(UI.ActiveTab.Button, TweenInfo.new(0.2), {BackgroundTransparency = 0, BackgroundColor3 = Theme.ItemBg}):Play()
+        TweenService:Create(UI.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0, 16)}):Play()
+    end)
+
+    -- Auto select first tab
+    if #UI.Tabs == 1 then
+        UI.ActiveTab = tabInfo
+        UI.ActiveTab.Page.Visible = true
+        TabLabel.TextColor3 = Theme.Accent
+        TabBtn.BackgroundTransparency = 0
+        TabBtn.BackgroundColor3 = Theme.ItemBg
+        TabIndicator.Size = UDim2.new(0, 3, 0, 16)
+    end
+
+    local SectionFuncs = {}
+    
+    function SectionFuncs:CreateSection(sectionName)
+        local Section = Instance.new("Frame")
+        Section.Name = sectionName
+        Section.Size = UDim2.new(1, 0, 0, 0)
+        Section.AutomaticSize = Enum.AutomaticSize.Y
+        Section.BackgroundColor3 = Theme.SectionBg
+        Section.BorderSizePixel = 0
+        Section.Parent = Page
+        Instance.new("UICorner", Section).CornerRadius = UDim.new(0, 6)
+        
+        local SectionStroke = Instance.new("UIStroke", Section)
+        SectionStroke.Color = Theme.Border
+        SectionStroke.Thickness = 1
+
+        local SectionLayout = Instance.new("UIListLayout")
+        SectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        SectionLayout.Padding = UDim.new(0, 0)
+        SectionLayout.Parent = Section
+
+        local SectionTitle = Instance.new("TextLabel")
+        SectionTitle.Size = UDim2.new(1, -24, 0, 36)
+        SectionTitle.Position = UDim2.new(0, 12, 0, 0)
+        SectionTitle.BackgroundTransparency = 1
+        SectionTitle.Text = "  " .. sectionName
+        SectionTitle.TextColor3 = Theme.TextPrimary
+        SectionTitle.Font = Theme.FontMedium
+        SectionTitle.TextSize = 13
+        SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+        SectionTitle.Parent = Section
+        
+        local Sep = Instance.new("Frame")
+        Sep.Size = UDim2.new(1, 0, 0, 1)
+        Sep.BackgroundColor3 = Theme.Border
+        Sep.BorderSizePixel = 0
+        Sep.Parent = Section
+
+        local SectionContent = Instance.new("Frame")
+        SectionContent.Size = UDim2.new(1, 0, 0, 0)
+        SectionContent.AutomaticSize = Enum.AutomaticSize.Y
+        SectionContent.BackgroundTransparency = 1
+        SectionContent.Parent = Section
+        
+        local ContentLayout = Instance.new("UIListLayout")
+        ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ContentLayout.Parent = SectionContent
+
+        local ItemFuncs = {}
+
+        function ItemFuncs:CreateButton(name, callback)
+            local BtnFrame = Instance.new("TextButton")
+            BtnFrame.Size = UDim2.new(1, 0, 0, 36)
+            BtnFrame.BackgroundTransparency = 1
+            BtnFrame.Text = ""
+            BtnFrame.Parent = SectionContent
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -24, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.BackgroundTransparency = 1
+            Label.Text = name
+            Label.TextColor3 = Theme.TextPrimary
+            Label.Font = Theme.FontMedium
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Center
+            Label.Parent = BtnFrame
+            
+            local Bg = Instance.new("Frame")
+            Bg.Size = UDim2.new(1, -16, 1, -8)
+            Bg.Position = UDim2.new(0, 8, 0, 4)
+            Bg.BackgroundColor3 = Theme.ItemBg
+            Bg.ZIndex = -1
+            Bg.Parent = BtnFrame
+            Instance.new("UICorner", Bg).CornerRadius = UDim.new(0, 6)
+
+            BtnFrame.MouseEnter:Connect(function()
+                TweenService:Create(Bg, TweenInfo.new(0.2), {BackgroundColor3 = Theme.ItemHover}):Play()
+            end)
+            BtnFrame.MouseLeave:Connect(function()
+                TweenService:Create(Bg, TweenInfo.new(0.2), {BackgroundColor3 = Theme.ItemBg}):Play()
+            end)
+            BtnFrame.MouseButton1Click:Connect(callback)
+            return BtnFrame
+        end
+
+        function ItemFuncs:CreateToggle(name, default, callback)
+            local ToggleFrame = Instance.new("TextButton")
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
+            ToggleFrame.BackgroundTransparency = 1
+            ToggleFrame.Text = ""
+            ToggleFrame.AutoButtonColor = false
+            ToggleFrame.Parent = SectionContent
+            
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -60, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.BackgroundTransparency = 1
+            Label.Text = name
+            Label.TextColor3 = Theme.TextSecondary
+            Label.Font = Theme.Font
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = ToggleFrame
+            
+            local Pill = Instance.new("Frame")
+            Pill.Size = UDim2.new(0, 36, 0, 18)
+            Pill.AnchorPoint = Vector2.new(1, 0.5)
+            Pill.Position = UDim2.new(1, -12, 0.5, 0)
+            Pill.BackgroundColor3 = default and Theme.Accent or Theme.ItemBg
+            Pill.Parent = ToggleFrame
+            Instance.new("UICorner", Pill).CornerRadius = UDim.new(1, 0)
+            
+            local Knob = Instance.new("Frame")
+            Knob.Size = UDim2.new(0, 14, 0, 14)
+            Knob.AnchorPoint = Vector2.new(0, 0.5)
+            Knob.Position = default and UDim2.new(1, -16, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+            Knob.BackgroundColor3 = Color3.new(1, 1, 1)
+            Knob.Parent = Pill
+            Instance.new("UICorner", Knob).CornerRadius = UDim.new(1, 0)
+            
+            local state = default
+            
+            ToggleFrame.MouseButton1Click:Connect(function()
+                state = not state
+                TweenService:Create(Pill, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+                    BackgroundColor3 = state and Theme.Accent or Theme.ItemBg
+                }):Play()
+                TweenService:Create(Knob, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+                    Position = state and UDim2.new(1, -16, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+                }):Play()
+                TweenService:Create(Label, TweenInfo.new(0.2), {
+                    TextColor3 = state and Theme.TextPrimary or Theme.TextSecondary
+                }):Play()
+                
+                if state then
+                    for i = 1, 5 do
+                        local particle = Instance.new("Frame")
+                        particle.Size = UDim2.new(0, 8, 0, 8)
+                        particle.Position = UDim2.new(0.5, 0, 0.5, 0)
+                        particle.AnchorPoint = Vector2.new(0.5, 0.5)
+                        particle.BackgroundColor3 = Theme.Accent
+                        particle.BorderSizePixel = 0
+                        particle.ZIndex = 10
+                        Instance.new("UICorner", particle).CornerRadius = UDim.new(1, 0)
+                        particle.Parent = Pill
+                        
+                        local angle = math.rad(math.random(0, 360))
+                        local distance = math.random(18, 30)
+                        local goalPos = UDim2.new(0.5, math.cos(angle) * distance, 0.5, math.sin(angle) * distance)
+                        
+                        local ptween = TweenService:Create(particle, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+                            Position = goalPos,
+                            BackgroundTransparency = 1,
+                            Size = UDim2.new(0, 3, 0, 3)
+                        })
+                        ptween:Play()
+                        
+                        task.delay(0.5, function()
+                            if particle then particle:Destroy() end
+                        end)
+                    end
+                end
+                
+                callback(state)
+            end)
+
+            if default then
+                Label.TextColor3 = Theme.TextPrimary
+            end
+        end
+
+        function ItemFuncs:CreateStatusLabel(name, defaultText)
+            local StatusFrame = Instance.new("Frame")
+            StatusFrame.Size = UDim2.new(1, 0, 0, 40)
+            StatusFrame.BackgroundTransparency = 1
+            StatusFrame.Parent = SectionContent
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(0, 100, 1, 0)
+            Label.Position = UDim2.new(0, 12, 0, 0)
+            Label.BackgroundTransparency = 1
+            Label.Text = name
+            Label.TextColor3 = Theme.TextSecondary
+            Label.Font = Theme.Font
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = StatusFrame
+
+            local ValueLabel = Instance.new("TextLabel")
+            ValueLabel.Size = UDim2.new(1, -124, 1, 0)
+            ValueLabel.Position = UDim2.new(0, 112, 0, 0)
+            ValueLabel.BackgroundTransparency = 1
+            ValueLabel.Text = defaultText
+            ValueLabel.TextColor3 = Theme.TextPrimary
+            ValueLabel.Font = Theme.FontMedium
+            ValueLabel.TextSize = 12
+            ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+            ValueLabel.Parent = StatusFrame
+
+            local function update(newText, color)
+                ValueLabel.Text = newText
+                if color then
+                    TweenService:Create(ValueLabel, TweenInfo.new(0.2), {TextColor3 = color}):Play()
+                else
+                    ValueLabel.TextColor3 = Theme.TextPrimary
+                end
+            end
+            return update
+        end
+
+        function ItemFuncs:CreateSlider(name, min, max, default, callback, displayScale)
+            local SliderFrame = Instance.new("Frame")
+            SliderFrame.Size = UDim2.new(1, 0, 0, 48)
+            SliderFrame.BackgroundTransparency = 1
+            SliderFrame.Parent = SectionContent
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -60, 0, 18)
+            Label.Position = UDim2.new(0, 12, 0, 6)
+            Label.BackgroundTransparency = 1
+            Label.Text = name
+            Label.TextColor3 = Theme.TextSecondary
+            Label.Font = Theme.Font
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = SliderFrame
+
+            local ValueLabel = Instance.new("TextLabel")
+            ValueLabel.Size = UDim2.new(0, 40, 0, 18)
+            ValueLabel.Position = UDim2.new(1, -52, 0, 6)
+            ValueLabel.BackgroundTransparency = 1
+            ValueLabel.Text = tostring(default / (displayScale or 1))
+            ValueLabel.TextColor3 = Theme.TextPrimary
+            ValueLabel.Font = Theme.FontMedium
+            ValueLabel.TextSize = 12
+            ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+            ValueLabel.Parent = SliderFrame
+
+            local TrackArea = Instance.new("TextButton")
+            TrackArea.Size = UDim2.new(1, -24, 0, 12)
+            TrackArea.Position = UDim2.new(0, 12, 0, 28)
+            TrackArea.BackgroundTransparency = 1
+            TrackArea.Text = ""
+            TrackArea.Parent = SliderFrame
+
+            local Track = Instance.new("Frame")
+            Track.Size = UDim2.new(1, 0, 0, 4)
+            Track.AnchorPoint = Vector2.new(0, 0.5)
+            Track.Position = UDim2.new(0, 0, 0.5, 0)
+            Track.BackgroundColor3 = Theme.ItemBg
+            Track.Parent = TrackArea
+            Instance.new("UICorner", Track).CornerRadius = UDim.new(1, 0)
+
+            local Fill = Instance.new("Frame")
+            local pct = (default - min) / (max - min)
+            Fill.Size = UDim2.new(pct, 0, 1, 0)
+            Fill.BackgroundColor3 = Theme.Accent
+            Fill.Parent = Track
+            Instance.new("UICorner", Fill).CornerRadius = UDim.new(1, 0)
+
+            local Handle = Instance.new("Frame")
+            Handle.Size = UDim2.new(0, 12, 0, 12)
+            Handle.AnchorPoint = Vector2.new(0.5, 0.5)
+            Handle.Position = UDim2.new(pct, 0, 0.5, 0)
+            Handle.BackgroundColor3 = Color3.new(1, 1, 1)
+            Handle.Parent = Track
+            Instance.new("UICorner", Handle).CornerRadius = UDim.new(1, 0)
+
+            local dragging = false
+            local function updateSlider(input)
+                local pos = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
+                local value = math.floor(min + ((max - min) * pos))
+                
+                TweenService:Create(Fill, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+                TweenService:Create(Handle, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Position = UDim2.new(pos, 0, 0.5, 0)}):Play()
+                ValueLabel.Text = tostring(value / (displayScale or 1))
+                callback(value)
+            end
+
+            TrackArea.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    updateSlider(input)
+                end
+            end)
+
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragging = false
+                end
+            end)
+
+            UserInputService.InputChanged:Connect(function(input)
+                if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                    updateSlider(input)
+                end
+            end)
+
+            return SliderFrame
+        end
+
+        function ItemFuncs:CreateDropdown(name, options, default, callback)
+            local DropdownFrame = Instance.new("Frame")
+            DropdownFrame.Size = UDim2.new(1, 0, 0, 48)
+            DropdownFrame.BackgroundTransparency = 1
+            DropdownFrame.Parent = SectionContent
+
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1, -120, 0, 18)
+            Label.Position = UDim2.new(0, 12, 0, 15)
+            Label.BackgroundTransparency = 1
+            Label.Text = name
+            Label.TextColor3 = Theme.TextSecondary
+            Label.Font = Theme.Font
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = DropdownFrame
+
+            local SelectedBox = Instance.new("TextButton")
+            SelectedBox.Size = UDim2.new(0, 100, 0, 24)
+            SelectedBox.Position = UDim2.new(1, -112, 0, 12)
+            SelectedBox.BackgroundColor3 = Theme.ItemBg
+            SelectedBox.Text = ""
+            SelectedBox.AutoButtonColor = false
+            SelectedBox.Parent = DropdownFrame
+            Instance.new("UICorner", SelectedBox).CornerRadius = UDim.new(0, 4)
+
+            local SelectedText = Instance.new("TextLabel")
+            SelectedText.Size = UDim2.new(1, -20, 1, 0)
+            SelectedText.Position = UDim2.new(0, 8, 0, 0)
+            SelectedText.BackgroundTransparency = 1
+            SelectedText.Text = default
+            SelectedText.TextColor3 = Theme.TextPrimary
+            SelectedText.Font = Theme.Font
+            SelectedText.TextSize = 12
+            SelectedText.TextXAlignment = Enum.TextXAlignment.Left
+            SelectedText.Parent = SelectedBox
+
+            local Arrow = Instance.new("TextLabel")
+            Arrow.Size = UDim2.new(0, 20, 1, 0)
+            Arrow.Position = UDim2.new(1, -20, 0, 0)
+            Arrow.BackgroundTransparency = 1
+            Arrow.Text = "Ã¢â€“Â¼"
+            Arrow.TextColor3 = Theme.TextSecondary
+            Arrow.Font = Theme.Font
+            Arrow.TextSize = 10
+            Arrow.Parent = SelectedBox
+
+            local DropdownContainer = Instance.new("Frame")
+            DropdownContainer.Size = UDim2.new(0, 100, 0, 0)
+            DropdownContainer.Position = UDim2.new(1, -112, 0, 40)
+            DropdownContainer.BackgroundColor3 = Theme.ItemBg
+            DropdownContainer.ZIndex = 10
+            DropdownContainer.ClipsDescendants = true
+            DropdownContainer.Parent = DropdownFrame
+            Instance.new("UICorner", DropdownContainer).CornerRadius = UDim.new(0, 4)
+
+            local DropdownLayout = Instance.new("UIListLayout")
+            DropdownLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            DropdownLayout.Parent = DropdownContainer
+
+            local isOpen = false
+            local listSize = math.min(#options * 24, 120)
+
+            local function toggleDropdown()
+                isOpen = not isOpen
+                TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = isOpen and 180 or 0}):Play()
+                TweenService:Create(DropdownContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+                    Size = UDim2.new(0, 100, 0, isOpen and listSize or 0)
+                }):Play()
+                
+                if isOpen then
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 48 + listSize + 4)
+                else
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 48)
+                end
+            end
+
+            SelectedBox.MouseButton1Click:Connect(toggleDropdown)
+
+            for i, option in ipairs(options) do
+                local OptionBtn = Instance.new("TextButton")
+                OptionBtn.Size = UDim2.new(1, 0, 0, 24)
+                OptionBtn.BackgroundColor3 = Theme.ItemBg
+                OptionBtn.BackgroundTransparency = 1
+                OptionBtn.Text = "  " .. option
+                OptionBtn.TextColor3 = Theme.TextSecondary
+                OptionBtn.Font = Theme.Font
+                OptionBtn.TextSize = 12
+                OptionBtn.TextXAlignment = Enum.TextXAlignment.Left
+                OptionBtn.AutoButtonColor = false
+                OptionBtn.ZIndex = 11
+                OptionBtn.Parent = DropdownContainer
+
+                OptionBtn.MouseEnter:Connect(function()
+                    TweenService:Create(OptionBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = Theme.ItemHover, TextColor3 = Theme.TextPrimary}):Play()
+                end)
+                OptionBtn.MouseLeave:Connect(function()
+                    TweenService:Create(OptionBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1, TextColor3 = Theme.TextSecondary}):Play()
+                end)
+
+                OptionBtn.MouseButton1Click:Connect(function()
+                    SelectedText.Text = option
+                    toggleDropdown()
+                    callback(option)
+                end)
+            end
+        end
+
+        return ItemFuncs
+    end
+    
+    return SectionFuncs
+end
+
+--------------------------------------------------------------------
+-- BUILD UI TABS
+--------------------------------------------------------------------
+local BattingTab = CreateTab("Baseball Universe")
+local HittingSection = BattingTab:CreateSection("Hitting")
+
+HittingSection:CreateToggle("Ball ESP (Predictor)", Options.Predictor, function(val)
+    Options.Predictor = val
+end)
+
+HittingSection:CreateToggle("Auto Swing", Options.AutoSwing, function(val)
+    Options.AutoSwing = val
+end)
+
+HittingSection:CreateToggle("Strikebox Only (RECOMMENDED)", Options.StrikeboxOnly, function(val)
+    Options.StrikeboxOnly = val
+end)
+
+_G.UseCustomOffsets = false
+_G.PciOffsetX = 0
+_G.PciOffsetY = 0
+
+local pciXSlider
+local pciYSlider
+
+HittingSection:CreateToggle("Custom PCI Offsets", false, function(val)
+    _G.UseCustomOffsets = val
+    if pciXSlider and pciYSlider then
+        pciXSlider.Visible = val
+        pciYSlider.Visible = val
+    end
+end)
+
+-- Reduced max range to 20 (0.2) to prevent swinging so far that it naturally hooks/slices foul
+pciXSlider = HittingSection:CreateSlider("PCI Offset X (Left Ã¢â€ â€ Right)", -20, 20, 0, function(val)
+    _G.PciOffsetX = val / 100
+end, 100)
+pciXSlider.Visible = false
+
+pciYSlider = HittingSection:CreateSlider("PCI Offset Y (Up Ã¢â€ â€¢ Down)", -20, 20, 0, function(val)
+    _G.PciOffsetY = val / 100
+end, 100)
+pciYSlider.Visible = false
+
+-- Swing Timing Adjustment Slider (For Ping)
+_G.UserTimingOffset = 10
+_G.UseCustomTiming = false
+
+local timingSlider
+
+HittingSection:CreateToggle("Custom Ping Timing", false, function(val)
+    _G.UseCustomTiming = val
+    if not val then
+        _G.UserTimingOffset = 10
+    end
+    if timingSlider then
+        timingSlider.Visible = val
+    end
+end)
+
+timingSlider = HittingSection:CreateSlider("Timing Offset (Ping)", -100, 100, 10, function(val)
+    if _G.UseCustomTiming then
+        _G.UserTimingOffset = val
+    end
+end)
+timingSlider.Visible = false
+local PitchingSection = BattingTab:CreateSection("Pitching")
+
+PitchingSection:CreateToggle("Auto Pitch", Options.AutoPitch, function(val)
+    Options.AutoPitch = val
+end)
+
+
+
+local PlayerTab = CreateTab("Player")
+local StatsSection = PlayerTab:CreateSection("Stats")
+
+StatsSection:CreateSlider("Walk Speed", 16, 100, 16, function(val)
+    _G.MoonHubWalkSpeed = val
+end)
+
+StatsSection:CreateSlider("Jump Power", 50, 200, 50, function(val)
+    _G.MoonHubJumpPower = val
+end)
+
+local MiscTab = CreateTab("Settings")
+
+local ThemeSection = MiscTab:CreateSection("Theme")
+ThemeSection:CreateDropdown("Accent Theme", {"Default", "Crimson", "Aqua", "Purple"}, SelectedTheme, function(val)
+    local oldColor = Theme.Accent
+    SelectedTheme = val
+    saveTheme()
+    
+    local newColor = AvailableThemes[val] or AvailableThemes.Default
+    Theme.Accent = newColor
+    
+    local function isClose(c1, c2)
+        return math.abs(c1.R - c2.R) < 0.02 and math.abs(c1.G - c2.G) < 0.02 and math.abs(c1.B - c2.B) < 0.02
+    end
+    
+    -- Dynamically apply to all existing UI elements
+    for _, el in ipairs(ScreenGui:GetDescendants()) do
+        if el:IsA("GuiObject") then
+            pcall(function()
+                local currentBg = el:GetAttribute("TargetBg") or el.BackgroundColor3
+                if isClose(currentBg, oldColor) then
+                    el:SetAttribute("TargetBg", newColor)
+                    TweenService:Create(el, TweenInfo.new(0.3), {BackgroundColor3 = newColor}):Play()
+                end
+                if el:IsA("TextLabel") or el:IsA("TextButton") or el:IsA("TextBox") then
+                    local currentText = el:GetAttribute("TargetText") or el.TextColor3
+                    if isClose(currentText, oldColor) then
+                        el:SetAttribute("TargetText", newColor)
+                        TweenService:Create(el, TweenInfo.new(0.3), {TextColor3 = newColor}):Play()
+                    end
+                end
+                if el:IsA("ImageLabel") or el:IsA("ImageButton") then
+                    local currentImage = el:GetAttribute("TargetImage") or el.ImageColor3
+                    if isClose(currentImage, oldColor) then
+                        el:SetAttribute("TargetImage", newColor)
+                        TweenService:Create(el, TweenInfo.new(0.3), {ImageColor3 = newColor}):Play()
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+local InfoSection = MiscTab:CreateSection("Information")
+setStatus = InfoSection:CreateStatusLabel("Status", "WAITING FOR PITCH...")
+InfoSection:CreateStatusLabel("Keybind", "[0] Hide UI")
+
+
+--------------------------------------------------------------------
+-- PREDICTOR 3D UI
+--------------------------------------------------------------------
+local PredictorGui = Instance.new("BillboardGui")
+PredictorGui.Name = "PredictorGui"
+PredictorGui.Size = UDim2.new(0, 45, 0, 45)
+PredictorGui.AlwaysOnTop = true
+PredictorGui.Parent = PlayerGui
+
+local PredictorFrame = Instance.new("Frame")
+PredictorFrame.Size = UDim2.new(1, 0, 1, 0)
+PredictorFrame.BackgroundColor3 = Theme.Accent
+PredictorFrame.BackgroundTransparency = 0.3
+PredictorFrame.Parent = PredictorGui
+Instance.new("UICorner", PredictorFrame).CornerRadius = UDim.new(1, 0)
+
+local PredictorStroke = Instance.new("UIStroke")
+PredictorStroke.Color = Color3.new(1, 1, 1)
+PredictorStroke.Thickness = 2
+PredictorStroke.Parent = PredictorFrame
+
+PredictorGui.Enabled = false
+--------------------------------------------------------------------
+-- PREDICTOR & AUTO-SWING LOGIC
+--------------------------------------------------------------------
+local function getPlateZ()
+    local repo = workspace:FindFirstChild("Repository")
+    if repo and repo:FindFirstChild("Strikezone") then
+        local sz = repo.Strikezone:FindFirstChild("Strikezone")
+        if sz then return sz.Position.Z end
+    end
+    return 112.147
+end
+
+local function isBatting()
+    local char = LocalPlayer.Character
+    if not char then return false end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return false end
+    
+    local repo = workspace:FindFirstChild("Repository")
+    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
+        local sz = repo.Strikezone.Strikezone
+        local dist = (hrp.Position - sz.Position).Magnitude
+        -- If the player is further than 20 studs from the strikezone, they are not batting
+        if dist > 20 then
+            return false
+        end
+    end
+    
+    return true
+end
+
+local function isStrike(pos)
+    local repo = workspace:FindFirstChild("Repository")
+    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
+        local sz = repo.Strikezone.Strikezone
+        local relPos = sz.CFrame:PointToObjectSpace(pos)
+        local size = sz.Size
+        
+        -- Added 0.15 ball radius for more accurate strikezone detection
+        local ballRadius = 0.15
+        if math.abs(relPos.X) <= (size.X / 2) + ballRadius and math.abs(relPos.Y) <= (size.Y / 2) + ballRadius and math.abs(relPos.Z) <= size.Z / 2 then
+            return true
+        end
+    end
+    return false
+end
+
+-- New function to check if the ball is close enough to be hittable (even if it's a ball)
+local function isSwingable(pos)
+    local repo = workspace:FindFirstChild("Repository")
+    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
+        local sz = repo.Strikezone.Strikezone
+        local relPos = sz.CFrame:PointToObjectSpace(pos)
+        local size = sz.Size
+        
+        -- Increased margin to 1.75 for a slightly wider swing range when not in strict mode
+        local marginX = 1.75 
+        local marginY = 1.75 
+        
+        if math.abs(relPos.X) <= (size.X / 2) + marginX and math.abs(relPos.Y) <= (size.Y / 2) + marginY and math.abs(relPos.Z) <= size.Z / 2 then
+            return true
+        end
+    end
+    return false
+end
+
+local function OnPitchFired(p31, p32, p33)
+    print("[MOON HUB DEBUG] OnPitchFired TRIGGERED! Received pitch data:", type(p32))
+    if type(p32) == "table" and p32[2] and p32[3] and p32[4] and p32[5] then
+        local P0 = p32[2]
+        local P1 = p32[3]
+        local P2 = p32[4]
+        local MaxTime = p32[5]
+        
+        local z_plate = getPlateZ()
+        local a = P0.Z - 2*P1.Z + P2.Z
+        local b = -2*P0.Z + 2*P1.Z
+        local c = P0.Z - z_plate
+        
+        local s = 1
+        local discriminant = b*b - 4*a*c
+        if discriminant >= 0 then
+            local s1 = (-b + math.sqrt(discriminant)) / (2*a)
+            local s2 = (-b - math.sqrt(discriminant)) / (2*a)
+            s = (s1 >= 0 and s1 <= 1) and s1 or s2
+        end
+        
+        local final_pos = (1-s)^2 * P0 + 2*(1-s)*s * P1 + s^2 * P2
+        
+        -- Curveball adjustment: lower the target due to visual/game physics offset
+        local isCurve = (MaxTime > 0.6) and (P1.Y > (P0.Y + P2.Y)/2)
+        if isCurve then
+            final_pos = final_pos - Vector3.new(0, 0.1, 0)
+        end
+        
+        local isAStrike = isStrike(final_pos)
+        local canSwing = isSwingable(final_pos) -- Determine if it's within hittable range
+        
+        if Options.Predictor then
+            -- Hide completely if not batting
+            if not isBatting() then return end
+            
+            local part = Instance.new("Part")
+            part.Transparency = 1
+            part.Anchored = true
+            part.CanCollide = false
+            part.Position = final_pos
+            part.Parent = workspace
+            
+            PredictorGui.Adornee = part
+            PredictorGui.Enabled = true
+            
+            -- Automatically change color based on strike or ball
+            if isAStrike then
+                PredictorFrame.BackgroundColor3 = Theme.Accent
+                setStatus("PITCH: STRIKE (ZONE)", Theme.Accent)
+            else
+                PredictorFrame.BackgroundColor3 = Color3.fromRGB(80, 80, 80) -- Grey for Ball
+                setStatus("PITCH: BALL", Color3.fromRGB(160, 160, 160))
+            end
+            
+            task.delay(MaxTime + 1, function()
+                PredictorGui.Enabled = false
+                if part then part:Destroy() end
+            end)
+        end
+        
+        -- Auto Swing implementation
+        if Options.AutoSwing and isBatting() then
+            -- Changed to swing ONLY if it's a strike
+            local shouldSwing = (Options.StrikeboxOnly and isAStrike) or (not Options.StrikeboxOnly and canSwing)
+            if shouldSwing then
+                setStatus("WAITING FOR BALL RELEASE...", Color3.fromRGB(255, 200, 255))
+                
+                -- Spawn listener to wait for release point
+                task.spawn(function()
+                    local released = false
+                    local startWait = os.clock()
+                    
+                    -- Check if ball is already out
+                    if workspace:FindFirstChild("ClientBall") or workspace:FindFirstChild("Placebo") then
+                        released = true
+                    else
+                        -- Listen via workspace ChildAdded
+                        local sem = Instance.new("BindableEvent")
+                        local conn
+                        conn = workspace.ChildAdded:Connect(function(child)
+                            if child.Name == "ClientBall" or child.Name == "Placebo" then
+                                released = true
+                                sem:Fire()
+                            end
+                        end)
+                        
+                        -- Timeout safety
+                        task.delay(6.0, function()
+                            if not released then
+                                sem:Fire()
+                            end
+                        end)
+                        
+                        sem.Event:Wait()
+                        conn:Disconnect()
+                        sem:Destroy()
+                    end
+                    
+                    if released and _G.CrimsonActiveLoop and isBatting() then
+                        -- Calculate target timing from the moment of release
+                        local baseOffset = (_G.CrimsonTimingOffset or 31.5)
+                        local speedAdjustment = 0
+                        -- If it's a fast pitch (MaxTime is low), we add a bit more delay so we don't swing too early.
+                        if MaxTime < 0.55 then
+                            speedAdjustment = (0.55 - MaxTime) * 60
+                        end
+                        local userTiming = (_G.UserTimingOffset or 0)
+                        local offsetSeconds = (baseOffset + speedAdjustment + userTiming) / 1000
+                        local t_cross = s * MaxTime
+                        local SWING_DELAY = Options.SwingDelay or 0.083
+                        local t_swing = t_cross - SWING_DELAY + offsetSeconds
+                        
+                        setStatus(string.format("SWING SCHEDULED IN %.3fS", t_swing), Color3.fromRGB(255, 200, 255))
+                        
+                        task.wait(math.max(0, t_swing))
+                        
+                        if not _G.CrimsonActiveLoop or not isBatting() then return end
+                        
+                        -- Requires to fetch game logic (identical to original.lua)
+                        local Knit = require(ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"))
+                        local GameController = Knit.GetController("GameController")
+                        local BattingController = Knit.GetController("BattingController")
+                        local AnimationController = Knit.GetController("AnimationController")
+                        
+                        -- Calculate targeted PCI position
+                        local repo = workspace:FindFirstChild("Repository")
+                        if repo and repo:FindFirstChild("Strikezone") then
+                            local boundary = repo.Strikezone:FindFirstChild("Boundary")
+                            if boundary then
+                                local relPos = boundary.CFrame:PointToObjectSpace(final_pos)
+                                local sizeX, sizeY = boundary.Size.X, boundary.Size.Y
+                                
+                                local pci_x = (relPos.X / sizeX) + 0.5 - (_G.UseCustomOffsets and _G.PciOffsetX or 0)
+                                local pci_y = 0.5 - (relPos.Y / sizeY) + (_G.UseCustomOffsets and _G.PciOffsetY or 0)
+                                
+                                local pci_pos = Vector2.new(pci_x, pci_y)
+                                
+                                -- Calculate the world position of the custom PCI to properly bypass the mouse anti-cheat
+                                local offsetRelPos = Vector3.new((pci_x - 0.5) * sizeX, (0.5 - pci_y) * sizeY, relPos.Z)
+                                local offsetWorldPos = boundary.CFrame * offsetRelPos
+                                
+                                local specificity = "MM"
+                                if BattingController.DetermineZoneSpecificity then
+                                    -- Use the original, un-offset PCI for the animation to ensure the timing delay remains perfectly consistent
+                                    local original_pci_x = (relPos.X / sizeX) + 0.5
+                                    local original_pci_y = 0.5 - (relPos.Y / sizeY)
+                                    specificity = BattingController:DetermineZoneSpecificity(Vector2.new(original_pci_x, original_pci_y))
+                                end
+                                
+                                -- Play directional swing animation natively
+                                pcall(function()
+                                    AnimationController:Stop(LocalPlayer.Name, "Batter", "Windup")
+                                    AnimationController:Play(LocalPlayer, "Batter", "Swing", specificity)
+                                end)
+                                
+                                local function executeHit()
+                                    -- Lock screen position to bypass maiz check
+                                    local screenPos, onScreen = game.Workspace.CurrentCamera:WorldToScreenPoint(offsetWorldPos)
+                                    _G.AutoLockScreenPos = Vector2.new(screenPos.X, screenPos.Y)
+                                    _G.AutoLockTarget = true
+                                    
+                                    -- Temporarily set IsConsole to true to bypass client raycast magnitude check
+                                    local originalIsConsole = GameController.IsConsole
+                                    GameController.IsConsole = true
+                                    
+                                    -- Execute swing using the exact original function reference bypassing interceptions
+                                    if _G.OriginalHandleSwing then
+                                        _G.OriginalHandleSwing(BattingController, pci_pos)
+                                    else
+                                        pcall(function()
+                                            BattingController:HandleSwing(pci_pos)
+                                        end)
+                                    end
+                                    
+                                    -- Restore console flag
+                                    GameController.IsConsole = originalIsConsole
+                                    
+                                    -- Unlock cursor
+                                    task.wait(0.1)
+                                    _G.AutoLockTarget = false
+                                end
+                                
+                                executeHit()
+                            end
+                        end
+                        
+                        setStatus("SWUNG! (PERFECT TIMING)", Theme.Accent)
+                    else
+                        setStatus("RELEASE TIMED OUT/CANCELED", Color3.fromRGB(255, 100, 100))
+                    end
+                end)
+            else
+                setStatus("PITCH: BALL - AUTO-SWING SKIPPED", Color3.fromRGB(160, 160, 160))
+            end
+        end
+    end
+end
+
+-- Connect directly to the underlying RemoteEvent to bypass Knit startup errors and metatable conflicts
+task.spawn(function()
+    local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
+    if not Packages then return end
+    local KnitPkg = Packages:WaitForChild("Knit", 10)
+    if not KnitPkg then return end
+    local ServicesFolder = KnitPkg:WaitForChild("Services", 10)
+    if not ServicesFolder then
+        warn("[MOON HUB] Could not find Knit Services folder!")
+        return
+    end
+    
+    local PitchRE = ServicesFolder:WaitForChild("PitchingService", 10):WaitForChild("RE", 10):WaitForChild("Pitch", 10)
+    if not PitchRE then
+        warn("[MOON HUB] Could not find Pitch RemoteEvent!")
+        return
+    end
+
+    if _G.CrimsonPitchConn then 
+        _G.CrimsonPitchConn:Disconnect() 
+    end
+    
+    -- Connect directly!
+    _G.CrimsonPitchConn = PitchRE.OnClientEvent:Connect(function(p1, p2, p3)
+        -- Knit RemoteEvents wrap the arguments, sometimes dropping or adding the player context.
+        -- We forward all arguments directly to OnPitchFired.
+        OnPitchFired(p1, p2, p3)
+    end)
+    
+    print("[MOON HUB] Successfully connected directly to Pitch RemoteEvent!")
+end)
+
+-- Auto Pitch Hook
+task.spawn(function()
+    local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
+    if not Packages then return end
+    local KnitPkg = Packages:WaitForChild("Knit", 10)
+    if not KnitPkg then return end
+    local Knit = require(KnitPkg)
+    if Knit then
+        local PitchingService = Knit.GetService("PitchingService")
+        if PitchingService and PitchingService.RequestThrowPitch then
+            if not _G.OriginalRequestThrowPitch then
+                _G.OriginalRequestThrowPitch = PitchingService.RequestThrowPitch
+            end
+            
+            PitchingService.RequestThrowPitch = newcclosure(function(self, pitchType, location, time1, time2)
+                if Options.AutoPitch and time1 and time2 then
+                    time1 = 1
+                    time2 = 1
+                end
+                return _G.OriginalRequestThrowPitch(self, pitchType, location, time1, time2)
+            end)
+            print("[MOON HUB] Successfully hooked Auto Pitch!")
+        end
+    end
+end)
+
+-- Background Loops for new features
+task.spawn(function()
+    local CustomGlow
+    
+    while _G.CrimsonActiveLoop and ScreenGui.Parent do
+        -- Player Stats
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            local hum = LocalPlayer.Character.Humanoid
+            if _G.MoonHubWalkSpeed and _G.MoonHubWalkSpeed > 16 then
+                hum.WalkSpeed = _G.MoonHubWalkSpeed
+            end
+            if _G.MoonHubJumpPower and _G.MoonHubJumpPower > 50 then
+                hum.UseJumpPower = true
+                hum.JumpPower = _G.MoonHubJumpPower
+            end
+        end
+        
+        
+        
+        task.wait(0.1)
+    end
+    
+    if CustomGlow then CustomGlow:Destroy() end
+end)
+
+print("MOON HUB UI Loaded.")
+
+
 
