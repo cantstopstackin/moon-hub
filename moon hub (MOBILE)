@@ -1,1437 +1,2165 @@
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-
--- Fallback for free executors that don't support C closures
-local newcclosure = newcclosure or function(f) return f end
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer and LocalPlayer:WaitForChild("PlayerGui") or CoreGui
-
---------------------------------------------------------------------
--- CLEANUP OLD UIs
---------------------------------------------------------------------
-for _, child in ipairs(PlayerGui:GetChildren()) do
-    if child.Name == "MoonHubUI" or child.Name == "MoonHubToggleUI" or child.Name == "Moon1xHitUI" or child.Name == "CrimsonHitUI" then
-        child:Destroy()
-    end
+local OO_O0_ = game:GetService("TweenService")
+local lI0_lOl = game:GetService("RunService")
+local l0Oll_lII = game:GetService("UserInputService")
+if false then
+	_ = 503
 end
-
---------------------------------------------------------------------
--- CLEANUP OLD CONNECTIONS
---------------------------------------------------------------------
-if _G.CrimsonPitchConn then _G.CrimsonPitchConn:Disconnect(); _G.CrimsonPitchConn = nil end
-if _G.CrimsonInputConn then _G.CrimsonInputConn:Disconnect(); _G.CrimsonInputConn = nil end
-if _G.CrimsonActiveLoop then _G.CrimsonActiveLoop = false end
-
+local IO__Il0 = game:GetService("ReplicatedStorage")
+local lII__0Il0_ = game:GetService("Workspace")
+local O_I0_____O = 946293
+local lI__OO0__ = newcclosure or function(IIIlIlI)
+	return IIIlIlI
+end
+local Il_l0_I0I = game:GetService("Players")
+local O_00_O__ = 406367
+local l_00O_Il00l = Il_l0_I0I.LocalPlayer
+local OI0Il0II0O = l_00O_Il00l and l_00O_Il00l:WaitForChild("PlayerGui") or CoreGui
+for O0I_l0_O_, I_0IlOIl_ in ipairs(OI0Il0II0O:GetChildren()) do
+	if I_0IlOIl_.Name == "MoonHubUI" or I_0IlOIl_.Name == "MoonHubToggleUI" or I_0IlOIl_.Name == "Moon1xHitUI" or I_0IlOIl_.Name == "CrimsonHitUI" then
+		I_0IlOIl_:Destroy()
+	end
+end
+if _G.CrimsonPitchConn then
+	local IOOIO____ = 705341
+	_G.CrimsonPitchConn:Disconnect()
+	_G.CrimsonPitchConn = nil
+end
+if _G.CrimsonInputConn then
+	_G.CrimsonInputConn:Disconnect()
+	local I_00Oll_0l_ = 890926
+	_G.CrimsonInputConn = nil
+end
+if _G.CrimsonActiveLoop then
+	local lOI0OO_I = 701039
+	_G.CrimsonActiveLoop = false
+end
 task.wait(0.1)
+local II0lll_ = 12745
 _G.CrimsonActiveLoop = true
-
---------------------------------------------------------------------
--- SETTINGS & HOOKS
---------------------------------------------------------------------
-local Options = {
-    Predictor = false,
-    AutoSwing = false,
-    SwingDelay = 0.083, -- Exactly how long the animation takes to reach HitPoint (83ms)
-    StrikeboxOnly = false,
-    AutoPitch = false
-}
-
--- Cursor Locking Hook with Jitter to bypass 'maiz' aimbot anti-cheat
+local I_O0IO = { Predictor = false, AutoSwing = false, SwingDelay = 0.083, StrikeboxOnly = false, AutoPitch = false }
 _G.AutoLockTarget = false
-_G.AutoLockScreenPos = Vector2.new(0, 0)
+if false then
+	_ = 195
+end
+_G.AutoLockScreenPos = Vector2.new(924 - 924, 282 - 282)
 if not _G.hookedMouseLocation then
-    _G.hookedMouseLocation = true
-    
-    local oldNamecall
-    oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        if method == "GetMouseLocation" and typeof(self) == "Instance" and self.ClassName == "UserInputService" and _G.AutoLockTarget then
-            return _G.AutoLockScreenPos
-        end
-        
-        -- Prevent tail-call obfuscator bugs
-        local a, b, c, d, e = oldNamecall(self, ...)
-        return a, b, c, d, e
-    end))
-    
-    local oldIndex
-    oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
-        if _G.AutoLockTarget and not checkcaller() then
-            local isMouse = false
-            pcall(function() isMouse = (typeof(self) == "Instance" and self.ClassName == "Mouse") end)
-            if isMouse then
-                if key == "X" then return _G.AutoLockScreenPos.X end
-                if key == "Y" then return _G.AutoLockScreenPos.Y end
-            end
-        end
-        
-        -- Prevent tail-call obfuscator bugs
-        local result = oldIndex(self, key)
-        return result
-    end))
+	_G.hookedMouseLocation = true
+	local Ol_I_OOIO = 320881
+	if false then
+		_ = 214
+	end
+	local OO_0000IO
+	OO_0000IO = hookmetamethod(game, "__namecall", lI__OO0__(function(self, ...)
+		local lOOI0O = 54939
+		local l0000l = getnamecallmethod()
+		local IOlIOI_OO_ = 777353
+		if l0000l == "GetMouseLocation" and typeof(self) == "Instance" and self.ClassName == "UserInputService" and _G.AutoLockTarget then
+			if false then
+				_ = 250
+			end
+			return _G.AutoLockScreenPos
+		end
+		local OOO_ll0_, Ol_00IO_I_0, l_00O_I_Oll, OIll00Il00O, I0OOO_Ol = OO_0000IO(self, ...)
+		return OOO_ll0_, Ol_00IO_I_0, l_00O_I_Oll, OIll00Il00O, I0OOO_Ol
+	end))
+	local O_OI_IO
+	O_OI_IO = hookmetamethod(game, "__index", lI__OO0__(function(self, lOIlIll0__)
+		local IO_II_ = 424061
+		if _G.AutoLockTarget and not checkcaller() then
+			local l__I_IIO = 124948
+			local I0lO0O000l = false
+			if false then
+				_ = 593
+			end
+			pcall(function()
+				if false then
+					_ = 332
+				end
+				I0lO0O000l = typeof(self) == "Instance" and self.ClassName == "Mouse"
+			end)
+			local I_0III = 350357
+			if I0lO0O000l then
+				if false then
+					_ = 884
+				end
+				if lOIlIll0__ == "X" then
+					return _G.AutoLockScreenPos.X
+				end
+				if lOIlIll0__ == "Y" then
+					if false then
+						_ = 149
+					end
+					return _G.AutoLockScreenPos.Y
+				end
+			end
+		end
+		local OlOI00lIO = O_OI_IO(self, lOIlIll0__)
+		return OlOI00lIO
+	end))
 end
-
---------------------------------------------------------------------
--- UI LIBRARY (MOON HUB THEME)
---------------------------------------------------------------------
-local AvailableThemes = {
-    Default = Color3.fromRGB(240, 240, 240),
-    Crimson = Color3.fromRGB(220, 40, 40),
-    Aqua = Color3.fromRGB(40, 220, 220),
-    Purple = Color3.fromRGB(120, 80, 200)
-}
-
--- Try to load saved theme
-local SavedData = { Theme = "Default", LightMode = false }
+local llIO0lO0 = 149952
+local lOOIlO___I_ = { Default = Color3.fromRGB(258 - 18, 911 - 671, 1062 - 822), Crimson = Color3.fromRGB(385 - 165, 803 - 763, 116 - 76), Aqua = Color3.fromRGB(492 - 452, 606 - 386, 1217 - 997), Purple = Color3.fromRGB(555 - 435, 991 - 911, 520 - 320) }
+if false then
+	_ = 159
+end
+local lO_llIl_ = { Theme = "Default", LightMode = false }
 pcall(function()
-    if isfile and readfile and isfile("MoonHubSavedTheme.json") then
-        local HttpService = game:GetService("HttpService")
-        local loaded = HttpService:JSONDecode(readfile("MoonHubSavedTheme.json"))
-        if loaded then SavedData = loaded end
-    elseif _G.MoonHubSavedTheme then
-        SavedData = _G.MoonHubSavedTheme
-    end
+	local IIlOlIIl = 680870
+	if isfile and readfile and isfile("MoonHubSavedTheme.json") then
+		local O0l__II00O = 77067
+		local llO0_l_l = game:GetService("HttpService")
+		local IOII0I00I = llO0_l_l:JSONDecode(readfile("MoonHubSavedTheme.json"))
+		if false then
+			_ = 423
+		end
+		if IOII0I00I then
+			lO_llIl_ = IOII0I00I
+		end
+	elseif _G.MoonHubSavedTheme then
+		lO_llIl_ = _G.MoonHubSavedTheme
+	end
 end)
-
-local SelectedTheme = SavedData.Theme or "Default"
-local IsLightMode = SavedData.LightMode or false
-
-local function saveTheme()
-    SavedData.Theme = SelectedTheme
-    SavedData.LightMode = IsLightMode
-    pcall(function()
-        if writefile then
-            local HttpService = game:GetService("HttpService")
-            writefile("MoonHubSavedTheme.json", HttpService:JSONEncode(SavedData))
-        end
-    end)
-    _G.MoonHubSavedTheme = SavedData
+local l0IIIl_IlII = 337105
+if false then
+	_ = 906
 end
-
-local Theme = {
-    Background = IsLightMode and Color3.fromRGB(240, 240, 240) or Color3.fromRGB(12, 12, 12),
-    Sidebar = IsLightMode and Color3.fromRGB(225, 225, 225) or Color3.fromRGB(16, 16, 16),
-    SectionBg = IsLightMode and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(18, 18, 18),
-    Border = IsLightMode and Color3.fromRGB(200, 200, 200) or Color3.fromRGB(28, 28, 28),
-    Accent = AvailableThemes[SelectedTheme] or AvailableThemes.Default,
-    TextPrimary = IsLightMode and Color3.fromRGB(20, 20, 20) or Color3.fromRGB(240, 240, 240),
-    TextSecondary = IsLightMode and Color3.fromRGB(100, 100, 100) or Color3.fromRGB(150, 150, 150),
-    ItemBg = IsLightMode and Color3.fromRGB(210, 210, 210) or Color3.fromRGB(24, 24, 24),
-    ItemHover = IsLightMode and Color3.fromRGB(190, 190, 190) or Color3.fromRGB(32, 32, 32),
-    Font = Enum.Font.Gotham,
-    FontMedium = Enum.Font.GothamMedium,
-    FontBold = Enum.Font.GothamBold
-}
-
-local UI = {
-    Tabs = {},
-    ActiveTab = nil,
-    IsVisible = true,
-}
-
-local isMobile = true
-local defaultWidth = isMobile and 450 or 600
-local defaultHeight = isMobile and 280 or 400
-local hiddenWidth = isMobile and 410 or 560
-local hiddenHeight = isMobile and 240 or 360
-
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "MoonHubUI"
-ScreenGui.Parent = PlayerGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
-ScreenGui.IgnoreGuiInset = true
-
--- Main container (responsive scaling)
-local MainContainer = Instance.new("CanvasGroup")
-MainContainer.Name = "MainContainer"
-MainContainer.AnchorPoint = Vector2.new(0.5, 0.5)
-MainContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainContainer.Size = UDim2.new(0, defaultWidth, 0, defaultHeight)
-MainContainer.BackgroundColor3 = Theme.Background
-MainContainer.BorderSizePixel = 0
-MainContainer.ClipsDescendants = true
-MainContainer.Parent = ScreenGui
-
-Instance.new("UICorner", MainContainer).CornerRadius = UDim.new(0, 8)
-local MainStroke = Instance.new("UIStroke", MainContainer)
-MainStroke.Color = Theme.Border
-MainStroke.Thickness = 1
-
--- Drop shadow
-local Shadow = Instance.new("ImageLabel")
-Shadow.Name = "Shadow"
-Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-Shadow.Size = UDim2.new(1, 40, 1, 40)
-Shadow.BackgroundTransparency = 1
-Shadow.Image = "rbxassetid://131692000"
-Shadow.ImageColor3 = Color3.new(0, 0, 0)
-Shadow.ImageTransparency = 0.4
-Shadow.ScaleType = Enum.ScaleType.Slice
-Shadow.SliceCenter = Rect.new(10, 10, 118, 118)
-Shadow.ZIndex = -1
-Shadow.Parent = MainContainer
-
--- Ambient Moon Particles
-local ParticleContainer = Instance.new("Frame")
-ParticleContainer.Name = "ParticleContainer"
-ParticleContainer.Size = UDim2.new(1, 0, 1, -36)
-ParticleContainer.Position = UDim2.new(0, 0, 0, 36)
-ParticleContainer.BackgroundTransparency = 1
-ParticleContainer.ZIndex = 0
-ParticleContainer.ClipsDescendants = true
-ParticleContainer.Parent = MainContainer
-
+local lIl_IOlI = lO_llIl_.Theme or "Default"
+local lOI0_lO0l = lO_llIl_.LightMode or false
+local I_lI_000lIO = 436765
+local function OOO0l0()
+	if false then
+		_ = 501
+	end
+	lO_llIl_.Theme = lIl_IOlI
+	lO_llIl_.LightMode = lOI0_lO0l
+	pcall(function()
+		if writefile then
+			local l__l0O = 207629
+			local llOlIO = game:GetService("HttpService")
+			local OIlOI0_ = 286710
+			writefile("MoonHubSavedTheme.json", llOlIO:JSONEncode(lO_llIl_))
+		end
+	end)
+	local OlOOOI_I = 469668
+	_G.MoonHubSavedTheme = lO_llIl_
+end
+local IlO0ll0llOO = 896615
+local lOOl0_l = { Background = lOI0_lO0l and Color3.fromRGB(905 - 665, 467 - 227, 991 - 751) or Color3.fromRGB(914 - 902, 421 - 409, 348 - 336), Sidebar = lOI0_lO0l and Color3.fromRGB(887 - 662, 920 - 695, 588 - 363) or Color3.fromRGB(331 - 315, 68 - 52, 282 - 266), SectionBg = lOI0_lO0l and Color3.fromRGB(442 - 207, 688 - 453, 947 - 712) or Color3.fromRGB(606 - 588, 570 - 552, 532 - 514), Border = lOI0_lO0l and Color3.fromRGB(632 - 432, 751 - 551, 1095 - 895) or Color3.fromRGB(75 - 47, 567 - 539, 771 - 743), Accent = lOOIlO___I_[lIl_IOlI] or lOOIlO___I_.Default, TextPrimary = lOI0_lO0l and Color3.fromRGB(586 - 566, 469 - 449, 674 - 654) or Color3.fromRGB(968 - 728, 1213 - 973, 331 - 91), TextSecondary = lOI0_lO0l and Color3.fromRGB(935 - 835, 281 - 181, 476 - 376) or Color3.fromRGB(971 - 821, 807 - 657, 643 - 493), ItemBg = lOI0_lO0l and Color3.fromRGB(1104 - 894, 636 - 426, 335 - 125) or Color3.fromRGB(509 - 485, 155 - 131, 705 - 681), ItemHover = lOI0_lO0l and Color3.fromRGB(616 - 426, 473 - 283, 783 - 593) or Color3.fromRGB(472 - 440, 352 - 320, 42 - 10), Font = Enum.Font.Gotham, FontMedium = Enum.Font.GothamMedium, FontBold = Enum.Font.GothamBold }
+local lOl0O_Ol0_ = { Tabs = {}, ActiveTab = nil, IsVisible = true }
+local IIIOll_Oll0 = true
+local IIO0lI = 956210
+if false then
+	_ = 71
+end
+local I_IlllOOO = IIIOll_Oll0 and 1150 - 700 or 1308 - 708
+if false then
+	_ = 842
+end
+local I00O_0IlIIO = IIIOll_Oll0 and 623 - 343 or 1107 - 707
+local OIO0OIllO = 437477
+local O00I00IO0 = IIIOll_Oll0 and 878 - 468 or 1134 - 574
+local IIlIll = IIIOll_Oll0 and 285 - 45 or 685 - 325
+local l0Il_O__0O = 669979
+local OIO_I_0 = Instance.new("ScreenGui")
+local IOOl0IO_O0 = 352717
+OIO_I_0.Name = "MoonHubUI"
+local O_00l0lO_ = 732386
+OIO_I_0.Parent = OI0Il0II0O
+OIO_I_0.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+OIO_I_0.ResetOnSpawn = false
+local O0IO__Ill0O = 878824
+OIO_I_0.IgnoreGuiInset = true
+local Ol0I0l_lll_ = Instance.new("CanvasGroup")
+Ol0I0l_lll_.Name = "MainContainer"
+local l0_I_0_I_OI = 384847
+if false then
+	_ = 656
+end
+Ol0I0l_lll_.AnchorPoint = Vector2.new(0.5, 0.5)
+local OOl0O0O = 884606
+Ol0I0l_lll_.Position = UDim2.new(0.5, 965 - 965, 0.5, 678 - 678)
+Ol0I0l_lll_.Size = UDim2.new(921 - 921, I_IlllOOO, 21 - 21, I00O_0IlIIO)
+local lII0lI_lI = 85728
+Ol0I0l_lll_.BackgroundColor3 = lOOl0_l.Background
+Ol0I0l_lll_.BorderSizePixel = 907 - 907
+local I00__0IlOl = 638346
+if false then
+	_ = 61
+end
+Ol0I0l_lll_.ClipsDescendants = true
+if false then
+	_ = 374
+end
+Ol0I0l_lll_.Parent = OIO_I_0
+if false then
+	_ = 668
+end
+Instance.new("UICorner", Ol0I0l_lll_).CornerRadius = UDim.new(108 - 108, 32 - 24)
+if false then
+	_ = 448
+end
+local O0II00lll0 = Instance.new("UIStroke", Ol0I0l_lll_)
+O0II00lll0.Color = lOOl0_l.Border
+if false then
+	_ = 945
+end
+O0II00lll0.Thickness = 952 - 951
+local l_I0_00_I = Instance.new("ImageLabel")
+l_I0_00_I.Name = "Shadow"
+if false then
+	_ = 388
+end
+l_I0_00_I.AnchorPoint = Vector2.new(0.5, 0.5)
+l_I0_00_I.Position = UDim2.new(0.5, 766 - 766, 0.5, 477 - 477)
+l_I0_00_I.Size = UDim2.new(487 - 486, 736 - 696, 585 - 584, 328 - 288)
+local OlI_Il0I_I = 382535
+l_I0_00_I.BackgroundTransparency = 166 - 165
+if false then
+	_ = 889
+end
+l_I0_00_I.Image = "rbxassetid://131692000"
+local l0OIOlI0_Ol = 657505
+l_I0_00_I.ImageColor3 = Color3.new(22 - 22, 215 - 215, 952 - 952)
+local lOll_Ill0I0 = 640470
+l_I0_00_I.ImageTransparency = 0.4
+local I_0_IO_ = 521496
+l_I0_00_I.ScaleType = Enum.ScaleType.Slice
+l_I0_00_I.SliceCenter = Rect.new(190 - 180, 186 - 176, 145 - 27, 816 - 698)
+l_I0_00_I.ZIndex = -(599 - 598)
+l_I0_00_I.Parent = Ol0I0l_lll_
+local II_00OI0O = 812934
+local OI00I0 = Instance.new("Frame")
+local lO_IlO_O = 900964
+OI00I0.Name = "ParticleContainer"
+if false then
+	_ = 547
+end
+OI00I0.Size = UDim2.new(220 - 219, 822 - 822, 802 - 801, -(401 - 365))
+OI00I0.Position = UDim2.new(822 - 822, 923 - 923, 797 - 797, 159 - 123)
+OI00I0.BackgroundTransparency = 419 - 418
+local OOlOI0 = 851538
+OI00I0.ZIndex = 292 - 292
+OI00I0.ClipsDescendants = true
+OI00I0.Parent = Ol0I0l_lll_
+local Ol0llOI_0_l = 828991
 task.spawn(function()
-        local PatternFrame = Instance.new("Frame")
-        PatternFrame.Size = UDim2.new(2, 0, 2, 0)
-        PatternFrame.Position = UDim2.new(0, 0, 0, 0)
-        PatternFrame.BackgroundTransparency = 1
-        PatternFrame.Parent = ParticleContainer
-
-        for x = 0, 10 do
-            for y = 0, 10 do
-                local moon = Instance.new("ImageLabel")
-                local size = 28
-                moon.Size = UDim2.new(0, size, 0, size)
-                moon.Position = UDim2.new(x * 0.15, 0, y * 0.15, 0)
-                moon.BackgroundTransparency = 1
-                moon.Image = "rbxassetid://77005149022898"
-                moon.ImageColor3 = Theme.Accent
-                moon.ImageTransparency = 0.25
-                moon.ZIndex = 0
-                moon.Parent = PatternFrame
-            end
-        end
-        
-        while _G.CrimsonActiveLoop and ScreenGui.Parent do
-            PatternFrame.Position = UDim2.new(0, 0, 0, 0)
-            local t = TweenService:Create(PatternFrame, TweenInfo.new(12, Enum.EasingStyle.Linear), {
-                Position = UDim2.new(-0.3, 0, -0.3, 0)
-            })
-            t:Play()
-            t.Completed:Wait()
-        end
+	if false then
+		_ = 608
+	end
+	local lIlII0OIO = Instance.new("Frame")
+	lIlII0OIO.Size = UDim2.new(888 - 886, 663 - 663, 255 - 253, 459 - 459)
+	if false then
+		_ = 976
+	end
+	lIlII0OIO.Position = UDim2.new(468 - 468, 85 - 85, 651 - 651, 245 - 245)
+	lIlII0OIO.BackgroundTransparency = 265 - 264
+	lIlII0OIO.Parent = OI00I0
+	for OOlOll = 871 - 871, 935 - 925 do
+		for OOOII0 = 269 - 269, 108 - 98 do
+			local l__0I0O0O = Instance.new("ImageLabel")
+			local IOlOII0O = 456654
+			if false then
+				_ = 149
+			end
+			local OO0lOI_ = 999 - 971
+			local Il_0000O00 = 122589
+			l__0I0O0O.Size = UDim2.new(936 - 936, OO0lOI_, 180 - 180, OO0lOI_)
+			local lllOOOl = 120527
+			l__0I0O0O.Position = UDim2.new(OOlOll * 0.15, 713 - 713, OOOII0 * 0.15, 340 - 340)
+			l__0I0O0O.BackgroundTransparency = 368 - 367
+			l__0I0O0O.Image = "rbxassetid://77005149022898"
+			l__0I0O0O.ImageColor3 = lOOl0_l.Accent
+			l__0I0O0O.ImageTransparency = 0.25
+			l__0I0O0O.ZIndex = 847 - 847
+			local IlOI_I_O0 = 279437
+			l__0I0O0O.Parent = lIlII0OIO
+		end
+	end
+	local IO0_ll0lI_ = 70095
+	if false then
+		_ = 794
+	end
+	while _G.CrimsonActiveLoop and OIO_I_0.Parent do
+		lIlII0OIO.Position = UDim2.new(728 - 728, 910 - 910, 793 - 793, 76 - 76)
+		local OlOO0lll0I = OO_O0_:Create(lIlII0OIO, TweenInfo.new(928 - 916, Enum.EasingStyle.Linear), { Position = UDim2.new(-0.3, 7 - 7, -0.3, 99 - 99) })
+		if false then
+			_ = 899
+		end
+		OlOO0lll0I:Play()
+		local OI_Oll00O__ = 811897
+		OlOO0lll0I.Completed:Wait()
+	end
 end)
-
--- Title Bar (Top)
-local TitleBar = Instance.new("Frame")
-TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 36)
-TitleBar.BackgroundTransparency = 1
-TitleBar.ZIndex = 5
-TitleBar.Parent = MainContainer
-
-local TitleLogo = Instance.new("ImageLabel")
-TitleLogo.Name = "TitleLogo"
-TitleLogo.Size = UDim2.new(0, 26, 0, 26)
-TitleLogo.Position = UDim2.new(0, 12, 0.5, -13)
-TitleLogo.BackgroundTransparency = 1
-TitleLogo.Image = "rbxassetid://103314343492991"
-TitleLogo.ImageColor3 = Theme.Accent
-TitleLogo.ZIndex = 5
-TitleLogo.Parent = TitleBar
-
-local TitleText = Instance.new("TextLabel")
-TitleText.Name = "TitleText"
-TitleText.Size = UDim2.new(1, -50, 1, 0)
-TitleText.Position = UDim2.new(0, 44, 0, 0)
-TitleText.BackgroundTransparency = 1
-TitleText.Text = "MOON HUB"
-TitleText.TextColor3 = Theme.TextPrimary
-TitleText.Font = Theme.FontMedium
-TitleText.TextSize = 12
-TitleText.TextXAlignment = Enum.TextXAlignment.Left
-TitleText.ZIndex = 5
-TitleText.Parent = TitleBar
-
--- Close Button
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Name = "CloseBtn"
-CloseBtn.Size = UDim2.new(0, 36, 0, 36)
-CloseBtn.Position = UDim2.new(1, -36, 0, 0)
-CloseBtn.BackgroundTransparency = 1
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Theme.TextSecondary
-CloseBtn.Font = Theme.FontBold
-CloseBtn.TextSize = 14
-CloseBtn.ZIndex = 5
-CloseBtn.Parent = TitleBar
-
-CloseBtn.MouseEnter:Connect(function()
-    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Color3.new(1, 1, 1)}):Play()
-end)
-CloseBtn.MouseLeave:Connect(function()
-    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
-end)
-
-local function toggleUI(state)
-    UI.IsVisible = state
-    if state then
-        ScreenGui.Enabled = true
-        TweenService:Create(MainContainer, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, defaultWidth, 0, defaultHeight),
-            GroupTransparency = 0,
-            Position = UDim2.new(0.5, 0, 0.5, 0)
-        }):Play()
-    else
-        local t = TweenService:Create(MainContainer, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, hiddenWidth, 0, hiddenHeight),
-            GroupTransparency = 1,
-            Position = UDim2.new(0.5, 0, 0.5, 30)
-        })
-        t:Play()
-        t.Completed:Connect(function()
-            if not UI.IsVisible then ScreenGui.Enabled = false end
-        end)
-    end
+local l0IOII = Instance.new("Frame")
+if false then
+	_ = 155
 end
-
-CloseBtn.MouseButton1Click:Connect(function()
-    toggleUI(false)
-end)
-
-if isMobile then
-    local ToggleGui = Instance.new("ScreenGui")
-    ToggleGui.Name = "MoonHubToggleUI"
-    ToggleGui.Parent = PlayerGui
-    ToggleGui.ResetOnSpawn = false
-    ToggleGui.IgnoreGuiInset = true
-
-    local MobileToggleBtn = Instance.new("ImageButton")
-    MobileToggleBtn.Name = "MobileToggleBtn"
-    MobileToggleBtn.Size = UDim2.new(0, 45, 0, 45)
-    MobileToggleBtn.Position = UDim2.new(0.5, -22, 0, 10)
-    MobileToggleBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
-    MobileToggleBtn.Image = "rbxassetid://103314343492991"
-    MobileToggleBtn.ImageColor3 = Theme.Accent
-    MobileToggleBtn.Active = true
-    MobileToggleBtn.Draggable = true
-    MobileToggleBtn.Parent = ToggleGui
-    
-    Instance.new("UICorner", MobileToggleBtn).CornerRadius = UDim.new(0, 8)
-    local stroke = Instance.new("UIStroke", MobileToggleBtn)
-    stroke.Color = Theme.Border
-    stroke.Thickness = 1
-    
-    MobileToggleBtn.MouseButton1Click:Connect(function()
-        toggleUI(not UI.IsVisible)
-    end)
+l0IOII.Name = "TitleBar"
+if false then
+	_ = 520
 end
-
-_G.CrimsonInputConn = UserInputService.InputBegan:Connect(function(input, gp)
-    if not gp then
-        if input.KeyCode == Enum.KeyCode.Zero then
-            toggleUI(not UI.IsVisible)
-        end
-    end
-end)
-
-local RunService = game:GetService("RunService")
-local dragging, dragInput, dragStart, startPos
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainContainer.Position
-    end
-end)
-TitleBar.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-    end
-end)
-UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-RunService.RenderStepped:Connect(function()
-    if dragging and dragInput then
-        local delta = dragInput.Position - dragStart
-        local targetPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        MainContainer.Position = MainContainer.Position:Lerp(targetPos, 0.25)
-    end
-end)
-
-local TopSeparator = Instance.new("Frame")
-TopSeparator.Size = UDim2.new(1, 0, 0, 1)
-TopSeparator.Position = UDim2.new(0, 0, 0, 36)
-TopSeparator.BackgroundColor3 = Theme.Border
-TopSeparator.BorderSizePixel = 0
-TopSeparator.ZIndex = 5
-TopSeparator.Parent = MainContainer
-
--- Content Container
-local ContentBody = Instance.new("Frame")
-ContentBody.Name = "ContentBody"
-ContentBody.Size = UDim2.new(1, 0, 1, -37)
-ContentBody.Position = UDim2.new(0, 0, 0, 37)
-ContentBody.BackgroundTransparency = 1
-ContentBody.Parent = MainContainer
-
--- Sidebar
-local Sidebar = Instance.new("Frame")
-Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0, 140, 1, 0)
-Sidebar.BackgroundColor3 = Theme.Sidebar
-Sidebar.BorderSizePixel = 0
-Sidebar.ZIndex = 2
-Sidebar.Parent = ContentBody
-
-local SidebarSeparator = Instance.new("Frame")
-SidebarSeparator.Size = UDim2.new(0, 1, 1, 0)
-SidebarSeparator.Position = UDim2.new(0, 140, 0, 0)
-SidebarSeparator.BackgroundColor3 = Theme.Border
-SidebarSeparator.BorderSizePixel = 0
-SidebarSeparator.ZIndex = 2
-SidebarSeparator.Parent = ContentBody
-
-local TabList = Instance.new("UIListLayout")
-TabList.SortOrder = Enum.SortOrder.LayoutOrder
-TabList.Padding = UDim.new(0, 4)
-TabList.Parent = Sidebar
-
-local TabPadding = Instance.new("UIPadding")
-TabPadding.PaddingTop = UDim.new(0, 12)
-TabPadding.PaddingLeft = UDim.new(0, 8)
-TabPadding.PaddingRight = UDim.new(0, 8)
-TabPadding.Parent = Sidebar
-
--- Pages Container
-local PagesContainer = Instance.new("Frame")
-PagesContainer.Name = "PagesContainer"
-PagesContainer.Size = UDim2.new(1, -140, 1, 0)
-PagesContainer.Position = UDim2.new(0, 140, 0, 0)
-PagesContainer.BackgroundTransparency = 1
-PagesContainer.ZIndex = 1
-PagesContainer.Parent = ContentBody
-
-local function CreateTab(name)
-    local TabBtn = Instance.new("TextButton")
-    TabBtn.Name = name
-    TabBtn.Size = UDim2.new(1, 0, 0, 32)
-    TabBtn.BackgroundColor3 = Theme.Sidebar
-    TabBtn.BackgroundTransparency = 1
-    TabBtn.Text = ""
-    TabBtn.AutoButtonColor = false
-    TabBtn.Parent = Sidebar
-    Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 6)
-
-    local TabIndicator = Instance.new("Frame")
-    TabIndicator.Size = UDim2.new(0, 3, 0, 0)
-    TabIndicator.Position = UDim2.new(0, 0, 0.5, 0)
-    TabIndicator.AnchorPoint = Vector2.new(0, 0.5)
-    TabIndicator.BackgroundColor3 = Theme.Accent
-    TabIndicator.BorderSizePixel = 0
-    TabIndicator.Parent = TabBtn
-    Instance.new("UICorner", TabIndicator).CornerRadius = UDim.new(1, 0)
-
-    local TabLabel = Instance.new("TextLabel")
-    TabLabel.Size = UDim2.new(1, -16, 1, 0)
-    TabLabel.Position = UDim2.new(0, 12, 0, 0)
-    TabLabel.BackgroundTransparency = 1
-    TabLabel.Text = name
-    TabLabel.TextColor3 = Theme.TextSecondary
-    TabLabel.Font = Theme.FontMedium
-    TabLabel.TextSize = 13
-    TabLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TabLabel.Parent = TabBtn
-
-    local Page = Instance.new("ScrollingFrame")
-    Page.Name = name .. "Page"
-    Page.Size = UDim2.new(1, 0, 1, 0)
-    Page.BackgroundTransparency = 1
-    Page.BorderSizePixel = 0
-    Page.ScrollBarThickness = 2
-    Page.ScrollBarImageColor3 = Theme.Border
-    Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    Page.Visible = false
-    Page.Parent = PagesContainer
-
-    local PageLayout = Instance.new("UIListLayout")
-    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    PageLayout.Padding = UDim.new(0, 12)
-    PageLayout.FillDirection = Enum.FillDirection.Vertical
-    PageLayout.Parent = Page
-
-    local PagePadding = Instance.new("UIPadding")
-    PagePadding.PaddingTop = UDim.new(0, 16)
-    PagePadding.PaddingLeft = UDim.new(0, 16)
-    PagePadding.PaddingRight = UDim.new(0, 16)
-    PagePadding.PaddingBottom = UDim.new(0, 16)
-    PagePadding.Parent = Page
-
-    local tabInfo = {Button = TabBtn, Page = Page, Indicator = TabIndicator, Label = TabLabel}
-    table.insert(UI.Tabs, tabInfo)
-
-    TabBtn.MouseEnter:Connect(function()
-        if UI.ActiveTab ~= tabInfo then
-            TweenService:Create(TabLabel, TweenInfo.new(0.2), {TextColor3 = Theme.TextPrimary}):Play()
-            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.5, BackgroundColor3 = Theme.ItemHover}):Play()
-        end
-    end)
-
-    TabBtn.MouseLeave:Connect(function()
-        if UI.ActiveTab ~= tabInfo then
-            TweenService:Create(TabLabel, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
-            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-        end
-    end)
-
-    TabBtn.MouseButton1Click:Connect(function()
-        if UI.ActiveTab == tabInfo then return end
-        
-        if UI.ActiveTab then
-            TweenService:Create(UI.ActiveTab.Label, TweenInfo.new(0.2), {TextColor3 = Theme.TextSecondary}):Play()
-            TweenService:Create(UI.ActiveTab.Button, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(UI.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0, 0)}):Play()
-            UI.ActiveTab.Page.Visible = false
-        end
-
-        UI.ActiveTab = tabInfo
-        UI.ActiveTab.Page.Visible = true
-        TweenService:Create(UI.ActiveTab.Label, TweenInfo.new(0.2), {TextColor3 = Theme.Accent}):Play()
-        TweenService:Create(UI.ActiveTab.Button, TweenInfo.new(0.2), {BackgroundTransparency = 0, BackgroundColor3 = Theme.ItemBg}):Play()
-        TweenService:Create(UI.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 3, 0, 16)}):Play()
-    end)
-
-    -- Auto select first tab
-    if #UI.Tabs == 1 then
-        UI.ActiveTab = tabInfo
-        UI.ActiveTab.Page.Visible = true
-        TabLabel.TextColor3 = Theme.Accent
-        TabBtn.BackgroundTransparency = 0
-        TabBtn.BackgroundColor3 = Theme.ItemBg
-        TabIndicator.Size = UDim2.new(0, 3, 0, 16)
-    end
-
-    local SectionFuncs = {}
-    
-    function SectionFuncs:CreateSection(sectionName)
-        local Section = Instance.new("Frame")
-        Section.Name = sectionName
-        Section.Size = UDim2.new(1, 0, 0, 0)
-        Section.AutomaticSize = Enum.AutomaticSize.Y
-        Section.BackgroundColor3 = Theme.SectionBg
-        Section.BorderSizePixel = 0
-        Section.Parent = Page
-        Instance.new("UICorner", Section).CornerRadius = UDim.new(0, 6)
-        
-        local SectionStroke = Instance.new("UIStroke", Section)
-        SectionStroke.Color = Theme.Border
-        SectionStroke.Thickness = 1
-
-        local SectionLayout = Instance.new("UIListLayout")
-        SectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        SectionLayout.Padding = UDim.new(0, 0)
-        SectionLayout.Parent = Section
-
-        local SectionTitle = Instance.new("TextLabel")
-        SectionTitle.Size = UDim2.new(1, -24, 0, 36)
-        SectionTitle.Position = UDim2.new(0, 12, 0, 0)
-        SectionTitle.BackgroundTransparency = 1
-        SectionTitle.Text = "  " .. sectionName
-        SectionTitle.TextColor3 = Theme.TextPrimary
-        SectionTitle.Font = Theme.FontMedium
-        SectionTitle.TextSize = 13
-        SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
-        SectionTitle.Parent = Section
-        
-        local Sep = Instance.new("Frame")
-        Sep.Size = UDim2.new(1, 0, 0, 1)
-        Sep.BackgroundColor3 = Theme.Border
-        Sep.BorderSizePixel = 0
-        Sep.Parent = Section
-
-        local SectionContent = Instance.new("Frame")
-        SectionContent.Size = UDim2.new(1, 0, 0, 0)
-        SectionContent.AutomaticSize = Enum.AutomaticSize.Y
-        SectionContent.BackgroundTransparency = 1
-        SectionContent.Parent = Section
-        
-        local ContentLayout = Instance.new("UIListLayout")
-        ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        ContentLayout.Parent = SectionContent
-
-        local ItemFuncs = {}
-
-        function ItemFuncs:CreateButton(name, callback)
-            local BtnFrame = Instance.new("TextButton")
-            BtnFrame.Size = UDim2.new(1, 0, 0, 36)
-            BtnFrame.BackgroundTransparency = 1
-            BtnFrame.Text = ""
-            BtnFrame.Parent = SectionContent
-
-            local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(1, -24, 1, 0)
-            Label.Position = UDim2.new(0, 12, 0, 0)
-            Label.BackgroundTransparency = 1
-            Label.Text = name
-            Label.TextColor3 = Theme.TextPrimary
-            Label.Font = Theme.FontMedium
-            Label.TextSize = 13
-            Label.TextXAlignment = Enum.TextXAlignment.Center
-            Label.Parent = BtnFrame
-            
-            local Bg = Instance.new("Frame")
-            Bg.Size = UDim2.new(1, -16, 1, -8)
-            Bg.Position = UDim2.new(0, 8, 0, 4)
-            Bg.BackgroundColor3 = Theme.ItemBg
-            Bg.ZIndex = -1
-            Bg.Parent = BtnFrame
-            Instance.new("UICorner", Bg).CornerRadius = UDim.new(0, 6)
-
-            BtnFrame.MouseEnter:Connect(function()
-                TweenService:Create(Bg, TweenInfo.new(0.2), {BackgroundColor3 = Theme.ItemHover}):Play()
-            end)
-            BtnFrame.MouseLeave:Connect(function()
-                TweenService:Create(Bg, TweenInfo.new(0.2), {BackgroundColor3 = Theme.ItemBg}):Play()
-            end)
-            BtnFrame.MouseButton1Click:Connect(callback)
-            return BtnFrame
-        end
-
-        function ItemFuncs:CreateToggle(name, default, callback)
-            local ToggleFrame = Instance.new("TextButton")
-            ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
-            ToggleFrame.BackgroundTransparency = 1
-            ToggleFrame.Text = ""
-            ToggleFrame.AutoButtonColor = false
-            ToggleFrame.Parent = SectionContent
-            
-            local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(1, -60, 1, 0)
-            Label.Position = UDim2.new(0, 12, 0, 0)
-            Label.BackgroundTransparency = 1
-            Label.Text = name
-            Label.TextColor3 = Theme.TextSecondary
-            Label.Font = Theme.Font
-            Label.TextSize = 13
-            Label.TextXAlignment = Enum.TextXAlignment.Left
-            Label.Parent = ToggleFrame
-            
-            local Pill = Instance.new("Frame")
-            Pill.Size = UDim2.new(0, 36, 0, 18)
-            Pill.AnchorPoint = Vector2.new(1, 0.5)
-            Pill.Position = UDim2.new(1, -12, 0.5, 0)
-            Pill.BackgroundColor3 = default and Theme.Accent or Theme.ItemBg
-            Pill.Parent = ToggleFrame
-            Instance.new("UICorner", Pill).CornerRadius = UDim.new(1, 0)
-            
-            local Knob = Instance.new("Frame")
-            Knob.Size = UDim2.new(0, 14, 0, 14)
-            Knob.AnchorPoint = Vector2.new(0, 0.5)
-            Knob.Position = default and UDim2.new(1, -16, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
-            Knob.BackgroundColor3 = Color3.new(1, 1, 1)
-            Knob.Parent = Pill
-            Instance.new("UICorner", Knob).CornerRadius = UDim.new(1, 0)
-            
-            local state = default
-            
-            ToggleFrame.MouseButton1Click:Connect(function()
-                state = not state
-                TweenService:Create(Pill, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                    BackgroundColor3 = state and Theme.Accent or Theme.ItemBg
-                }):Play()
-                TweenService:Create(Knob, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                    Position = state and UDim2.new(1, -16, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
-                }):Play()
-                TweenService:Create(Label, TweenInfo.new(0.2), {
-                    TextColor3 = state and Theme.TextPrimary or Theme.TextSecondary
-                }):Play()
-                
-                if state then
-                    for i = 1, 5 do
-                        local particle = Instance.new("Frame")
-                        particle.Size = UDim2.new(0, 8, 0, 8)
-                        particle.Position = UDim2.new(0.5, 0, 0.5, 0)
-                        particle.AnchorPoint = Vector2.new(0.5, 0.5)
-                        particle.BackgroundColor3 = Theme.Accent
-                        particle.BorderSizePixel = 0
-                        particle.ZIndex = 10
-                        Instance.new("UICorner", particle).CornerRadius = UDim.new(1, 0)
-                        particle.Parent = Pill
-                        
-                        local angle = math.rad(math.random(0, 360))
-                        local distance = math.random(18, 30)
-                        local goalPos = UDim2.new(0.5, math.cos(angle) * distance, 0.5, math.sin(angle) * distance)
-                        
-                        local ptween = TweenService:Create(particle, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-                            Position = goalPos,
-                            BackgroundTransparency = 1,
-                            Size = UDim2.new(0, 3, 0, 3)
-                        })
-                        ptween:Play()
-                        
-                        task.delay(0.5, function()
-                            if particle then particle:Destroy() end
-                        end)
-                    end
-                end
-                
-                callback(state)
-            end)
-
-            if default then
-                Label.TextColor3 = Theme.TextPrimary
-            end
-        end
-
-        function ItemFuncs:CreateStatusLabel(name, defaultText)
-            local StatusFrame = Instance.new("Frame")
-            StatusFrame.Size = UDim2.new(1, 0, 0, 40)
-            StatusFrame.BackgroundTransparency = 1
-            StatusFrame.Parent = SectionContent
-
-            local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(0, 100, 1, 0)
-            Label.Position = UDim2.new(0, 12, 0, 0)
-            Label.BackgroundTransparency = 1
-            Label.Text = name
-            Label.TextColor3 = Theme.TextSecondary
-            Label.Font = Theme.Font
-            Label.TextSize = 13
-            Label.TextXAlignment = Enum.TextXAlignment.Left
-            Label.Parent = StatusFrame
-
-            local ValueLabel = Instance.new("TextLabel")
-            ValueLabel.Size = UDim2.new(1, -124, 1, 0)
-            ValueLabel.Position = UDim2.new(0, 112, 0, 0)
-            ValueLabel.BackgroundTransparency = 1
-            ValueLabel.Text = defaultText
-            ValueLabel.TextColor3 = Theme.TextPrimary
-            ValueLabel.Font = Theme.FontMedium
-            ValueLabel.TextSize = 12
-            ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-            ValueLabel.Parent = StatusFrame
-
-            local function update(newText, color)
-                ValueLabel.Text = newText
-                if color then
-                    TweenService:Create(ValueLabel, TweenInfo.new(0.2), {TextColor3 = color}):Play()
-                else
-                    ValueLabel.TextColor3 = Theme.TextPrimary
-                end
-            end
-            return update
-        end
-
-        function ItemFuncs:CreateSlider(name, min, max, default, callback, displayScale)
-            local SliderFrame = Instance.new("Frame")
-            SliderFrame.Size = UDim2.new(1, 0, 0, 48)
-            SliderFrame.BackgroundTransparency = 1
-            SliderFrame.Parent = SectionContent
-
-            local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(1, -60, 0, 18)
-            Label.Position = UDim2.new(0, 12, 0, 6)
-            Label.BackgroundTransparency = 1
-            Label.Text = name
-            Label.TextColor3 = Theme.TextSecondary
-            Label.Font = Theme.Font
-            Label.TextSize = 13
-            Label.TextXAlignment = Enum.TextXAlignment.Left
-            Label.Parent = SliderFrame
-
-            local ValueLabel = Instance.new("TextLabel")
-            ValueLabel.Size = UDim2.new(0, 40, 0, 18)
-            ValueLabel.Position = UDim2.new(1, -52, 0, 6)
-            ValueLabel.BackgroundTransparency = 1
-            ValueLabel.Text = tostring(default / (displayScale or 1))
-            ValueLabel.TextColor3 = Theme.TextPrimary
-            ValueLabel.Font = Theme.FontMedium
-            ValueLabel.TextSize = 12
-            ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-            ValueLabel.Parent = SliderFrame
-
-            local TrackArea = Instance.new("TextButton")
-            TrackArea.Size = UDim2.new(1, -24, 0, 12)
-            TrackArea.Position = UDim2.new(0, 12, 0, 28)
-            TrackArea.BackgroundTransparency = 1
-            TrackArea.Text = ""
-            TrackArea.Parent = SliderFrame
-
-            local Track = Instance.new("Frame")
-            Track.Size = UDim2.new(1, 0, 0, 4)
-            Track.AnchorPoint = Vector2.new(0, 0.5)
-            Track.Position = UDim2.new(0, 0, 0.5, 0)
-            Track.BackgroundColor3 = Theme.ItemBg
-            Track.Parent = TrackArea
-            Instance.new("UICorner", Track).CornerRadius = UDim.new(1, 0)
-
-            local Fill = Instance.new("Frame")
-            local pct = (default - min) / (max - min)
-            Fill.Size = UDim2.new(pct, 0, 1, 0)
-            Fill.BackgroundColor3 = Theme.Accent
-            Fill.Parent = Track
-            Instance.new("UICorner", Fill).CornerRadius = UDim.new(1, 0)
-
-            local Handle = Instance.new("Frame")
-            Handle.Size = UDim2.new(0, 12, 0, 12)
-            Handle.AnchorPoint = Vector2.new(0.5, 0.5)
-            Handle.Position = UDim2.new(pct, 0, 0.5, 0)
-            Handle.BackgroundColor3 = Color3.new(1, 1, 1)
-            Handle.Parent = Track
-            Instance.new("UICorner", Handle).CornerRadius = UDim.new(1, 0)
-
-            local dragging = false
-            local function updateSlider(input)
-                local pos = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
-                local value = math.floor(min + ((max - min) * pos))
-                
-                TweenService:Create(Fill, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
-                TweenService:Create(Handle, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Position = UDim2.new(pos, 0, 0.5, 0)}):Play()
-                ValueLabel.Text = tostring(value / (displayScale or 1))
-                callback(value)
-            end
-
-            TrackArea.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    dragging = true
-                    updateSlider(input)
-                end
-            end)
-
-            UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    dragging = false
-                end
-            end)
-
-            UserInputService.InputChanged:Connect(function(input)
-                if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                    updateSlider(input)
-                end
-            end)
-
-            return SliderFrame
-        end
-
-        function ItemFuncs:CreateDropdown(name, options, default, callback)
-            local DropdownFrame = Instance.new("Frame")
-            DropdownFrame.Size = UDim2.new(1, 0, 0, 48)
-            DropdownFrame.BackgroundTransparency = 1
-            DropdownFrame.Parent = SectionContent
-
-            local Label = Instance.new("TextLabel")
-            Label.Size = UDim2.new(1, -120, 0, 18)
-            Label.Position = UDim2.new(0, 12, 0, 15)
-            Label.BackgroundTransparency = 1
-            Label.Text = name
-            Label.TextColor3 = Theme.TextSecondary
-            Label.Font = Theme.Font
-            Label.TextSize = 13
-            Label.TextXAlignment = Enum.TextXAlignment.Left
-            Label.Parent = DropdownFrame
-
-            local SelectedBox = Instance.new("TextButton")
-            SelectedBox.Size = UDim2.new(0, 100, 0, 24)
-            SelectedBox.Position = UDim2.new(1, -112, 0, 12)
-            SelectedBox.BackgroundColor3 = Theme.ItemBg
-            SelectedBox.Text = ""
-            SelectedBox.AutoButtonColor = false
-            SelectedBox.Parent = DropdownFrame
-            Instance.new("UICorner", SelectedBox).CornerRadius = UDim.new(0, 4)
-
-            local SelectedText = Instance.new("TextLabel")
-            SelectedText.Size = UDim2.new(1, -20, 1, 0)
-            SelectedText.Position = UDim2.new(0, 8, 0, 0)
-            SelectedText.BackgroundTransparency = 1
-            SelectedText.Text = default
-            SelectedText.TextColor3 = Theme.TextPrimary
-            SelectedText.Font = Theme.Font
-            SelectedText.TextSize = 12
-            SelectedText.TextXAlignment = Enum.TextXAlignment.Left
-            SelectedText.Parent = SelectedBox
-
-            local Arrow = Instance.new("TextLabel")
-            Arrow.Size = UDim2.new(0, 20, 1, 0)
-            Arrow.Position = UDim2.new(1, -20, 0, 0)
-            Arrow.BackgroundTransparency = 1
-            Arrow.Text = "Ã¢â€“Â¼"
-            Arrow.TextColor3 = Theme.TextSecondary
-            Arrow.Font = Theme.Font
-            Arrow.TextSize = 10
-            Arrow.Parent = SelectedBox
-
-            local DropdownContainer = Instance.new("Frame")
-            DropdownContainer.Size = UDim2.new(0, 100, 0, 0)
-            DropdownContainer.Position = UDim2.new(1, -112, 0, 40)
-            DropdownContainer.BackgroundColor3 = Theme.ItemBg
-            DropdownContainer.ZIndex = 10
-            DropdownContainer.ClipsDescendants = true
-            DropdownContainer.Parent = DropdownFrame
-            Instance.new("UICorner", DropdownContainer).CornerRadius = UDim.new(0, 4)
-
-            local DropdownLayout = Instance.new("UIListLayout")
-            DropdownLayout.SortOrder = Enum.SortOrder.LayoutOrder
-            DropdownLayout.Parent = DropdownContainer
-
-            local isOpen = false
-            local listSize = math.min(#options * 24, 120)
-
-            local function toggleDropdown()
-                isOpen = not isOpen
-                TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = isOpen and 180 or 0}):Play()
-                TweenService:Create(DropdownContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                    Size = UDim2.new(0, 100, 0, isOpen and listSize or 0)
-                }):Play()
-                
-                if isOpen then
-                    DropdownFrame.Size = UDim2.new(1, 0, 0, 48 + listSize + 4)
-                else
-                    DropdownFrame.Size = UDim2.new(1, 0, 0, 48)
-                end
-            end
-
-            SelectedBox.MouseButton1Click:Connect(toggleDropdown)
-
-            for i, option in ipairs(options) do
-                local OptionBtn = Instance.new("TextButton")
-                OptionBtn.Size = UDim2.new(1, 0, 0, 24)
-                OptionBtn.BackgroundColor3 = Theme.ItemBg
-                OptionBtn.BackgroundTransparency = 1
-                OptionBtn.Text = "  " .. option
-                OptionBtn.TextColor3 = Theme.TextSecondary
-                OptionBtn.Font = Theme.Font
-                OptionBtn.TextSize = 12
-                OptionBtn.TextXAlignment = Enum.TextXAlignment.Left
-                OptionBtn.AutoButtonColor = false
-                OptionBtn.ZIndex = 11
-                OptionBtn.Parent = DropdownContainer
-
-                OptionBtn.MouseEnter:Connect(function()
-                    TweenService:Create(OptionBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = Theme.ItemHover, TextColor3 = Theme.TextPrimary}):Play()
-                end)
-                OptionBtn.MouseLeave:Connect(function()
-                    TweenService:Create(OptionBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1, TextColor3 = Theme.TextSecondary}):Play()
-                end)
-
-                OptionBtn.MouseButton1Click:Connect(function()
-                    SelectedText.Text = option
-                    toggleDropdown()
-                    callback(option)
-                end)
-            end
-        end
-
-        return ItemFuncs
-    end
-    
-    return SectionFuncs
+l0IOII.Size = UDim2.new(111 - 110, 437 - 437, 386 - 386, 682 - 646)
+local l000IIO__O = 891174
+l0IOII.BackgroundTransparency = 448 - 447
+l0IOII.ZIndex = 1000 - 995
+l0IOII.Parent = Ol0I0l_lll_
+local OO_lllIO0__ = 239551
+local lOOOOOI = Instance.new("ImageLabel")
+lOOOOOI.Name = "TitleLogo"
+local l__l_lIOIl = 277070
+lOOOOOI.Size = UDim2.new(879 - 879, 509 - 483, 882 - 882, 799 - 773)
+local OlIIOl__ = 613763
+lOOOOOI.Position = UDim2.new(413 - 413, 656 - 644, 0.5, -(929 - 916))
+lOOOOOI.BackgroundTransparency = 315 - 314
+if false then
+	_ = 232
 end
-
---------------------------------------------------------------------
--- BUILD UI TABS
---------------------------------------------------------------------
-local BattingTab = CreateTab("Baseball Universe")
-local HittingSection = BattingTab:CreateSection("Hitting")
-
-HittingSection:CreateToggle("Ball ESP (Predictor)", Options.Predictor, function(val)
-    Options.Predictor = val
+lOOOOOI.Image = "rbxassetid://103314343492991"
+local lOOOlI_l0IO = 524729
+lOOOOOI.ImageColor3 = lOOl0_l.Accent
+if false then
+	_ = 483
+end
+lOOOOOI.ZIndex = 460 - 455
+local O_000O0O = 409176
+lOOOOOI.Parent = l0IOII
+local O_III_l0l = Instance.new("TextLabel")
+O_III_l0l.Name = "TitleText"
+O_III_l0l.Size = UDim2.new(814 - 813, -(203 - 153), 355 - 354, 889 - 889)
+local Il00_III = 749513
+O_III_l0l.Position = UDim2.new(505 - 505, 719 - 675, 396 - 396, 952 - 952)
+if false then
+	_ = 270
+end
+O_III_l0l.BackgroundTransparency = 933 - 932
+if false then
+	_ = 648
+end
+O_III_l0l.Text = "MOON HUB"
+local I_O_OO0_0OO = 430019
+O_III_l0l.TextColor3 = lOOl0_l.TextPrimary
+local I0I00IOll_O = 846771
+O_III_l0l.Font = lOOl0_l.FontMedium
+O_III_l0l.TextSize = 523 - 511
+local O__I0lO_ = 724474
+if false then
+	_ = 199
+end
+O_III_l0l.TextXAlignment = Enum.TextXAlignment.Left
+O_III_l0l.ZIndex = 505 - 500
+if false then
+	_ = 790
+end
+O_III_l0l.Parent = l0IOII
+local l0lIIOIOIII = 454371
+if false then
+	_ = 68
+end
+local IOOI0O0lIIl = Instance.new("TextButton")
+IOOI0O0lIIl.Name = "CloseBtn"
+IOOI0O0lIIl.Size = UDim2.new(383 - 383, 307 - 271, 530 - 530, 423 - 387)
+if false then
+	_ = 630
+end
+IOOI0O0lIIl.Position = UDim2.new(30 - 29, -(596 - 560), 303 - 303, 98 - 98)
+IOOI0O0lIIl.BackgroundTransparency = 389 - 388
+if false then
+	_ = 395
+end
+IOOI0O0lIIl.Text = "X"
+local O0__IOIOl = 4780
+if false then
+	_ = 769
+end
+IOOI0O0lIIl.TextColor3 = lOOl0_l.TextSecondary
+local OOOO0lII00 = 820728
+IOOI0O0lIIl.Font = lOOl0_l.FontBold
+IOOI0O0lIIl.TextSize = 43 - 29
+IOOI0O0lIIl.ZIndex = 888 - 883
+local lO_I0l = 556282
+IOOI0O0lIIl.Parent = l0IOII
+local OlOIOOIll0 = 304062
+IOOI0O0lIIl.MouseEnter:Connect(function()
+	if false then
+		_ = 794
+	end
+	OO_O0_:Create(IOOI0O0lIIl, TweenInfo.new(0.2), { TextColor3 = Color3.new(880 - 879, 638 - 637, 871 - 870) }):Play()
 end)
-
-HittingSection:CreateToggle("Auto Swing", Options.AutoSwing, function(val)
-    Options.AutoSwing = val
+IOOI0O0lIIl.MouseLeave:Connect(function()
+	local l0_0I_0I_0l = 641214
+	OO_O0_:Create(IOOI0O0lIIl, TweenInfo.new(0.2), { TextColor3 = lOOl0_l.TextSecondary }):Play()
 end)
-
-HittingSection:CreateToggle("Strikebox Only (RECOMMENDED)", Options.StrikeboxOnly, function(val)
-    Options.StrikeboxOnly = val
+local IOOIlIOl0 = 473165
+local function ll_lOII_00(l0IOIO0l)
+	lOl0O_Ol0_.IsVisible = l0IOIO0l
+	local I0Ol0Ol0lI_ = 468261
+	if l0IOIO0l then
+		local IOl0_II0Il0 = 56806
+		OIO_I_0.Enabled = true
+		if false then
+			_ = 219
+		end
+		OO_O0_:Create(Ol0I0l_lll_, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(633 - 633, I_IlllOOO, 116 - 116, I00O_0IlIIO), GroupTransparency = 324 - 324, Position = UDim2.new(0.5, 794 - 794, 0.5, 174 - 174) }):Play()
+	else
+		if false then
+			_ = 271
+		end
+		local IOI0llI_l0l = OO_O0_:Create(Ol0I0l_lll_, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In), { Size = UDim2.new(340 - 340, O00I00IO0, 337 - 337, IIlIll), GroupTransparency = 885 - 884, Position = UDim2.new(0.5, 237 - 237, 0.5, 234 - 204) })
+		if false then
+			_ = 502
+		end
+		IOI0llI_l0l:Play()
+		local I0ll_0l0 = 611532
+		IOI0llI_l0l.Completed:Connect(function()
+			local OII_OIOl0 = 191005
+			if not lOl0O_Ol0_.IsVisible then
+				OIO_I_0.Enabled = false
+			end
+		end)
+	end
+end
+IOOI0O0lIIl.MouseButton1Click:Connect(function()
+	if false then
+		_ = 134
+	end
+	ll_lOII_00(false)
 end)
-
+local lI0l0ll = 471351
+if false then
+	_ = 748
+end
+if IIIOll_Oll0 then
+	local ll0OlI = Instance.new("ScreenGui")
+	local OllI00O_O_ = 496592
+	ll0OlI.Name = "MoonHubToggleUI"
+	ll0OlI.Parent = OI0Il0II0O
+	ll0OlI.ResetOnSpawn = false
+	local IO_I0IlI0_ = 659362
+	ll0OlI.IgnoreGuiInset = true
+	if false then
+		_ = 720
+	end
+	local lOI__I__ = Instance.new("ImageButton")
+	lOI__I__.Name = "MobileToggleBtn"
+	lOI__I__.Size = UDim2.new(626 - 626, 73 - 28, 425 - 425, 732 - 687)
+	local Olll_OO0 = 79387
+	lOI__I__.Position = UDim2.new(0.5, -(451 - 429), 126 - 126, 610 - 600)
+	if false then
+		_ = 12
+	end
+	lOI__I__.BackgroundColor3 = Color3.fromRGB(634 - 626, 440 - 432, 494 - 486)
+	if false then
+		_ = 26
+	end
+	lOI__I__.Image = "rbxassetid://103314343492991"
+	local I_lOOI_ = 99138
+	lOI__I__.ImageColor3 = lOOl0_l.Accent
+	local lOl0Il_lI = 597138
+	lOI__I__.Active = true
+	local llOI0O0O0O = 518957
+	lOI__I__.Draggable = true
+	lOI__I__.Parent = ll0OlI
+	local I_O_lOI = 882919
+	Instance.new("UICorner", lOI__I__).CornerRadius = UDim.new(370 - 370, 658 - 650)
+	local OO__O0O = Instance.new("UIStroke", lOI__I__)
+	OO__O0O.Color = lOOl0_l.Border
+	OO__O0O.Thickness = 885 - 884
+	if false then
+		_ = 594
+	end
+	lOI__I__.MouseButton1Click:Connect(function()
+		ll_lOII_00(not lOl0O_Ol0_.IsVisible)
+	end)
+end
+_G.CrimsonInputConn = l0Oll_lII.InputBegan:Connect(function(OOIII0l_l0_, OII__O_I)
+	local OO0_I0IlO_O = 707981
+	if false then
+		_ = 759
+	end
+	if not OII__O_I then
+		if OOIII0l_l0_.KeyCode == Enum.KeyCode.Zero then
+			local O0Ol_0_lI_ = 985605
+			ll_lOII_00(not lOl0O_Ol0_.IsVisible)
+		end
+	end
+end)
+local OI00IIII_0I = 472925
+local O0__lIllI__ = game:GetService("RunService")
+local I0I00I0, Ol0O_0IlI__, lO_lI0OIOO, IIIOO_I
+l0IOII.InputBegan:Connect(function(O_O____0)
+	local OI0I_O0IO0 = 550486
+	if O_O____0.UserInputType == Enum.UserInputType.MouseButton1 or O_O____0.UserInputType == Enum.UserInputType.Touch then
+		I0I00I0 = true
+		if false then
+			_ = 380
+		end
+		lO_lI0OIOO = O_O____0.Position
+		if false then
+			_ = 328
+		end
+		IIIOO_I = Ol0I0l_lll_.Position
+	end
+end)
+if false then
+	_ = 415
+end
+l0IOII.InputEnded:Connect(function(OI_II_OIIO)
+	if OI_II_OIIO.UserInputType == Enum.UserInputType.MouseButton1 or OI_II_OIIO.UserInputType == Enum.UserInputType.Touch then
+		local O0II0l = 877909
+		I0I00I0 = false
+	end
+end)
+local OIl0OO_0 = 817189
+l0Oll_lII.InputChanged:Connect(function(I0IO_lOIOI_)
+	if false then
+		_ = 376
+	end
+	if I0IO_lOIOI_.UserInputType == Enum.UserInputType.MouseMovement or I0IO_lOIOI_.UserInputType == Enum.UserInputType.Touch then
+		Ol0O_0IlI__ = I0IO_lOIOI_
+	end
+end)
+local OO__lO_O0Ol = 841644
+O0__lIllI__.RenderStepped:Connect(function()
+	if I0I00I0 and Ol0O_0IlI__ then
+		local OO__II_II = Ol0O_0IlI__.Position - lO_lI0OIOO
+		local lOlOlOOI_IO = UDim2.new(IIIOO_I.X.Scale, IIIOO_I.X.Offset + OO__II_II.X, IIIOO_I.Y.Scale, IIIOO_I.Y.Offset + OO__II_II.Y)
+		local lI_O_0l_0l0 = 706203
+		Ol0I0l_lll_.Position = Ol0I0l_lll_.Position:Lerp(lOlOlOOI_IO, 0.25)
+	end
+end)
+local I00OOllI_ = 418187
+local OlOI__I__ = Instance.new("Frame")
+OlOI__I__.Size = UDim2.new(438 - 437, 848 - 848, 377 - 377, 241 - 240)
+local O_OlIl0I_lO = 658249
+OlOI__I__.Position = UDim2.new(717 - 717, 331 - 331, 270 - 270, 915 - 879)
+OlOI__I__.BackgroundColor3 = lOOl0_l.Border
+OlOI__I__.BorderSizePixel = 997 - 997
+OlOI__I__.ZIndex = 166 - 161
+if false then
+	_ = 366
+end
+OlOI__I__.Parent = Ol0I0l_lll_
+local IlO__IO_0OI = Instance.new("Frame")
+local ll0_O0O = 374045
+if false then
+	_ = 838
+end
+IlO__IO_0OI.Name = "ContentBody"
+IlO__IO_0OI.Size = UDim2.new(890 - 889, 676 - 676, 165 - 164, -(280 - 243))
+IlO__IO_0OI.Position = UDim2.new(87 - 87, 890 - 890, 532 - 532, 450 - 413)
+local I_0IO0 = 210238
+IlO__IO_0OI.BackgroundTransparency = 210 - 209
+IlO__IO_0OI.Parent = Ol0I0l_lll_
+if false then
+	_ = 7
+end
+local l0l_0lll__ = Instance.new("Frame")
+l0l_0lll__.Name = "Sidebar"
+l0l_0lll__.Size = UDim2.new(968 - 968, 1037 - 897, 270 - 269, 334 - 334)
+local I_I_OI_ll0 = 2616
+l0l_0lll__.BackgroundColor3 = lOOl0_l.Sidebar
+l0l_0lll__.BorderSizePixel = 5 - 5
+l0l_0lll__.ZIndex = 953 - 951
+l0l_0lll__.Parent = IlO__IO_0OI
+local IO_l0O_I_0_ = Instance.new("Frame")
+IO_l0O_I_0_.Size = UDim2.new(260 - 260, 445 - 444, 14 - 13, 448 - 448)
+IO_l0O_I_0_.Position = UDim2.new(294 - 294, 266 - 126, 922 - 922, 351 - 351)
+if false then
+	_ = 877
+end
+IO_l0O_I_0_.BackgroundColor3 = lOOl0_l.Border
+local lI00l_l_l__ = 833217
+IO_l0O_I_0_.BorderSizePixel = 736 - 736
+IO_l0O_I_0_.ZIndex = 439 - 437
+IO_l0O_I_0_.Parent = IlO__IO_0OI
+local OIlI0lIII0O = 73717
+local O0IIl_l0ll0 = Instance.new("UIListLayout")
+O0IIl_l0ll0.SortOrder = Enum.SortOrder.LayoutOrder
+if false then
+	_ = 267
+end
+O0IIl_l0ll0.Padding = UDim.new(757 - 757, 829 - 825)
+O0IIl_l0ll0.Parent = l0l_0lll__
+local OIOllI = Instance.new("UIPadding")
+local I_OI0l = 686540
+OIOllI.PaddingTop = UDim.new(49 - 49, 742 - 730)
+OIOllI.PaddingLeft = UDim.new(321 - 321, 804 - 796)
+OIOllI.PaddingRight = UDim.new(127 - 127, 620 - 612)
+OIOllI.Parent = l0l_0lll__
+local I_IOllO = Instance.new("Frame")
+if false then
+	_ = 503
+end
+I_IOllO.Name = "PagesContainer"
+I_IOllO.Size = UDim2.new(180 - 179, -(399 - 259), 34 - 33, 81 - 81)
+I_IOllO.Position = UDim2.new(345 - 345, 852 - 712, 458 - 458, 429 - 429)
+I_IOllO.BackgroundTransparency = 420 - 419
+I_IOllO.ZIndex = 98 - 97
+I_IOllO.Parent = IlO__IO_0OI
+local function l0OOIO(IO0I0III)
+	local I__I0___ = Instance.new("TextButton")
+	I__I0___.Name = IO0I0III
+	local l_0O00_l__ = 677314
+	I__I0___.Size = UDim2.new(1000 - 999, 625 - 625, 137 - 137, 260 - 228)
+	I__I0___.BackgroundColor3 = lOOl0_l.Sidebar
+	if false then
+		_ = 556
+	end
+	I__I0___.BackgroundTransparency = 607 - 606
+	I__I0___.Text = ""
+	I__I0___.AutoButtonColor = false
+	local OOIl_II = 332540
+	I__I0___.Parent = l0l_0lll__
+	Instance.new("UICorner", I__I0___).CornerRadius = UDim.new(144 - 144, 714 - 708)
+	if false then
+		_ = 950
+	end
+	local llOOOO__0 = Instance.new("Frame")
+	llOOOO__0.Size = UDim2.new(858 - 858, 732 - 729, 924 - 924, 862 - 862)
+	llOOOO__0.Position = UDim2.new(268 - 268, 677 - 677, 0.5, 269 - 269)
+	llOOOO__0.AnchorPoint = Vector2.new(746 - 746, 0.5)
+	local llO0I0_l__0 = 54699
+	llOOOO__0.BackgroundColor3 = lOOl0_l.Accent
+	local I_O_l0OI = 883692
+	llOOOO__0.BorderSizePixel = 895 - 895
+	local IO_Il_ = 429078
+	llOOOO__0.Parent = I__I0___
+	Instance.new("UICorner", llOOOO__0).CornerRadius = UDim.new(178 - 177, 770 - 770)
+	local I00OOI_0_ = Instance.new("TextLabel")
+	if false then
+		_ = 832
+	end
+	I00OOI_0_.Size = UDim2.new(16 - 15, -(864 - 848), 615 - 614, 938 - 938)
+	I00OOI_0_.Position = UDim2.new(206 - 206, 170 - 158, 837 - 837, 231 - 231)
+	I00OOI_0_.BackgroundTransparency = 672 - 671
+	local O00l_Il0l0 = 867325
+	if false then
+		_ = 549
+	end
+	I00OOI_0_.Text = IO0I0III
+	I00OOI_0_.TextColor3 = lOOl0_l.TextSecondary
+	I00OOI_0_.Font = lOOl0_l.FontMedium
+	I00OOI_0_.TextSize = 281 - 268
+	local O_lI_I0lII = 125237
+	I00OOI_0_.TextXAlignment = Enum.TextXAlignment.Left
+	local O_OO0IIll_ = 352039
+	I00OOI_0_.Parent = I__I0___
+	if false then
+		_ = 823
+	end
+	local l_I0l00I = Instance.new("ScrollingFrame")
+	l_I0l00I.Name = IO0I0III .. "Page"
+	l_I0l00I.Size = UDim2.new(612 - 611, 692 - 692, 669 - 668, 144 - 144)
+	l_I0l00I.BackgroundTransparency = 677 - 676
+	l_I0l00I.BorderSizePixel = 235 - 235
+	local OOl0lI_0_lI = 608403
+	if false then
+		_ = 397
+	end
+	l_I0l00I.ScrollBarThickness = 220 - 218
+	local O_l0lI0l = 830476
+	if false then
+		_ = 33
+	end
+	l_I0l00I.ScrollBarImageColor3 = lOOl0_l.Border
+	if false then
+		_ = 210
+	end
+	l_I0l00I.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	if false then
+		_ = 145
+	end
+	l_I0l00I.Visible = false
+	local OOII0_lIOl_ = 797753
+	l_I0l00I.Parent = I_IOllO
+	if false then
+		_ = 239
+	end
+	local lOOlI_O__ = Instance.new("UIListLayout")
+	local l_IllIIlI = 971790
+	lOOlI_O__.SortOrder = Enum.SortOrder.LayoutOrder
+	local lIOl_O0ll0I = 498635
+	lOOlI_O__.Padding = UDim.new(835 - 835, 298 - 286)
+	lOOlI_O__.FillDirection = Enum.FillDirection.Vertical
+	lOOlI_O__.Parent = l_I0l00I
+	if false then
+		_ = 998
+	end
+	local l0lIII__0lI = Instance.new("UIPadding")
+	local lOIl_0ll = 827526
+	l0lIII__0lI.PaddingTop = UDim.new(531 - 531, 864 - 848)
+	l0lIII__0lI.PaddingLeft = UDim.new(460 - 460, 1006 - 990)
+	local IlOOll = 632488
+	if false then
+		_ = 208
+	end
+	l0lIII__0lI.PaddingRight = UDim.new(731 - 731, 372 - 356)
+	if false then
+		_ = 662
+	end
+	l0lIII__0lI.PaddingBottom = UDim.new(833 - 833, 769 - 753)
+	local lIOl0Il = 374610
+	if false then
+		_ = 870
+	end
+	l0lIII__0lI.Parent = l_I0l00I
+	local IIOIll = 888641
+	local lOlI0IO00I = { Button = I__I0___, Page = l_I0l00I, Indicator = llOOOO__0, Label = I00OOI_0_ }
+	if false then
+		_ = 709
+	end
+	table.insert(lOl0O_Ol0_.Tabs, lOlI0IO00I)
+	I__I0___.MouseEnter:Connect(function()
+		local IOl0ll = 300836
+		if lOl0O_Ol0_.ActiveTab ~= lOlI0IO00I then
+			OO_O0_:Create(I00OOI_0_, TweenInfo.new(0.2), { TextColor3 = lOOl0_l.TextPrimary }):Play()
+			OO_O0_:Create(I__I0___, TweenInfo.new(0.2), { BackgroundTransparency = 0.5, BackgroundColor3 = lOOl0_l.ItemHover }):Play()
+		end
+	end)
+	I__I0___.MouseLeave:Connect(function()
+		if lOl0O_Ol0_.ActiveTab ~= lOlI0IO00I then
+			OO_O0_:Create(I00OOI_0_, TweenInfo.new(0.2), { TextColor3 = lOOl0_l.TextSecondary }):Play()
+			local llI0OOO00 = 570444
+			OO_O0_:Create(I__I0___, TweenInfo.new(0.2), { BackgroundTransparency = 302 - 301 }):Play()
+		end
+	end)
+	local l00lI0O0Il = 732259
+	if false then
+		_ = 942
+	end
+	I__I0___.MouseButton1Click:Connect(function()
+		local llOlOlO = 81753
+		if lOl0O_Ol0_.ActiveTab == lOlI0IO00I then
+			local ll0lI0O0_I_ = 275091
+			if false then
+				_ = 574
+			end
+			return
+		end
+		if lOl0O_Ol0_.ActiveTab then
+			OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = lOOl0_l.TextSecondary }):Play()
+			OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 64 - 63 }):Play()
+			OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(1 - 1, 944 - 941, 733 - 733, 788 - 788) }):Play()
+			local O0_II__0Ill = 427759
+			lOl0O_Ol0_.ActiveTab.Page.Visible = false
+		end
+		lOl0O_Ol0_.ActiveTab = lOlI0IO00I
+		local O0Ol_l0 = 822545
+		lOl0O_Ol0_.ActiveTab.Page.Visible = true
+		if false then
+			_ = 394
+		end
+		OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = lOOl0_l.Accent }):Play()
+		local IO0OI___l_O = 646010
+		OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 4 - 4, BackgroundColor3 = lOOl0_l.ItemBg }):Play()
+		local OOOOI0Illl = 761834
+		OO_O0_:Create(lOl0O_Ol0_.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(832 - 832, 142 - 139, 442 - 442, 612 - 596) }):Play()
+	end)
+	if #lOl0O_Ol0_.Tabs == 201 - 200 then
+		if false then
+			_ = 171
+		end
+		lOl0O_Ol0_.ActiveTab = lOlI0IO00I
+		lOl0O_Ol0_.ActiveTab.Page.Visible = true
+		I00OOI_0_.TextColor3 = lOOl0_l.Accent
+		I__I0___.BackgroundTransparency = 445 - 445
+		if false then
+			_ = 895
+		end
+		I__I0___.BackgroundColor3 = lOOl0_l.ItemBg
+		local OIl__I0 = 451340
+		llOOOO__0.Size = UDim2.new(529 - 529, 446 - 443, 397 - 397, 862 - 846)
+	end
+	local Ol_OllI = {}
+	function Ol_OllI:CreateSection(ll_0lIOO)
+		local l0__O0__0l0 = 139720
+		local lO_OII_l_I = Instance.new("Frame")
+		if false then
+			_ = 204
+		end
+		lO_OII_l_I.Name = ll_0lIOO
+		if false then
+			_ = 33
+		end
+		lO_OII_l_I.Size = UDim2.new(175 - 174, 766 - 766, 323 - 323, 798 - 798)
+		lO_OII_l_I.AutomaticSize = Enum.AutomaticSize.Y
+		lO_OII_l_I.BackgroundColor3 = lOOl0_l.SectionBg
+		if false then
+			_ = 17
+		end
+		lO_OII_l_I.BorderSizePixel = 423 - 423
+		local OOO0llII0Ol = 720702
+		if false then
+			_ = 205
+		end
+		lO_OII_l_I.Parent = l_I0l00I
+		Instance.new("UICorner", lO_OII_l_I).CornerRadius = UDim.new(203 - 203, 924 - 918)
+		local IlO00lO_ = Instance.new("UIStroke", lO_OII_l_I)
+		local Il00II0 = 248863
+		IlO00lO_.Color = lOOl0_l.Border
+		IlO00lO_.Thickness = 332 - 331
+		local lOl0IOO_OI0 = Instance.new("UIListLayout")
+		local lII0l_OI0 = 477332
+		if false then
+			_ = 722
+		end
+		lOl0IOO_OI0.SortOrder = Enum.SortOrder.LayoutOrder
+		lOl0IOO_OI0.Padding = UDim.new(372 - 372, 208 - 208)
+		lOl0IOO_OI0.Parent = lO_OII_l_I
+		local I0Illl0 = Instance.new("TextLabel")
+		I0Illl0.Size = UDim2.new(484 - 483, -(398 - 374), 411 - 411, 1022 - 986)
+		I0Illl0.Position = UDim2.new(479 - 479, 816 - 804, 444 - 444, 528 - 528)
+		local OI_l0__l = 708302
+		if false then
+			_ = 1
+		end
+		I0Illl0.BackgroundTransparency = 48 - 47
+		local Il_0OIO = 792541
+		I0Illl0.Text = "  " .. ll_0lIOO
+		I0Illl0.TextColor3 = lOOl0_l.TextPrimary
+		local IOO0lI_l_IO = 445250
+		I0Illl0.Font = lOOl0_l.FontMedium
+		I0Illl0.TextSize = 129 - 116
+		local l0I_0Il = 514757
+		I0Illl0.TextXAlignment = Enum.TextXAlignment.Left
+		local Ol0IlO = 651086
+		I0Illl0.Parent = lO_OII_l_I
+		local OI_0_0 = 125371
+		local IOII0_l_I = Instance.new("Frame")
+		IOII0_l_I.Size = UDim2.new(790 - 789, 909 - 909, 306 - 306, 699 - 698)
+		IOII0_l_I.BackgroundColor3 = lOOl0_l.Border
+		IOII0_l_I.BorderSizePixel = 389 - 389
+		local l_OO_O = 137180
+		IOII0_l_I.Parent = lO_OII_l_I
+		local IllO__00 = Instance.new("Frame")
+		local OO0l_00Il = 836250
+		if false then
+			_ = 504
+		end
+		IllO__00.Size = UDim2.new(391 - 390, 70 - 70, 824 - 824, 659 - 659)
+		local IIOIO0I = 321408
+		if false then
+			_ = 582
+		end
+		IllO__00.AutomaticSize = Enum.AutomaticSize.Y
+		local O0Ill0O0_00 = 500626
+		IllO__00.BackgroundTransparency = 51 - 50
+		IllO__00.Parent = lO_OII_l_I
+		local lllI0l0ll = 971717
+		local IIllOl0_l_ = Instance.new("UIListLayout")
+		IIllOl0_l_.SortOrder = Enum.SortOrder.LayoutOrder
+		if false then
+			_ = 643
+		end
+		IIllOl0_l_.Parent = IllO__00
+		local IOO_lI = 578472
+		local OIIlO_l_O = {}
+		local lO00_0l_ = 991274
+		function OIIlO_l_O:CreateButton(OOlOO0Illl, lIIIOl0_I0I)
+			local lI0_000 = Instance.new("TextButton")
+			lI0_000.Size = UDim2.new(995 - 994, 636 - 636, 510 - 510, 460 - 424)
+			lI0_000.BackgroundTransparency = 69 - 68
+			lI0_000.Text = ""
+			local O_lIlI00I0 = 568663
+			if false then
+				_ = 762
+			end
+			lI0_000.Parent = IllO__00
+			local l_IO_l = Instance.new("TextLabel")
+			if false then
+				_ = 7
+			end
+			l_IO_l.Size = UDim2.new(726 - 725, -(960 - 936), 695 - 694, 675 - 675)
+			l_IO_l.Position = UDim2.new(570 - 570, 341 - 329, 571 - 571, 524 - 524)
+			l_IO_l.BackgroundTransparency = 100 - 99
+			if false then
+				_ = 998
+			end
+			l_IO_l.Text = OOlOO0Illl
+			local lIO_0_O_Ol = 287549
+			l_IO_l.TextColor3 = lOOl0_l.TextPrimary
+			l_IO_l.Font = lOOl0_l.FontMedium
+			local lOlI_I_ = 885685
+			if false then
+				_ = 257
+			end
+			l_IO_l.TextSize = 132 - 119
+			local lOI_IlIlOI0 = 495353
+			l_IO_l.TextXAlignment = Enum.TextXAlignment.Center
+			l_IO_l.Parent = lI0_000
+			local IOOI_I0 = Instance.new("Frame")
+			IOOI_I0.Size = UDim2.new(532 - 531, -(33 - 17), 556 - 555, -(126 - 118))
+			IOOI_I0.Position = UDim2.new(991 - 991, 504 - 496, 836 - 836, 137 - 133)
+			IOOI_I0.BackgroundColor3 = lOOl0_l.ItemBg
+			IOOI_I0.ZIndex = -(791 - 790)
+			IOOI_I0.Parent = lI0_000
+			local lIII00OO0 = 40543
+			if false then
+				_ = 290
+			end
+			Instance.new("UICorner", IOOI_I0).CornerRadius = UDim.new(55 - 55, 109 - 103)
+			if false then
+				_ = 516
+			end
+			lI0_000.MouseEnter:Connect(function()
+				local OOIO__0O = 303670
+				OO_O0_:Create(IOOI_I0, TweenInfo.new(0.2), { BackgroundColor3 = lOOl0_l.ItemHover }):Play()
+			end)
+			lI0_000.MouseLeave:Connect(function()
+				OO_O0_:Create(IOOI_I0, TweenInfo.new(0.2), { BackgroundColor3 = lOOl0_l.ItemBg }):Play()
+			end)
+			lI0_000.MouseButton1Click:Connect(lIIIOl0_I0I)
+			return lI0_000
+		end
+		local II0IO0 = 216968
+		function OIIlO_l_O:CreateToggle(O0l_O0, OlII_O_, llI_0OI)
+			local IOIO0lI0 = Instance.new("TextButton")
+			IOIO0lI0.Size = UDim2.new(569 - 568, 129 - 129, 742 - 742, 888 - 848)
+			IOIO0lI0.BackgroundTransparency = 865 - 864
+			local ll_0lIlO__O = 767447
+			IOIO0lI0.Text = ""
+			local OI0II_lOI = 840603
+			IOIO0lI0.AutoButtonColor = false
+			local O0lOO0_ = 367326
+			IOIO0lI0.Parent = IllO__00
+			local OIO0O_0OI = Instance.new("TextLabel")
+			local Oll_OO0OI0_ = 177745
+			OIO0O_0OI.Size = UDim2.new(135 - 134, -(836 - 776), 76 - 75, 217 - 217)
+			OIO0O_0OI.Position = UDim2.new(910 - 910, 842 - 830, 959 - 959, 516 - 516)
+			OIO0O_0OI.BackgroundTransparency = 684 - 683
+			local IIOIO0_O0 = 702819
+			OIO0O_0OI.Text = O0l_O0
+			local l00OOIl = 294318
+			if false then
+				_ = 308
+			end
+			OIO0O_0OI.TextColor3 = lOOl0_l.TextSecondary
+			OIO0O_0OI.Font = lOOl0_l.Font
+			OIO0O_0OI.TextSize = 990 - 977
+			OIO0O_0OI.TextXAlignment = Enum.TextXAlignment.Left
+			local IlO_Ol_l0IO = 109263
+			OIO0O_0OI.Parent = IOIO0lI0
+			local lO_O_0 = 660907
+			local lII_O0 = Instance.new("Frame")
+			lII_O0.Size = UDim2.new(63 - 63, 151 - 115, 833 - 833, 540 - 522)
+			if false then
+				_ = 373
+			end
+			lII_O0.AnchorPoint = Vector2.new(666 - 665, 0.5)
+			local IOI0_00l = 809406
+			lII_O0.Position = UDim2.new(321 - 320, -(182 - 170), 0.5, 949 - 949)
+			local IO_O00_OOI = 970897
+			if false then
+				_ = 633
+			end
+			lII_O0.BackgroundColor3 = OlII_O_ and lOOl0_l.Accent or lOOl0_l.ItemBg
+			lII_O0.Parent = IOIO0lI0
+			local Il_l_I = 23630
+			Instance.new("UICorner", lII_O0).CornerRadius = UDim.new(119 - 118, 108 - 108)
+			local llO0ll0 = 694320
+			local OOII0____0 = Instance.new("Frame")
+			OOII0____0.Size = UDim2.new(133 - 133, 971 - 957, 384 - 384, 991 - 977)
+			OOII0____0.AnchorPoint = Vector2.new(440 - 440, 0.5)
+			OOII0____0.Position = OlII_O_ and UDim2.new(15 - 14, -(356 - 340), 0.5, 253 - 253) or UDim2.new(500 - 500, 466 - 464, 0.5, 195 - 195)
+			OOII0____0.BackgroundColor3 = Color3.new(400 - 399, 830 - 829, 82 - 81)
+			if false then
+				_ = 773
+			end
+			OOII0____0.Parent = lII_O0
+			Instance.new("UICorner", OOII0____0).CornerRadius = UDim.new(528 - 527, 918 - 918)
+			local I_I00IlO = OlII_O_
+			IOIO0lI0.MouseButton1Click:Connect(function()
+				if false then
+					_ = 168
+				end
+				I_I00IlO = not I_I00IlO
+				if false then
+					_ = 197
+				end
+				OO_O0_:Create(lII_O0, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { BackgroundColor3 = I_I00IlO and lOOl0_l.Accent or lOOl0_l.ItemBg }):Play()
+				OO_O0_:Create(OOII0____0, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Position = I_I00IlO and UDim2.new(437 - 436, -(63 - 47), 0.5, 780 - 780) or UDim2.new(812 - 812, 390 - 388, 0.5, 26 - 26) }):Play()
+				if false then
+					_ = 987
+				end
+				OO_O0_:Create(OIO0O_0OI, TweenInfo.new(0.2), { TextColor3 = I_I00IlO and lOOl0_l.TextPrimary or lOOl0_l.TextSecondary }):Play()
+				local lI0I_0l_ = 458745
+				if false then
+					_ = 981
+				end
+				if I_I00IlO then
+					if false then
+						_ = 919
+					end
+					for IOlOlO__O_ = 736 - 735, 280 - 275 do
+						local ll_I00I00_ = 185326
+						local I_Il0l0Ol = Instance.new("Frame")
+						if false then
+							_ = 820
+						end
+						I_Il0l0Ol.Size = UDim2.new(903 - 903, 290 - 282, 734 - 734, 85 - 77)
+						local OlI0__l__ = 768946
+						I_Il0l0Ol.Position = UDim2.new(0.5, 490 - 490, 0.5, 438 - 438)
+						I_Il0l0Ol.AnchorPoint = Vector2.new(0.5, 0.5)
+						local lII00Il0 = 471358
+						I_Il0l0Ol.BackgroundColor3 = lOOl0_l.Accent
+						I_Il0l0Ol.BorderSizePixel = 81 - 81
+						if false then
+							_ = 296
+						end
+						I_Il0l0Ol.ZIndex = 862 - 852
+						Instance.new("UICorner", I_Il0l0Ol).CornerRadius = UDim.new(502 - 501, 418 - 418)
+						local Oll_IO_ = 804463
+						I_Il0l0Ol.Parent = lII_O0
+						local lIlI__ = math.rad(math.random(515 - 515, 593 - 233))
+						local l_lI0I__IO = math.random(164 - 146, 132 - 102)
+						if false then
+							_ = 945
+						end
+						local I_00OIl = UDim2.new(0.5, math.cos(lIlI__) * l_lI0I__IO, 0.5, math.sin(lIlI__) * l_lI0I__IO)
+						if false then
+							_ = 373
+						end
+						local IIOIlO0_I = OO_O0_:Create(I_Il0l0Ol, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = I_00OIl, BackgroundTransparency = 243 - 242, Size = UDim2.new(463 - 463, 440 - 437, 785 - 785, 600 - 597) })
+						if false then
+							_ = 945
+						end
+						IIOIlO0_I:Play()
+						task.delay(0.5, function()
+							if false then
+								_ = 443
+							end
+							if I_Il0l0Ol then
+								I_Il0l0Ol:Destroy()
+							end
+						end)
+					end
+				end
+				llI_0OI(I_I00IlO)
+			end)
+			if false then
+				_ = 886
+			end
+			if OlII_O_ then
+				local OO0II__ = 694871
+				OIO0O_0OI.TextColor3 = lOOl0_l.TextPrimary
+			end
+		end
+		if false then
+			_ = 884
+		end
+		function OIIlO_l_O:CreateStatusLabel(llOI00I_0, O_OIO_OO0)
+			local Ill0O_Ol = 882054
+			local llOO_OOI = Instance.new("Frame")
+			llOO_OOI.Size = UDim2.new(862 - 861, 225 - 225, 242 - 242, 478 - 438)
+			llOO_OOI.BackgroundTransparency = 101 - 100
+			local l_IOlOl = 890913
+			if false then
+				_ = 157
+			end
+			llOO_OOI.Parent = IllO__00
+			local lI_llIOO = 273794
+			local IO0OlII0IO = Instance.new("TextLabel")
+			IO0OlII0IO.Size = UDim2.new(25 - 25, 850 - 750, 304 - 303, 499 - 499)
+			local O0O_llI0I = 979470
+			IO0OlII0IO.Position = UDim2.new(164 - 164, 273 - 261, 612 - 612, 783 - 783)
+			IO0OlII0IO.BackgroundTransparency = 223 - 222
+			IO0OlII0IO.Text = llOI00I_0
+			if false then
+				_ = 246
+			end
+			IO0OlII0IO.TextColor3 = lOOl0_l.TextSecondary
+			IO0OlII0IO.Font = lOOl0_l.Font
+			IO0OlII0IO.TextSize = 887 - 874
+			local ll_l0I0lI = 628087
+			IO0OlII0IO.TextXAlignment = Enum.TextXAlignment.Left
+			if false then
+				_ = 40
+			end
+			IO0OlII0IO.Parent = llOO_OOI
+			local llIllI0 = Instance.new("TextLabel")
+			local I0_0I0OlI_ = 81136
+			if false then
+				_ = 256
+			end
+			llIllI0.Size = UDim2.new(869 - 868, -(227 - 103), 536 - 535, 46 - 46)
+			local IlOlIllOlll = 325182
+			llIllI0.Position = UDim2.new(588 - 588, 778 - 666, 892 - 892, 159 - 159)
+			llIllI0.BackgroundTransparency = 244 - 243
+			llIllI0.Text = O_OIO_OO0
+			llIllI0.TextColor3 = lOOl0_l.TextPrimary
+			if false then
+				_ = 698
+			end
+			llIllI0.Font = lOOl0_l.FontMedium
+			llIllI0.TextSize = 470 - 458
+			llIllI0.TextXAlignment = Enum.TextXAlignment.Right
+			llIllI0.Parent = llOO_OOI
+			local function IlOIIIl_O(l0_0lOO_I, OlIOlI_lll)
+				llIllI0.Text = l0_0lOO_I
+				local Ill_0I = 785614
+				if OlIOlI_lll then
+					OO_O0_:Create(llIllI0, TweenInfo.new(0.2), { TextColor3 = OlIOlI_lll }):Play()
+				else
+					local l_l_Il_ = 692482
+					llIllI0.TextColor3 = lOOl0_l.TextPrimary
+				end
+			end
+			local lll_0OOl0I = 531434
+			return IlOIIIl_O
+		end
+		function OIIlO_l_O:CreateSlider(l__OIlI, IOll00I__, l00Ol0I_ll, OO_OOIOO, OI0l_0I0ll, lOO_0O)
+			local OIlIll0_0 = 468996
+			local IO0l_I_ = Instance.new("Frame")
+			local l00lOI0l_ = 247844
+			IO0l_I_.Size = UDim2.new(152 - 151, 30 - 30, 90 - 90, 397 - 349)
+			local OIlll0 = 515123
+			IO0l_I_.BackgroundTransparency = 338 - 337
+			if false then
+				_ = 593
+			end
+			IO0l_I_.Parent = IllO__00
+			if false then
+				_ = 192
+			end
+			local lII_00 = Instance.new("TextLabel")
+			lII_00.Size = UDim2.new(276 - 275, -(399 - 339), 165 - 165, 498 - 480)
+			local IO_O00Il0 = 946652
+			lII_00.Position = UDim2.new(901 - 901, 225 - 213, 736 - 736, 578 - 572)
+			lII_00.BackgroundTransparency = 761 - 760
+			local IOlOOOlOII = 329711
+			lII_00.Text = l__OIlI
+			if false then
+				_ = 188
+			end
+			lII_00.TextColor3 = lOOl0_l.TextSecondary
+			if false then
+				_ = 692
+			end
+			lII_00.Font = lOOl0_l.Font
+			lII_00.TextSize = 814 - 801
+			lII_00.TextXAlignment = Enum.TextXAlignment.Left
+			lII_00.Parent = IO0l_I_
+			if false then
+				_ = 433
+			end
+			local IOOl__IO = Instance.new("TextLabel")
+			if false then
+				_ = 836
+			end
+			IOOl__IO.Size = UDim2.new(648 - 648, 339 - 299, 265 - 265, 126 - 108)
+			IOOl__IO.Position = UDim2.new(621 - 620, -(991 - 939), 902 - 902, 603 - 597)
+			local lOIOIIII0 = 916919
+			IOOl__IO.BackgroundTransparency = 603 - 602
+			local OllO___OOl_ = 923220
+			IOOl__IO.Text = tostring(OO_OOIOO / (lOO_0O or 186 - 185))
+			IOOl__IO.TextColor3 = lOOl0_l.TextPrimary
+			IOOl__IO.Font = lOOl0_l.FontMedium
+			IOOl__IO.TextSize = 102 - 90
+			local ll0_lI_I = 59365
+			IOOl__IO.TextXAlignment = Enum.TextXAlignment.Right
+			if false then
+				_ = 985
+			end
+			IOOl__IO.Parent = IO0l_I_
+			local Il_Ol_IO = Instance.new("TextButton")
+			Il_Ol_IO.Size = UDim2.new(564 - 563, -(901 - 877), 608 - 608, 802 - 790)
+			Il_Ol_IO.Position = UDim2.new(387 - 387, 316 - 304, 289 - 289, 53 - 25)
+			local I__O_0_OO = 387055
+			Il_Ol_IO.BackgroundTransparency = 990 - 989
+			local IlO0OlO_ = 234665
+			if false then
+				_ = 163
+			end
+			Il_Ol_IO.Text = ""
+			Il_Ol_IO.Parent = IO0l_I_
+			local II_I0IlI = 2421
+			local Il0OI_O = Instance.new("Frame")
+			Il0OI_O.Size = UDim2.new(74 - 73, 899 - 899, 628 - 628, 177 - 173)
+			Il0OI_O.AnchorPoint = Vector2.new(925 - 925, 0.5)
+			Il0OI_O.Position = UDim2.new(779 - 779, 906 - 906, 0.5, 408 - 408)
+			Il0OI_O.BackgroundColor3 = lOOl0_l.ItemBg
+			Il0OI_O.Parent = Il_Ol_IO
+			local IlOI_0_I0O_ = 209439
+			if false then
+				_ = 290
+			end
+			Instance.new("UICorner", Il0OI_O).CornerRadius = UDim.new(828 - 827, 269 - 269)
+			local OOOI_IOI = 249494
+			local lOl__lIl_ll = Instance.new("Frame")
+			if false then
+				_ = 193
+			end
+			local IlOlO__ = (OO_OOIOO - IOll00I__) / (l00Ol0I_ll - IOll00I__)
+			local lOOI00I0IO_ = 513095
+			lOl__lIl_ll.Size = UDim2.new(IlOlO__, 90 - 90, 401 - 400, 413 - 413)
+			lOl__lIl_ll.BackgroundColor3 = lOOl0_l.Accent
+			local l0lO0__OO_ = 905901
+			if false then
+				_ = 549
+			end
+			lOl__lIl_ll.Parent = Il0OI_O
+			local lO__OOOl = 390032
+			if false then
+				_ = 624
+			end
+			Instance.new("UICorner", lOl__lIl_ll).CornerRadius = UDim.new(18 - 17, 149 - 149)
+			local I_OOl0II0 = 902296
+			local Il__IO00lO = Instance.new("Frame")
+			Il__IO00lO.Size = UDim2.new(874 - 874, 570 - 558, 213 - 213, 274 - 262)
+			Il__IO00lO.AnchorPoint = Vector2.new(0.5, 0.5)
+			local IllOO0I__0I = 254941
+			if false then
+				_ = 200
+			end
+			Il__IO00lO.Position = UDim2.new(IlOlO__, 195 - 195, 0.5, 162 - 162)
+			Il__IO00lO.BackgroundColor3 = Color3.new(402 - 401, 413 - 412, 663 - 662)
+			local l_llIO_I_0 = 184412
+			Il__IO00lO.Parent = Il0OI_O
+			Instance.new("UICorner", Il__IO00lO).CornerRadius = UDim.new(816 - 815, 553 - 553)
+			local IO_l0l_OOOl = 108623
+			local lOO0IlOlIO = false
+			local function IOII_0(llI0l00)
+				local l0_I0IOlI_ = math.clamp((llI0l00.Position.X - Il0OI_O.AbsolutePosition.X) / Il0OI_O.AbsoluteSize.X, 874 - 874, 491 - 490)
+				local I_0O0O_O0O_ = math.floor(IOll00I__ + (l00Ol0I_ll - IOll00I__) * l0_I0IOlI_)
+				local OOIIOIlIl0 = 871404
+				OO_O0_:Create(lOl__lIl_ll, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Size = UDim2.new(l0_I0IOlI_, 870 - 870, 30 - 29, 418 - 418) }):Play()
+				local OOI_lIl_ = 976156
+				OO_O0_:Create(Il__IO00lO, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Position = UDim2.new(l0_I0IOlI_, 46 - 46, 0.5, 657 - 657) }):Play()
+				IOOl__IO.Text = tostring(I_0O0O_O0O_ / (lOO_0O or 245 - 244))
+				local OlI0_l = 894467
+				OI0l_0I0ll(I_0O0O_O0O_)
+			end
+			Il_Ol_IO.InputBegan:Connect(function(OI00OO0l)
+				if OI00OO0l.UserInputType == Enum.UserInputType.MouseButton1 or OI00OO0l.UserInputType == Enum.UserInputType.Touch then
+					local I_lO0_O = 312465
+					lOO0IlOlIO = true
+					local IOO_0Il0_ = 148962
+					IOII_0(OI00OO0l)
+				end
+			end)
+			local IlIIllI0IOO = 684029
+			if false then
+				_ = 730
+			end
+			l0Oll_lII.InputEnded:Connect(function(lll0OO)
+				local I0_O0III = 2083
+				if lll0OO.UserInputType == Enum.UserInputType.MouseButton1 or lll0OO.UserInputType == Enum.UserInputType.Touch then
+					lOO0IlOlIO = false
+				end
+			end)
+			if false then
+				_ = 435
+			end
+			l0Oll_lII.InputChanged:Connect(function(lI00OOOOOI)
+				local O_Il__0_0 = 387896
+				if lOO0IlOlIO and (lI00OOOOOI.UserInputType == Enum.UserInputType.MouseMovement or lI00OOOOOI.UserInputType == Enum.UserInputType.Touch) then
+					if false then
+						_ = 817
+					end
+					IOII_0(lI00OOOOOI)
+				end
+			end)
+			return IO0l_I_
+		end
+		local OII000 = 711047
+		function OIIlO_l_O:CreateDropdown(ll__Ol__I0l, I0IO0OI_IO0, II__l0, Il00lO0)
+			local IIIIOIIIOll = Instance.new("Frame")
+			if false then
+				_ = 505
+			end
+			IIIIOIIIOll.Size = UDim2.new(879 - 878, 180 - 180, 869 - 869, 852 - 804)
+			IIIIOIIIOll.BackgroundTransparency = 384 - 383
+			if false then
+				_ = 779
+			end
+			IIIIOIIIOll.Parent = IllO__00
+			local l_II_llOO = 658124
+			local OIOIlO_ = Instance.new("TextLabel")
+			if false then
+				_ = 296
+			end
+			OIOIlO_.Size = UDim2.new(42 - 41, -(623 - 503), 929 - 929, 751 - 733)
+			if false then
+				_ = 237
+			end
+			OIOIlO_.Position = UDim2.new(708 - 708, 565 - 553, 816 - 816, 632 - 617)
+			local OI000lll_ = 221139
+			OIOIlO_.BackgroundTransparency = 264 - 263
+			local lll00_OIO = 389705
+			OIOIlO_.Text = ll__Ol__I0l
+			local lIOlI00l0II = 936376
+			OIOIlO_.TextColor3 = lOOl0_l.TextSecondary
+			OIOIlO_.Font = lOOl0_l.Font
+			local II00_IlOOOl = 153690
+			OIOIlO_.TextSize = 883 - 870
+			local O0O_OI = 551544
+			OIOIlO_.TextXAlignment = Enum.TextXAlignment.Left
+			if false then
+				_ = 431
+			end
+			OIOIlO_.Parent = IIIIOIIIOll
+			local IOO___I0_0O = 66399
+			local IIO0O_O_00 = Instance.new("TextButton")
+			IIO0O_O_00.Size = UDim2.new(406 - 406, 946 - 846, 78 - 78, 978 - 954)
+			IIO0O_O_00.Position = UDim2.new(816 - 815, -(898 - 786), 619 - 619, 717 - 705)
+			IIO0O_O_00.BackgroundColor3 = lOOl0_l.ItemBg
+			IIO0O_O_00.Text = ""
+			IIO0O_O_00.AutoButtonColor = false
+			IIO0O_O_00.Parent = IIIIOIIIOll
+			local IOO0llIO0_I = 547765
+			Instance.new("UICorner", IIO0O_O_00).CornerRadius = UDim.new(900 - 900, 117 - 113)
+			local l00__00O = 314976
+			local O____lO0 = Instance.new("TextLabel")
+			O____lO0.Size = UDim2.new(858 - 857, -(822 - 802), 758 - 757, 835 - 835)
+			local O_I0lI0_lO_ = 386705
+			if false then
+				_ = 605
+			end
+			O____lO0.Position = UDim2.new(787 - 787, 941 - 933, 835 - 835, 277 - 277)
+			O____lO0.BackgroundTransparency = 274 - 273
+			local OOO0ll_0_ = 432602
+			if false then
+				_ = 404
+			end
+			O____lO0.Text = II__l0
+			if false then
+				_ = 157
+			end
+			O____lO0.TextColor3 = lOOl0_l.TextPrimary
+			local I0__llI = 604900
+			O____lO0.Font = lOOl0_l.Font
+			if false then
+				_ = 592
+			end
+			O____lO0.TextSize = 306 - 294
+			local IlII_I_IlI = 887069
+			O____lO0.TextXAlignment = Enum.TextXAlignment.Left
+			local Oll_l_l_IIl = 404314
+			O____lO0.Parent = IIO0O_O_00
+			local ll__0OI_I = Instance.new("TextLabel")
+			ll__0OI_I.Size = UDim2.new(986 - 986, 853 - 833, 766 - 765, 34 - 34)
+			local lOIIO_OO = 543367
+			ll__0OI_I.Position = UDim2.new(290 - 289, -(395 - 375), 89 - 89, 234 - 234)
+			local I0I___ = 200684
+			ll__0OI_I.BackgroundTransparency = 405 - 404
+			ll__0OI_I.Text = "Ã¢â€“Â¼"
+			ll__0OI_I.TextColor3 = lOOl0_l.TextSecondary
+			local OO0OIllO = 785613
+			ll__0OI_I.Font = lOOl0_l.Font
+			ll__0OI_I.TextSize = 688 - 678
+			ll__0OI_I.Parent = IIO0O_O_00
+			local OOlIO0I0llI = 499757
+			local lI0OIO_O0I = Instance.new("Frame")
+			lI0OIO_O0I.Size = UDim2.new(695 - 695, 922 - 822, 338 - 338, 467 - 467)
+			lI0OIO_O0I.Position = UDim2.new(55 - 54, -(840 - 728), 882 - 882, 600 - 560)
+			local O_l0IIO = 714440
+			if false then
+				_ = 89
+			end
+			lI0OIO_O0I.BackgroundColor3 = lOOl0_l.ItemBg
+			local OOl0OOlO_ = 78386
+			lI0OIO_O0I.ZIndex = 445 - 435
+			local I0IlOl0 = 321479
+			lI0OIO_O0I.ClipsDescendants = true
+			lI0OIO_O0I.Parent = IIIIOIIIOll
+			local Ol_llllOIl = 892326
+			if false then
+				_ = 931
+			end
+			Instance.new("UICorner", lI0OIO_O0I).CornerRadius = UDim.new(766 - 766, 231 - 227)
+			local l0__0O = Instance.new("UIListLayout")
+			local OO_ll0IOl0O = 247474
+			l0__0O.SortOrder = Enum.SortOrder.LayoutOrder
+			local OI__Ol__O = 527947
+			l0__0O.Parent = lI0OIO_O0I
+			local IIl0lO_I = 40669
+			local IOO00I_0O = false
+			local II0OIOOlI = 774653
+			local O0IIII_l = math.min(#I0IO0OI_IO0 * (678 - 654), 589 - 469)
+			local function OIOIIlII()
+				IOO00I_0O = not IOO00I_0O
+				local Ol_00_ = 879987
+				OO_O0_:Create(ll__0OI_I, TweenInfo.new(0.2), { Rotation = IOO00I_0O and 751 - 571 or 494 - 494 }):Play()
+				if false then
+					_ = 303
+				end
+				OO_O0_:Create(lI0OIO_O0I, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(816 - 816, 669 - 569, 656 - 656, IOO00I_0O and O0IIII_l or 722 - 722) }):Play()
+				if IOO00I_0O then
+					if false then
+						_ = 971
+					end
+					IIIIOIIIOll.Size = UDim2.new(220 - 219, 580 - 580, 551 - 551, 407 - 359 + O0IIII_l + (908 - 904))
+				else
+					local Il_l0_0I = 536768
+					if false then
+						_ = 232
+					end
+					IIIIOIIIOll.Size = UDim2.new(101 - 100, 315 - 315, 426 - 426, 782 - 734)
+				end
+			end
+			local I0l_I0lO0 = 774829
+			IIO0O_O_00.MouseButton1Click:Connect(OIOIIlII)
+			if false then
+				_ = 234
+			end
+			for I000OII_00, lII0I0_IOOI in ipairs(I0IO0OI_IO0) do
+				local O_00lI = Instance.new("TextButton")
+				O_00lI.Size = UDim2.new(7 - 6, 943 - 943, 610 - 610, 996 - 972)
+				if false then
+					_ = 238
+				end
+				O_00lI.BackgroundColor3 = lOOl0_l.ItemBg
+				O_00lI.BackgroundTransparency = 545 - 544
+				O_00lI.Text = "  " .. lII0I0_IOOI
+				O_00lI.TextColor3 = lOOl0_l.TextSecondary
+				O_00lI.Font = lOOl0_l.Font
+				O_00lI.TextSize = 161 - 149
+				O_00lI.TextXAlignment = Enum.TextXAlignment.Left
+				O_00lI.AutoButtonColor = false
+				O_00lI.ZIndex = 287 - 276
+				O_00lI.Parent = lI0OIO_O0I
+				local IIIllIOOI_ = 181172
+				O_00lI.MouseEnter:Connect(function()
+					local Il0_OlI0 = 560578
+					OO_O0_:Create(O_00lI, TweenInfo.new(0.1), { BackgroundTransparency = 28 - 28, BackgroundColor3 = lOOl0_l.ItemHover, TextColor3 = lOOl0_l.TextPrimary }):Play()
+				end)
+				O_00lI.MouseLeave:Connect(function()
+					OO_O0_:Create(O_00lI, TweenInfo.new(0.1), { BackgroundTransparency = 694 - 693, TextColor3 = lOOl0_l.TextSecondary }):Play()
+				end)
+				local II_OOlO = 164564
+				O_00lI.MouseButton1Click:Connect(function()
+					O____lO0.Text = lII0I0_IOOI
+					local llIIOOI = 719448
+					OIOIIlII()
+					Il00lO0(lII0I0_IOOI)
+				end)
+			end
+		end
+		return OIIlO_l_O
+	end
+	local lll_IO = 701782
+	return Ol_OllI
+end
+local ll_II0lI__l = l0OOIO("Baseball Universe")
+local l0OOl_Il0 = 781916
+if false then
+	_ = 644
+end
+local lll_IIl = ll_II0lI__l:CreateSection("Hitting")
+lll_IIl:CreateToggle("Ball ESP (Predictor)", I_O0IO.Predictor, function(O0l0OO__l_O)
+	if false then
+		_ = 258
+	end
+	I_O0IO.Predictor = O0l0OO__l_O
+end)
+lll_IIl:CreateToggle("Auto Swing", I_O0IO.AutoSwing, function(I0OI0OOIO)
+	if false then
+		_ = 65
+	end
+	I_O0IO.AutoSwing = I0OI0OOIO
+end)
+local IOO_O_l_l0 = 38423
+lll_IIl:CreateToggle("Strikebox Only (RECOMMENDED)", I_O0IO.StrikeboxOnly, function(IlIl0I)
+	I_O0IO.StrikeboxOnly = IlIl0I
+end)
+local OOOO_lI = 11488
 _G.UseCustomOffsets = false
-_G.PciOffsetX = 0
-_G.PciOffsetY = 0
-
-local pciXSlider
-local pciYSlider
-
-HittingSection:CreateToggle("Custom PCI Offsets", false, function(val)
-    _G.UseCustomOffsets = val
-    if pciXSlider and pciYSlider then
-        pciXSlider.Visible = val
-        pciYSlider.Visible = val
-    end
+_G.PciOffsetX = 111 - 111
+_G.PciOffsetY = 826 - 826
+local l_O__l__O_I
+local lI_O_0 = 825279
+local IO_0_0llO
+lll_IIl:CreateToggle("Custom PCI Offsets", false, function(l0ll_0OO)
+	_G.UseCustomOffsets = l0ll_0OO
+	local IOI_O_0I0__ = 382748
+	if l_O__l__O_I and IO_0_0llO then
+		if false then
+			_ = 856
+		end
+		l_O__l__O_I.Visible = l0ll_0OO
+		if false then
+			_ = 124
+		end
+		IO_0_0llO.Visible = l0ll_0OO
+	end
 end)
-
--- Reduced max range to 20 (0.2) to prevent swinging so far that it naturally hooks/slices foul
-pciXSlider = HittingSection:CreateSlider("PCI Offset X (Left Ã¢â€ â€ Right)", -20, 20, 0, function(val)
-    _G.PciOffsetX = val / 100
-end, 100)
-pciXSlider.Visible = false
-
-pciYSlider = HittingSection:CreateSlider("PCI Offset Y (Up Ã¢â€ â€¢ Down)", -20, 20, 0, function(val)
-    _G.PciOffsetY = val / 100
-end, 100)
-pciYSlider.Visible = false
-
--- Swing Timing Adjustment Slider (For Ping)
-_G.UserTimingOffset = 10
+l_O__l__O_I = lll_IIl:CreateSlider("PCI Offset X (Left Ã¢â€ â€ Right)", -(854 - 834), 171 - 151, 498 - 498, function(l0OIOO_0lOI)
+	local IO_ll0___O_ = 417747
+	if false then
+		_ = 807
+	end
+	_G.PciOffsetX = l0OIOO_0lOI / (658 - 558)
+end, 659 - 559)
+local OIl__I = 833547
+l_O__l__O_I.Visible = false
+IO_0_0llO = lll_IIl:CreateSlider("PCI Offset Y (Up Ã¢â€ â€¢ Down)", -(852 - 832), 626 - 606, 962 - 962, function(IIOl_0O0_)
+	if false then
+		_ = 978
+	end
+	_G.PciOffsetY = IIOl_0O0_ / (680 - 580)
+end, 478 - 378)
+local lO_l0ll = 546144
+IO_0_0llO.Visible = false
+_G.UserTimingOffset = 943 - 933
+if false then
+	_ = 595
+end
 _G.UseCustomTiming = false
-
-local timingSlider
-
-HittingSection:CreateToggle("Custom Ping Timing", false, function(val)
-    _G.UseCustomTiming = val
-    if not val then
-        _G.UserTimingOffset = 10
-    end
-    if timingSlider then
-        timingSlider.Visible = val
-    end
+local l0l_lll0IOI = 639668
+local IllOOl0__0I
+lll_IIl:CreateToggle("Custom Ping Timing", false, function(IIlOllO_0_)
+	_G.UseCustomTiming = IIlOllO_0_
+	if not IIlOllO_0_ then
+		_G.UserTimingOffset = 479 - 469
+	end
+	if IllOOl0__0I then
+		IllOOl0__0I.Visible = IIlOllO_0_
+	end
 end)
-
-timingSlider = HittingSection:CreateSlider("Timing Offset (Ping)", -100, 100, 10, function(val)
-    if _G.UseCustomTiming then
-        _G.UserTimingOffset = val
-    end
+IllOOl0__0I = lll_IIl:CreateSlider("Timing Offset (Ping)", -(265 - 165), 401 - 301, 121 - 111, function(lIl0000lOO)
+	local lO_l_0l = 210447
+	if _G.UseCustomTiming then
+		_G.UserTimingOffset = lIl0000lOO
+	end
 end)
-timingSlider.Visible = false
-local PitchingSection = BattingTab:CreateSection("Pitching")
-
-PitchingSection:CreateToggle("Auto Pitch", Options.AutoPitch, function(val)
-    Options.AutoPitch = val
+local O__IOl_O = 571221
+IllOOl0__0I.Visible = false
+local OlI_00IlI = ll_II0lI__l:CreateSection("Pitching")
+OlI_00IlI:CreateToggle("Auto Pitch", I_O0IO.AutoPitch, function(IO0II_I_l_l)
+	I_O0IO.AutoPitch = IO0II_I_l_l
 end)
-
-
-
-local PlayerTab = CreateTab("Player")
-local StatsSection = PlayerTab:CreateSection("Stats")
-
-StatsSection:CreateSlider("Walk Speed", 16, 100, 16, function(val)
-    _G.MoonHubWalkSpeed = val
-end)
-
-StatsSection:CreateSlider("Jump Power", 50, 200, 50, function(val)
-    _G.MoonHubJumpPower = val
-end)
-
-local MiscTab = CreateTab("Settings")
-
-local ThemeSection = MiscTab:CreateSection("Theme")
-ThemeSection:CreateDropdown("Accent Theme", {"Default", "Crimson", "Aqua", "Purple"}, SelectedTheme, function(val)
-    local oldColor = Theme.Accent
-    SelectedTheme = val
-    saveTheme()
-    
-    local newColor = AvailableThemes[val] or AvailableThemes.Default
-    Theme.Accent = newColor
-    
-    local function isClose(c1, c2)
-        return math.abs(c1.R - c2.R) < 0.02 and math.abs(c1.G - c2.G) < 0.02 and math.abs(c1.B - c2.B) < 0.02
-    end
-    
-    -- Dynamically apply to all existing UI elements
-    for _, el in ipairs(ScreenGui:GetDescendants()) do
-        if el:IsA("GuiObject") then
-            pcall(function()
-                local currentBg = el:GetAttribute("TargetBg") or el.BackgroundColor3
-                if isClose(currentBg, oldColor) then
-                    el:SetAttribute("TargetBg", newColor)
-                    TweenService:Create(el, TweenInfo.new(0.3), {BackgroundColor3 = newColor}):Play()
-                end
-                if el:IsA("TextLabel") or el:IsA("TextButton") or el:IsA("TextBox") then
-                    local currentText = el:GetAttribute("TargetText") or el.TextColor3
-                    if isClose(currentText, oldColor) then
-                        el:SetAttribute("TargetText", newColor)
-                        TweenService:Create(el, TweenInfo.new(0.3), {TextColor3 = newColor}):Play()
-                    end
-                end
-                if el:IsA("ImageLabel") or el:IsA("ImageButton") then
-                    local currentImage = el:GetAttribute("TargetImage") or el.ImageColor3
-                    if isClose(currentImage, oldColor) then
-                        el:SetAttribute("TargetImage", newColor)
-                        TweenService:Create(el, TweenInfo.new(0.3), {ImageColor3 = newColor}):Play()
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-local InfoSection = MiscTab:CreateSection("Information")
-setStatus = InfoSection:CreateStatusLabel("Status", "WAITING FOR PITCH...")
-InfoSection:CreateStatusLabel("Keybind", "[0] Hide UI")
-
-
---------------------------------------------------------------------
--- PREDICTOR 3D UI
---------------------------------------------------------------------
-local PredictorGui = Instance.new("BillboardGui")
-PredictorGui.Name = "PredictorGui"
-PredictorGui.Size = UDim2.new(0, 45, 0, 45)
-PredictorGui.AlwaysOnTop = true
-PredictorGui.Parent = PlayerGui
-
-local PredictorFrame = Instance.new("Frame")
-PredictorFrame.Size = UDim2.new(1, 0, 1, 0)
-PredictorFrame.BackgroundColor3 = Theme.Accent
-PredictorFrame.BackgroundTransparency = 0.3
-PredictorFrame.Parent = PredictorGui
-Instance.new("UICorner", PredictorFrame).CornerRadius = UDim.new(1, 0)
-
-local PredictorStroke = Instance.new("UIStroke")
-PredictorStroke.Color = Color3.new(1, 1, 1)
-PredictorStroke.Thickness = 2
-PredictorStroke.Parent = PredictorFrame
-
-PredictorGui.Enabled = false
---------------------------------------------------------------------
--- PREDICTOR & AUTO-SWING LOGIC
---------------------------------------------------------------------
-local function getPlateZ()
-    local repo = workspace:FindFirstChild("Repository")
-    if repo and repo:FindFirstChild("Strikezone") then
-        local sz = repo.Strikezone:FindFirstChild("Strikezone")
-        if sz then return sz.Position.Z end
-    end
-    return 112.147
+local IOIO00llO00 = l0OOIO("Player")
+if false then
+	_ = 421
 end
-
-local function isBatting()
-    local char = LocalPlayer.Character
-    if not char then return false end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return false end
-    
-    local repo = workspace:FindFirstChild("Repository")
-    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
-        local sz = repo.Strikezone.Strikezone
-        local dist = (hrp.Position - sz.Position).Magnitude
-        -- If the player is further than 20 studs from the strikezone, they are not batting
-        if dist > 20 then
-            return false
-        end
-    end
-    
-    return true
+local I0_0_00_ = IOIO00llO00:CreateSection("Stats")
+local lO_00Oll_I = 685195
+I0_0_00_:CreateSlider("Walk Speed", 517 - 501, 451 - 351, 394 - 378, function(O0II_lI_)
+	_G.MoonHubWalkSpeed = O0II_lI_
+end)
+if false then
+	_ = 952
 end
-
-local function isStrike(pos)
-    local repo = workspace:FindFirstChild("Repository")
-    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
-        local sz = repo.Strikezone.Strikezone
-        local relPos = sz.CFrame:PointToObjectSpace(pos)
-        local size = sz.Size
-        
-        -- Added 0.15 ball radius for more accurate strikezone detection
-        local ballRadius = 0.15
-        if math.abs(relPos.X) <= (size.X / 2) + ballRadius and math.abs(relPos.Y) <= (size.Y / 2) + ballRadius and math.abs(relPos.Z) <= size.Z / 2 then
-            return true
-        end
-    end
-    return false
+I0_0_00_:CreateSlider("Jump Power", 216 - 166, 825 - 625, 499 - 449, function(IIIll0OlII)
+	if false then
+		_ = 794
+	end
+	_G.MoonHubJumpPower = IIIll0OlII
+end)
+local I0IOI_0_l_ = 673744
+local OOl_Il_ll_ = l0OOIO("Settings")
+local OI00Il = 317070
+local OIIl_0I0lOl = OOl_Il_ll_:CreateSection("Theme")
+if false then
+	_ = 417
 end
-
--- New function to check if the ball is close enough to be hittable (even if it's a ball)
-local function isSwingable(pos)
-    local repo = workspace:FindFirstChild("Repository")
-    if repo and repo:FindFirstChild("Strikezone") and repo.Strikezone:FindFirstChild("Strikezone") then
-        local sz = repo.Strikezone.Strikezone
-        local relPos = sz.CFrame:PointToObjectSpace(pos)
-        local size = sz.Size
-        
-        -- Increased margin to 1.75 for a slightly wider swing range when not in strict mode
-        local marginX = 1.75 
-        local marginY = 1.75 
-        
-        if math.abs(relPos.X) <= (size.X / 2) + marginX and math.abs(relPos.Y) <= (size.Y / 2) + marginY and math.abs(relPos.Z) <= size.Z / 2 then
-            return true
-        end
-    end
-    return false
+OIIl_0I0lOl:CreateDropdown("Accent Theme", { "Default", "Crimson", "Aqua", "Purple" }, lIl_IOlI, function(I_Ol_O_l_Il)
+	local IO____0_0 = 323142
+	if false then
+		_ = 977
+	end
+	local IlI_Ol_llI = lOOl0_l.Accent
+	lIl_IOlI = I_Ol_O_l_Il
+	local lIIlO0 = 958195
+	OOO0l0()
+	local ll0I0O = lOOIlO___I_[I_Ol_O_l_Il] or lOOIlO___I_.Default
+	if false then
+		_ = 165
+	end
+	lOOl0_l.Accent = ll0I0O
+	local function OlOlOOll(I0l00ll0l0l, O00I__)
+		local IO_lOl0ll_O = 858568
+		if false then
+			_ = 485
+		end
+		return math.abs(I0l00ll0l0l.R - O00I__.R) < 0.02 and math.abs(I0l00ll0l0l.G - O00I__.G) < 0.02 and math.abs(I0l00ll0l0l.B - O00I__.B) < 0.02
+	end
+	local II0l0O___ = 294843
+	for I_l_OO0l, lOIOOlO_ in ipairs(OIO_I_0:GetDescendants()) do
+		if lOIOOlO_:IsA("GuiObject") then
+			pcall(function()
+				local OOl_00lOIOI = 355668
+				local O0I0_0OI0_ = lOIOOlO_:GetAttribute("TargetBg") or lOIOOlO_.BackgroundColor3
+				local I0I_I0OlI_ = 263559
+				if OlOlOOll(O0I0_0OI0_, IlI_Ol_llI) then
+					if false then
+						_ = 305
+					end
+					lOIOOlO_:SetAttribute("TargetBg", ll0I0O)
+					OO_O0_:Create(lOIOOlO_, TweenInfo.new(0.3), { BackgroundColor3 = ll0I0O }):Play()
+				end
+				if lOIOOlO_:IsA("TextLabel") or lOIOOlO_:IsA("TextButton") or lOIOOlO_:IsA("TextBox") then
+					local I0_lOII = lOIOOlO_:GetAttribute("TargetText") or lOIOOlO_.TextColor3
+					local OIO0lOlI_O = 388627
+					if OlOlOOll(I0_lOII, IlI_Ol_llI) then
+						local IO00ll_ = 376594
+						lOIOOlO_:SetAttribute("TargetText", ll0I0O)
+						OO_O0_:Create(lOIOOlO_, TweenInfo.new(0.3), { TextColor3 = ll0I0O }):Play()
+					end
+				end
+				if lOIOOlO_:IsA("ImageLabel") or lOIOOlO_:IsA("ImageButton") then
+					local OOI0O0 = lOIOOlO_:GetAttribute("TargetImage") or lOIOOlO_.ImageColor3
+					if OlOlOOll(OOI0O0, IlI_Ol_llI) then
+						local OIlIIll = 966027
+						if false then
+							_ = 983
+						end
+						lOIOOlO_:SetAttribute("TargetImage", ll0I0O)
+						OO_O0_:Create(lOIOOlO_, TweenInfo.new(0.3), { ImageColor3 = ll0I0O }):Play()
+					end
+				end
+			end)
+		end
+	end
+end)
+if false then
+	_ = 853
 end
-
-local function OnPitchFired(p31, p32, p33)
-    print("[MOON HUB DEBUG] OnPitchFired TRIGGERED! Received pitch data:", type(p32))
-    if type(p32) == "table" and p32[2] and p32[3] and p32[4] and p32[5] then
-        local P0 = p32[2]
-        local P1 = p32[3]
-        local P2 = p32[4]
-        local MaxTime = p32[5]
-        
-        local z_plate = getPlateZ()
-        local a = P0.Z - 2*P1.Z + P2.Z
-        local b = -2*P0.Z + 2*P1.Z
-        local c = P0.Z - z_plate
-        
-        local s = 1
-        local discriminant = b*b - 4*a*c
-        if discriminant >= 0 then
-            local s1 = (-b + math.sqrt(discriminant)) / (2*a)
-            local s2 = (-b - math.sqrt(discriminant)) / (2*a)
-            s = (s1 >= 0 and s1 <= 1) and s1 or s2
-        end
-        
-        local final_pos = (1-s)^2 * P0 + 2*(1-s)*s * P1 + s^2 * P2
-        
-        -- Curveball adjustment: lower the target due to visual/game physics offset
-        local isCurve = (MaxTime > 0.6) and (P1.Y > (P0.Y + P2.Y)/2)
-        if isCurve then
-            final_pos = final_pos - Vector3.new(0, 0.1, 0)
-        end
-        
-        local isAStrike = isStrike(final_pos)
-        local canSwing = isSwingable(final_pos) -- Determine if it's within hittable range
-        
-        if Options.Predictor then
-            -- Hide completely if not batting
-            if not isBatting() then return end
-            
-            local part = Instance.new("Part")
-            part.Transparency = 1
-            part.Anchored = true
-            part.CanCollide = false
-            part.Position = final_pos
-            part.Parent = workspace
-            
-            PredictorGui.Adornee = part
-            PredictorGui.Enabled = true
-            
-            -- Automatically change color based on strike or ball
-            if isAStrike then
-                PredictorFrame.BackgroundColor3 = Theme.Accent
-                setStatus("PITCH: STRIKE (ZONE)", Theme.Accent)
-            else
-                PredictorFrame.BackgroundColor3 = Color3.fromRGB(80, 80, 80) -- Grey for Ball
-                setStatus("PITCH: BALL", Color3.fromRGB(160, 160, 160))
-            end
-            
-            task.delay(MaxTime + 1, function()
-                PredictorGui.Enabled = false
-                if part then part:Destroy() end
-            end)
-        end
-        
-        -- Auto Swing implementation
-        if Options.AutoSwing and isBatting() then
-            -- Changed to swing ONLY if it's a strike
-            local shouldSwing = (Options.StrikeboxOnly and isAStrike) or (not Options.StrikeboxOnly and canSwing)
-            if shouldSwing then
-                setStatus("WAITING FOR BALL RELEASE...", Color3.fromRGB(255, 200, 255))
-                
-                -- Spawn listener to wait for release point
-                task.spawn(function()
-                    local released = false
-                    local startWait = os.clock()
-                    
-                    -- Check if ball is already out
-                    if workspace:FindFirstChild("ClientBall") or workspace:FindFirstChild("Placebo") then
-                        released = true
-                    else
-                        -- Listen via workspace ChildAdded
-                        local sem = Instance.new("BindableEvent")
-                        local conn
-                        conn = workspace.ChildAdded:Connect(function(child)
-                            if child.Name == "ClientBall" or child.Name == "Placebo" then
-                                released = true
-                                sem:Fire()
-                            end
-                        end)
-                        
-                        -- Timeout safety
-                        task.delay(6.0, function()
-                            if not released then
-                                sem:Fire()
-                            end
-                        end)
-                        
-                        sem.Event:Wait()
-                        conn:Disconnect()
-                        sem:Destroy()
-                    end
-                    
-                    if released and _G.CrimsonActiveLoop and isBatting() then
-                        -- Calculate target timing from the moment of release
-                        local baseOffset = (_G.CrimsonTimingOffset or 31.5)
-                        local speedAdjustment = 0
-                        -- If it's a fast pitch (MaxTime is low), we add a bit more delay so we don't swing too early.
-                        if MaxTime < 0.55 then
-                            speedAdjustment = (0.55 - MaxTime) * 60
-                        end
-                        local userTiming = (_G.UserTimingOffset or 0)
-                        local offsetSeconds = (baseOffset + speedAdjustment + userTiming) / 1000
-                        local t_cross = s * MaxTime
-                        local SWING_DELAY = Options.SwingDelay or 0.083
-                        local t_swing = t_cross - SWING_DELAY + offsetSeconds
-                        
-                        setStatus(string.format("SWING SCHEDULED IN %.3fS", t_swing), Color3.fromRGB(255, 200, 255))
-                        
-                        task.wait(math.max(0, t_swing))
-                        
-                        if not _G.CrimsonActiveLoop or not isBatting() then return end
-                        
-                        -- Requires to fetch game logic (identical to original.lua)
-                        local Knit = require(ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"))
-                        local GameController = Knit.GetController("GameController")
-                        local BattingController = Knit.GetController("BattingController")
-                        local AnimationController = Knit.GetController("AnimationController")
-                        
-                        -- Calculate targeted PCI position
-                        local repo = workspace:FindFirstChild("Repository")
-                        if repo and repo:FindFirstChild("Strikezone") then
-                            local boundary = repo.Strikezone:FindFirstChild("Boundary")
-                            if boundary then
-                                local relPos = boundary.CFrame:PointToObjectSpace(final_pos)
-                                local sizeX, sizeY = boundary.Size.X, boundary.Size.Y
-                                
-                                local pci_x = (relPos.X / sizeX) + 0.5 - (_G.UseCustomOffsets and _G.PciOffsetX or 0)
-                                local pci_y = 0.5 - (relPos.Y / sizeY) + (_G.UseCustomOffsets and _G.PciOffsetY or 0)
-                                
-                                local pci_pos = Vector2.new(pci_x, pci_y)
-                                
-                                -- Calculate the world position of the custom PCI to properly bypass the mouse anti-cheat
-                                local offsetRelPos = Vector3.new((pci_x - 0.5) * sizeX, (0.5 - pci_y) * sizeY, relPos.Z)
-                                local offsetWorldPos = boundary.CFrame * offsetRelPos
-                                
-                                local specificity = "MM"
-                                if BattingController.DetermineZoneSpecificity then
-                                    -- Use the original, un-offset PCI for the animation to ensure the timing delay remains perfectly consistent
-                                    local original_pci_x = (relPos.X / sizeX) + 0.5
-                                    local original_pci_y = 0.5 - (relPos.Y / sizeY)
-                                    specificity = BattingController:DetermineZoneSpecificity(Vector2.new(original_pci_x, original_pci_y))
-                                end
-                                
-                                -- Play directional swing animation natively
-                                pcall(function()
-                                    AnimationController:Stop(LocalPlayer.Name, "Batter", "Windup")
-                                    AnimationController:Play(LocalPlayer, "Batter", "Swing", specificity)
-                                end)
-                                
-                                local function executeHit()
-                                    -- Lock screen position to bypass maiz check
-                                    local screenPos, onScreen = game.Workspace.CurrentCamera:WorldToScreenPoint(offsetWorldPos)
-                                    _G.AutoLockScreenPos = Vector2.new(screenPos.X, screenPos.Y)
-                                    _G.AutoLockTarget = true
-                                    
-                                    -- Temporarily set IsConsole to true to bypass client raycast magnitude check
-                                    local originalIsConsole = GameController.IsConsole
-                                    GameController.IsConsole = true
-                                    
-                                    -- Execute swing using the exact original function reference bypassing interceptions
-                                    if _G.OriginalHandleSwing then
-                                        _G.OriginalHandleSwing(BattingController, pci_pos)
-                                    else
-                                        pcall(function()
-                                            BattingController:HandleSwing(pci_pos)
-                                        end)
-                                    end
-                                    
-                                    -- Restore console flag
-                                    GameController.IsConsole = originalIsConsole
-                                    
-                                    -- Unlock cursor
-                                    task.wait(0.1)
-                                    _G.AutoLockTarget = false
-                                end
-                                
-                                executeHit()
-                            end
-                        end
-                        
-                        setStatus("SWUNG! (PERFECT TIMING)", Theme.Accent)
-                    else
-                        setStatus("RELEASE TIMED OUT/CANCELED", Color3.fromRGB(255, 100, 100))
-                    end
-                end)
-            else
-                setStatus("PITCH: BALL - AUTO-SWING SKIPPED", Color3.fromRGB(160, 160, 160))
-            end
-        end
-    end
+local OO0OI_0lO0I = OOl_Il_ll_:CreateSection("Information")
+local IlO_Ol0_ = 508417
+if false then
+	_ = 784
 end
-
--- Connect directly to the underlying RemoteEvent to bypass Knit startup errors and metatable conflicts
+setStatus = OO0OI_0lO0I:CreateStatusLabel("Status", "WAITING FOR PITCH...")
+local OIOlO_I = 625910
+OO0OI_0lO0I:CreateStatusLabel("Keybind", "[0] Hide UI")
+local IO0lIOI_ = Instance.new("BillboardGui")
+IO0lIOI_.Name = "PredictorGui"
+IO0lIOI_.Size = UDim2.new(230 - 230, 794 - 749, 363 - 363, 787 - 742)
+IO0lIOI_.AlwaysOnTop = true
+IO0lIOI_.Parent = OI0Il0II0O
+local llIl_O0 = Instance.new("Frame")
+local O00I00I_ = 44283
+llIl_O0.Size = UDim2.new(382 - 381, 513 - 513, 906 - 905, 691 - 691)
+local lIOOI0 = 638136
+llIl_O0.BackgroundColor3 = lOOl0_l.Accent
+local lll00l = 396220
+llIl_O0.BackgroundTransparency = 0.3
+local OI_ll0IOII = 944701
+llIl_O0.Parent = IO0lIOI_
+local l0_lll = 732528
+Instance.new("UICorner", llIl_O0).CornerRadius = UDim.new(146 - 145, 878 - 878)
+local O0OI00lIl = Instance.new("UIStroke")
+local llO0OOI = 63891
+O0OI00lIl.Color = Color3.new(709 - 708, 298 - 297, 179 - 178)
+local OIII_OlI0 = 629159
+O0OI00lIl.Thickness = 447 - 445
+local I0II__I0I00 = 183493
+O0OI00lIl.Parent = llIl_O0
+local lIIOl0OI0O = 621847
+IO0lIOI_.Enabled = false
+local lI_0O0O = 634879
+local function l00O0l_()
+	local O0lI00_00_l = workspace:FindFirstChild("Repository")
+	if O0lI00_00_l and O0lI00_00_l:FindFirstChild("Strikezone") then
+		local lIl_OOOl00 = O0lI00_00_l.Strikezone:FindFirstChild("Strikezone")
+		if lIl_OOOl00 then
+			local IOIO_I = 659614
+			return lIl_OOOl00.Position.Z
+		end
+	end
+	local lO___O0llIl = 469618
+	return 112.147
+end
+local l0I0lllI = 447087
+local function l0__0l()
+	local lOO_lll0l = 899096
+	local IIOIIO_0__0 = l_00O_Il00l.Character
+	if not IIOIIO_0__0 then
+		if false then
+			_ = 523
+		end
+		return false
+	end
+	local O0_000I_ = 71359
+	if false then
+		_ = 295
+	end
+	local OII_0IO___0 = IIOIIO_0__0:FindFirstChild("HumanoidRootPart")
+	if not OII_0IO___0 then
+		if false then
+			_ = 919
+		end
+		return false
+	end
+	local Ol_0_lII0_ = workspace:FindFirstChild("Repository")
+	local O_IO_I = 495249
+	if Ol_0_lII0_ and Ol_0_lII0_:FindFirstChild("Strikezone") and Ol_0_lII0_.Strikezone:FindFirstChild("Strikezone") then
+		local IIO__OIII__ = 500725
+		local I_Il_0 = Ol_0_lII0_.Strikezone.Strikezone
+		local O0_O_IOI__ = (OII_0IO___0.Position - I_Il_0.Position).Magnitude
+		if false then
+			_ = 574
+		end
+		if O0_O_IOI__ > 884 - 864 then
+			if false then
+				_ = 998
+			end
+			return false
+		end
+	end
+	return true
+end
+local lI_0lI_O = 927379
+local function lII00lII_(OIlO_Il)
+	local OOlIl_l___O = workspace:FindFirstChild("Repository")
+	if OOlIl_l___O and OOlIl_l___O:FindFirstChild("Strikezone") and OOlIl_l___O.Strikezone:FindFirstChild("Strikezone") then
+		local Il_0OO00_lO = 874311
+		local OOlll00O_IO = OOlIl_l___O.Strikezone.Strikezone
+		local lI0_0_ll = OOlll00O_IO.CFrame:PointToObjectSpace(OIlO_Il)
+		local l0OO0O = OOlll00O_IO.Size
+		if false then
+			_ = 715
+		end
+		local I00OO_Ol0 = 0.15
+		local IIO0OI = 58880
+		if false then
+			_ = 800
+		end
+		if math.abs(lI0_0_ll.X) <= l0OO0O.X / (400 - 398) + I00OO_Ol0 and math.abs(lI0_0_ll.Y) <= l0OO0O.Y / (506 - 504) + I00OO_Ol0 and math.abs(lI0_0_ll.Z) <= l0OO0O.Z / (197 - 195) then
+			local O__0IOIlOl = 806981
+			if false then
+				_ = 826
+			end
+			return true
+		end
+	end
+	return false
+end
+local function Il___0Ol_0O(IOOl_0_O_0l)
+	local l00IOIIO = 145038
+	local l__IIO = workspace:FindFirstChild("Repository")
+	if l__IIO and l__IIO:FindFirstChild("Strikezone") and l__IIO.Strikezone:FindFirstChild("Strikezone") then
+		local I_IIIl_ = l__IIO.Strikezone.Strikezone
+		local lIlOI_O_IO = 23394
+		local O0l0_0000 = I_IIIl_.CFrame:PointToObjectSpace(IOOl_0_O_0l)
+		if false then
+			_ = 18
+		end
+		local II0_00I = I_IIIl_.Size
+		local l_0OlOI0 = 1.75
+		if false then
+			_ = 114
+		end
+		local lO0OIllIO = 1.75
+		if math.abs(O0l0_0000.X) <= II0_00I.X / (299 - 297) + l_0OlOI0 and math.abs(O0l0_0000.Y) <= II0_00I.Y / (809 - 807) + lO0OIllIO and math.abs(O0l0_0000.Z) <= II0_00I.Z / (827 - 825) then
+			if false then
+				_ = 740
+			end
+			return true
+		end
+	end
+	local IIIOlI = 860905
+	return false
+end
+local function lO0IO_0(IIll0O0lO, O_OOI_OIIII, l0lOlO)
+	print("[MOON HUB DEBUG] OnPitchFired TRIGGERED! Received pitch data:", type(O_OOI_OIIII))
+	local l000O__O = 336256
+	if type(O_OOI_OIIII) == "table" and O_OOI_OIIII[862 - 860] and O_OOI_OIIII[812 - 809] and O_OOI_OIIII[531 - 527] and O_OOI_OIIII[380 - 375] then
+		local lI0O_0lII_0 = O_OOI_OIIII[459 - 457]
+		if false then
+			_ = 847
+		end
+		local lOII0Ill_l0 = O_OOI_OIIII[176 - 173]
+		local lO000I___0 = O_OOI_OIIII[305 - 301]
+		local l0OOl_ = O_OOI_OIIII[699 - 694]
+		if false then
+			_ = 35
+		end
+		local IIO__OOII = l00O0l_()
+		local II0O00_l_lI = lI0O_0lII_0.Z - (152 - 150) * lOII0Ill_l0.Z + lO000I___0.Z
+		local O_O_O00 = 213582
+		local II_OII00Ol = -(762 - 760) * lI0O_0lII_0.Z + (492 - 490) * lOII0Ill_l0.Z
+		local I_IO0_l = 597530
+		local IIl_0_ = lI0O_0lII_0.Z - IIO__OOII
+		local OlI_0OI_O0l = 732 - 731
+		if false then
+			_ = 366
+		end
+		local l_IIlO_OOl_ = II_OII00Ol * II_OII00Ol - (115 - 111) * II0O00_l_lI * IIl_0_
+		if false then
+			_ = 272
+		end
+		if l_IIlO_OOl_ >= 70 - 70 then
+			local lOO0O0lO_OI = (-II_OII00Ol + math.sqrt(l_IIlO_OOl_)) / ((768 - 766) * II0O00_l_lI)
+			local IOl_O_II_I0 = 408906
+			if false then
+				_ = 525
+			end
+			local OII_I_II_ = (-II_OII00Ol - math.sqrt(l_IIlO_OOl_)) / ((905 - 903) * II0O00_l_lI)
+			OlI_0OI_O0l = lOO0O0lO_OI >= 44 - 44 and lOO0O0lO_OI <= 300 - 299 and lOO0O0lO_OI or OII_I_II_
+		end
+		if false then
+			_ = 91
+		end
+		local O0OO__lO0IO = (323 - 322 - OlI_0OI_O0l) ^ (724 - 722) * lI0O_0lII_0 + (454 - 452) * (998 - 997 - OlI_0OI_O0l) * OlI_0OI_O0l * lOII0Ill_l0 + OlI_0OI_O0l ^ (549 - 547) * lO000I___0
+		local lIlOll0_ = l0OOl_ > 0.6 and lOII0Ill_l0.Y > (lI0O_0lII_0.Y + lO000I___0.Y) / (328 - 326)
+		if lIlOll0_ then
+			if false then
+				_ = 528
+			end
+			O0OO__lO0IO = O0OO__lO0IO - Vector3.new(420 - 420, 0.1, 240 - 240)
+		end
+		local OOOIII0ll = lII00lII_(O0OO__lO0IO)
+		local O0IO0lO_l0 = 203653
+		local l_0O00 = Il___0Ol_0O(O0OO__lO0IO)
+		local llO_OIlI_ = 632508
+		if I_O0IO.Predictor then
+			local O_lI_0 = 53602
+			if false then
+				_ = 574
+			end
+			if not l0__0l() then
+				return
+			end
+			local lO0_00_Ol00 = 25008
+			if false then
+				_ = 435
+			end
+			local O__II_l0 = Instance.new("Part")
+			O__II_l0.Transparency = 910 - 909
+			O__II_l0.Anchored = true
+			local II0l0IlOl__ = 296722
+			O__II_l0.CanCollide = false
+			if false then
+				_ = 758
+			end
+			O__II_l0.Position = O0OO__lO0IO
+			local IIOl_0II_0I = 105930
+			O__II_l0.Parent = workspace
+			IO0lIOI_.Adornee = O__II_l0
+			if false then
+				_ = 314
+			end
+			IO0lIOI_.Enabled = true
+			if false then
+				_ = 809
+			end
+			if OOOIII0ll then
+				llIl_O0.BackgroundColor3 = lOOl0_l.Accent
+				setStatus("PITCH: STRIKE (ZONE)", lOOl0_l.Accent)
+			else
+				if false then
+					_ = 907
+				end
+				llIl_O0.BackgroundColor3 = Color3.fromRGB(111 - 31, 193 - 113, 1060 - 980)
+				setStatus("PITCH: BALL", Color3.fromRGB(1101 - 941, 888 - 728, 565 - 405))
+			end
+			local OIllIOl = 507501
+			if false then
+				_ = 899
+			end
+			task.delay(l0OOl_ + (913 - 912), function()
+				IO0lIOI_.Enabled = false
+				if O__II_l0 then
+					if false then
+						_ = 539
+					end
+					O__II_l0:Destroy()
+				end
+			end)
+		end
+		if I_O0IO.AutoSwing and l0__0l() then
+			local IlllII_ = 822292
+			if false then
+				_ = 115
+			end
+			local II__OI = I_O0IO.StrikeboxOnly and OOOIII0ll or not I_O0IO.StrikeboxOnly and l_0O00
+			if II__OI then
+				local lIIOIOl_0Ol = 701070
+				if false then
+					_ = 470
+				end
+				setStatus("WAITING FOR BALL RELEASE...", Color3.fromRGB(446 - 191, 1196 - 996, 1220 - 965))
+				task.spawn(function()
+					local I0IO00O = 926855
+					local Il_l0IOOll = false
+					local I0OIOl_ = 239044
+					local I_0I000 = os.clock()
+					local lO0I0O = 674226
+					if workspace:FindFirstChild("ClientBall") or workspace:FindFirstChild("Placebo") then
+						Il_l0IOOll = true
+					else
+						local l00l_l = Instance.new("BindableEvent")
+						if false then
+							_ = 513
+						end
+						local l_I0_00I_l
+						l_I0_00I_l = workspace.ChildAdded:Connect(function(l0_IOlIllIl)
+							if l0_IOlIllIl.Name == "ClientBall" or l0_IOlIllIl.Name == "Placebo" then
+								Il_l0IOOll = true
+								l00l_l:Fire()
+							end
+						end)
+						if false then
+							_ = 213
+						end
+						task.delay(304 - 298, function()
+							if not Il_l0IOOll then
+								if false then
+									_ = 296
+								end
+								l00l_l:Fire()
+							end
+						end)
+						local IO_OOll = 888950
+						l00l_l.Event:Wait()
+						if false then
+							_ = 988
+						end
+						l_I0_00I_l:Disconnect()
+						l00l_l:Destroy()
+					end
+					if false then
+						_ = 964
+					end
+					if Il_l0IOOll and _G.CrimsonActiveLoop and l0__0l() then
+						local lOO_I0lI = _G.CrimsonTimingOffset or 31.5
+						local llOIIO0_ = 882 - 882
+						local OI_0O0I0_0 = 378072
+						if l0OOl_ < 0.55 then
+							llOIIO0_ = (0.55 - l0OOl_) * (920 - 860)
+						end
+						local Il_O0OlOI_ = _G.UserTimingOffset or 947 - 947
+						local O0OI_l__O = (lOO_I0lI + llOIIO0_ + Il_O0OlOI_) / (1100 - 100)
+						local lOIlI0_0_00 = OlI_0OI_O0l * l0OOl_
+						if false then
+							_ = 887
+						end
+						local OOlOII = I_O0IO.SwingDelay or 0.083
+						local lIIO0llOO = lOIlI0_0_00 - OOlOII + O0OI_l__O
+						setStatus(string.format("SWING SCHEDULED IN %.3fS", lIIO0llOO), Color3.fromRGB(1230 - 975, 828 - 628, 772 - 517))
+						if false then
+							_ = 921
+						end
+						task.wait(math.max(583 - 583, lIIO0llOO))
+						local IOl00_OO = 668653
+						if not _G.CrimsonActiveLoop or not l0__0l() then
+							if false then
+								_ = 711
+							end
+							return
+						end
+						if false then
+							_ = 222
+						end
+						local lI0Il_lllI = require(IO__Il0:WaitForChild("Packages"):WaitForChild("Knit"))
+						local I0lO_0 = lI0Il_lllI.GetController("GameController")
+						local OOOII0l0O = lI0Il_lllI.GetController("BattingController")
+						if false then
+							_ = 499
+						end
+						local OO_0OIOO = lI0Il_lllI.GetController("AnimationController")
+						local Il0I0O = workspace:FindFirstChild("Repository")
+						if Il0I0O and Il0I0O:FindFirstChild("Strikezone") then
+							local lIIO_0_ = 285965
+							local OII_O0I0 = Il0I0O.Strikezone:FindFirstChild("Boundary")
+							if OII_O0I0 then
+								local OO_IlOO = OII_O0I0.CFrame:PointToObjectSpace(O0OO__lO0IO)
+								local O0OIO_0_l = 381454
+								local O00l0O, O_00lO = OII_O0I0.Size.X, OII_O0I0.Size.Y
+								local IO_I0I_I_I = OO_IlOO.X / O00l0O + 0.5 - (_G.UseCustomOffsets and _G.PciOffsetX or 432 - 432)
+								if false then
+									_ = 557
+								end
+								local l_OII__0 = 0.5 - OO_IlOO.Y / O_00lO + (_G.UseCustomOffsets and _G.PciOffsetY or 171 - 171)
+								local I0IOIOOO = Vector2.new(IO_I0I_I_I, l_OII__0)
+								if false then
+									_ = 424
+								end
+								local I___ll0_00 = Vector3.new((IO_I0I_I_I - 0.5) * O00l0O, (0.5 - l_OII__0) * O_00lO, OO_IlOO.Z)
+								local OIOOl0IlO = 103382
+								local O_II0__ = OII_O0I0.CFrame * I___ll0_00
+								local Ol00Olll_ = "MM"
+								local lIOO_I0_O = 923017
+								if OOOII0l0O.DetermineZoneSpecificity then
+									local l0IIO00I0l = OO_IlOO.X / O00l0O + 0.5
+									local lOO0l___0O = 0.5 - OO_IlOO.Y / O_00lO
+									Ol00Olll_ = OOOII0l0O:DetermineZoneSpecificity(Vector2.new(l0IIO00I0l, lOO0l___0O))
+								end
+								pcall(function()
+									OO_0OIOO:Stop(l_00O_Il00l.Name, "Batter", "Windup")
+									local l_IlIO = 568059
+									OO_0OIOO:Play(l_00O_Il00l, "Batter", "Swing", Ol00Olll_)
+								end)
+								if false then
+									_ = 217
+								end
+								local function OIIlO0l0l0()
+									local I_IllIl, l0__Il_l0 = game.Workspace.CurrentCamera:WorldToScreenPoint(O_II0__)
+									_G.AutoLockScreenPos = Vector2.new(I_IllIl.X, I_IllIl.Y)
+									_G.AutoLockTarget = true
+									local OlI00O = 411366
+									local Il0_OI = I0lO_0.IsConsole
+									if false then
+										_ = 474
+									end
+									I0lO_0.IsConsole = true
+									if _G.OriginalHandleSwing then
+										local l_l__lOI = 870957
+										_G.OriginalHandleSwing(OOOII0l0O, I0IOIOOO)
+									else
+										pcall(function()
+											OOOII0l0O:HandleSwing(I0IOIOOO)
+										end)
+									end
+									if false then
+										_ = 659
+									end
+									I0lO_0.IsConsole = Il0_OI
+									task.wait(0.1)
+									_G.AutoLockTarget = false
+								end
+								OIIlO0l0l0()
+							end
+						end
+						if false then
+							_ = 859
+						end
+						setStatus("SWUNG! (PERFECT TIMING)", lOOl0_l.Accent)
+					else
+						if false then
+							_ = 392
+						end
+						setStatus("RELEASE TIMED OUT/CANCELED", Color3.fromRGB(287 - 32, 1086 - 986, 445 - 345))
+					end
+				end)
+			else
+				setStatus("PITCH: BALL - AUTO-SWING SKIPPED", Color3.fromRGB(451 - 291, 990 - 830, 887 - 727))
+			end
+		end
+	end
+end
 task.spawn(function()
-    local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
-    if not Packages then return end
-    local KnitPkg = Packages:WaitForChild("Knit", 10)
-    if not KnitPkg then return end
-    local ServicesFolder = KnitPkg:WaitForChild("Services", 10)
-    if not ServicesFolder then
-        warn("[MOON HUB] Could not find Knit Services folder!")
-        return
-    end
-    
-    local PitchRE = ServicesFolder:WaitForChild("PitchingService", 10):WaitForChild("RE", 10):WaitForChild("Pitch", 10)
-    if not PitchRE then
-        warn("[MOON HUB] Could not find Pitch RemoteEvent!")
-        return
-    end
-
-    if _G.CrimsonPitchConn then 
-        _G.CrimsonPitchConn:Disconnect() 
-    end
-    
-    -- Connect directly!
-    _G.CrimsonPitchConn = PitchRE.OnClientEvent:Connect(function(p1, p2, p3)
-        -- Knit RemoteEvents wrap the arguments, sometimes dropping or adding the player context.
-        -- We forward all arguments directly to OnPitchFired.
-        OnPitchFired(p1, p2, p3)
-    end)
-    
-    print("[MOON HUB] Successfully connected directly to Pitch RemoteEvent!")
+	local O0IOII = 136904
+	if false then
+		_ = 892
+	end
+	local IIOl_OII_ = IO__Il0:WaitForChild("Packages", 357 - 347)
+	if false then
+		_ = 784
+	end
+	if not IIOl_OII_ then
+		return
+	end
+	local l0_l_I = 286874
+	local I_IIIO = IIOl_OII_:WaitForChild("Knit", 493 - 483)
+	local OO__00O00 = 63197
+	if not I_IIIO then
+		local l00_I0_ = 364177
+		return
+	end
+	if false then
+		_ = 998
+	end
+	local OlIl0l0OIl_ = I_IIIO:WaitForChild("Services", 294 - 284)
+	local IOll__0_I = 135341
+	if false then
+		_ = 96
+	end
+	if not OlIl0l0OIl_ then
+		local l__OI0O00OI = 387989
+		warn("[MOON HUB] Could not find Knit Services folder!")
+		return
+	end
+	local I_0lIlO = 428601
+	local IIIlOl = OlIl0l0OIl_:WaitForChild("PitchingService", 356 - 346):WaitForChild("RE", 811 - 801):WaitForChild("Pitch", 461 - 451)
+	if not IIIlOl then
+		if false then
+			_ = 548
+		end
+		warn("[MOON HUB] Could not find Pitch RemoteEvent!")
+		return
+	end
+	if _G.CrimsonPitchConn then
+		local II0OO__ = 741197
+		_G.CrimsonPitchConn:Disconnect()
+	end
+	local l0_lOI_ll = 240878
+	_G.CrimsonPitchConn = IIIlOl.OnClientEvent:Connect(function(l_O_Il, IIOIIl, O0___I_)
+		lO0IO_0(l_O_Il, IIOIIl, O0___I_)
+	end)
+	local Ill0lO0O0l_ = 799817
+	print("[MOON HUB] Successfully connected directly to Pitch RemoteEvent!")
 end)
-
--- Auto Pitch Hook
+local II00Il_I_ = 788429
 task.spawn(function()
-    local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
-    if not Packages then return end
-    local KnitPkg = Packages:WaitForChild("Knit", 10)
-    if not KnitPkg then return end
-    local Knit = require(KnitPkg)
-    if Knit then
-        local PitchingService = Knit.GetService("PitchingService")
-        if PitchingService and PitchingService.RequestThrowPitch then
-            if not _G.OriginalRequestThrowPitch then
-                _G.OriginalRequestThrowPitch = PitchingService.RequestThrowPitch
-            end
-            
-            PitchingService.RequestThrowPitch = newcclosure(function(self, pitchType, location, time1, time2)
-                if Options.AutoPitch and time1 and time2 then
-                    time1 = 1
-                    time2 = 1
-                end
-                return _G.OriginalRequestThrowPitch(self, pitchType, location, time1, time2)
-            end)
-            print("[MOON HUB] Successfully hooked Auto Pitch!")
-        end
-    end
+	local OO0O0l_ = IO__Il0:WaitForChild("Packages", 998 - 988)
+	local l_II_I = 796556
+	if not OO0O0l_ then
+		if false then
+			_ = 285
+		end
+		return
+	end
+	local l00I_lIII = 536258
+	local O0lIIIIlO = OO0O0l_:WaitForChild("Knit", 973 - 963)
+	local l_0I_O = 69626
+	if not O0lIIIIlO then
+		local Oll_IO_O = 532011
+		if false then
+			_ = 704
+		end
+		return
+	end
+	local OllI00l = 326328
+	if false then
+		_ = 734
+	end
+	local l_lII_I = require(O0lIIIIlO)
+	if l_lII_I then
+		local lOOO_l_O000 = l_lII_I.GetService("PitchingService")
+		local IIIIOl00_ = 463277
+		if lOOO_l_O000 and lOOO_l_O000.RequestThrowPitch then
+			if not _G.OriginalRequestThrowPitch then
+				local IOll0II = 626610
+				_G.OriginalRequestThrowPitch = lOOO_l_O000.RequestThrowPitch
+			end
+			if false then
+				_ = 755
+			end
+			lOOO_l_O000.RequestThrowPitch = lI__OO0__(function(self, OOO0__00_lI, I_O_0l0OO_0, lOOlIOlO, l0O000_0)
+				if false then
+					_ = 573
+				end
+				if I_O0IO.AutoPitch and lOOlIOlO and l0O000_0 then
+					lOOlIOlO = 271 - 270
+					l0O000_0 = 302 - 301
+				end
+				local O__0_I0O = 92106
+				return _G.OriginalRequestThrowPitch(self, OOO0__00_lI, I_O_0l0OO_0, lOOlIOlO, l0O000_0)
+			end)
+			print("[MOON HUB] Successfully hooked Auto Pitch!")
+		end
+	end
 end)
-
--- Background Loops for new features
+if false then
+	_ = 943
+end
 task.spawn(function()
-    local CustomGlow
-    
-    while _G.CrimsonActiveLoop and ScreenGui.Parent do
-        -- Player Stats
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            local hum = LocalPlayer.Character.Humanoid
-            if _G.MoonHubWalkSpeed and _G.MoonHubWalkSpeed > 16 then
-                hum.WalkSpeed = _G.MoonHubWalkSpeed
-            end
-            if _G.MoonHubJumpPower and _G.MoonHubJumpPower > 50 then
-                hum.UseJumpPower = true
-                hum.JumpPower = _G.MoonHubJumpPower
-            end
-        end
-        
-        
-        
-        task.wait(0.1)
-    end
-    
-    if CustomGlow then CustomGlow:Destroy() end
+	local OI__O_Ol00
+	while _G.CrimsonActiveLoop and OIO_I_0.Parent do
+		local IllIll_0l = 236864
+		if l_00O_Il00l.Character and l_00O_Il00l.Character:FindFirstChild("Humanoid") then
+			local OO0OI_lIl_ = 135981
+			local lO__OOI = l_00O_Il00l.Character.Humanoid
+			local l0ll0IIl = 212935
+			if _G.MoonHubWalkSpeed and _G.MoonHubWalkSpeed > 43 - 27 then
+				lO__OOI.WalkSpeed = _G.MoonHubWalkSpeed
+			end
+			local lI_l___I0l = 161354
+			if _G.MoonHubJumpPower and _G.MoonHubJumpPower > 159 - 109 then
+				lO__OOI.UseJumpPower = true
+				lO__OOI.JumpPower = _G.MoonHubJumpPower
+			end
+		end
+		if false then
+			_ = 249
+		end
+		task.wait(0.1)
+	end
+	if OI__O_Ol00 then
+		OI__O_Ol00:Destroy()
+	end
 end)
-
 print("MOON HUB UI Loaded.")
-
-
-
