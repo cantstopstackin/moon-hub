@@ -1,17 +1,17 @@
-local lI_l00 = game:GetService("")
-local l_0l0OOOI = game:GetService("")
-local l_0O_l = game:GetService("")
-local lOlI___ = game:GetService("")
-local lIIlI_lII = game:GetService("")
-local OIlOlOO_ = newcclosure or function(OO0IO__I)
-	return OO0IO__I
+local I0l0O_I = game:GetService("TweenService")
+local llIOlOl_Il = game:GetService("RunService")
+local O0OI000I_Il = game:GetService("UserInputService")
+local OI_O__II = game:GetService("ReplicatedStorage")
+local OOlI__l = game:GetService("Workspace")
+local Ill_lI_I = newcclosure or function(O_IOIO00)
+	return O_IOIO00
 end
-local l00OO0OlI = game:GetService("")
-local lll0I__Illl = l00OO0OlI.LocalPlayer
-local OI0O_I_O0I = lll0I__Illl and lll0I__Illl:WaitForChild("") or CoreGui
-for Oll0I0, O__O0IO0 in ipairs(OI0O_I_O0I:GetChildren()) do
-	if O__O0IO0.Name == "" or O__O0IO0.Name == "" or O__O0IO0.Name == "" then
-		O__O0IO0:Destroy()
+local lI0I0_I = game:GetService("Players")
+local l0l0I0Ill = lI0I0_I.LocalPlayer
+local III0_III_O_ = l0l0I0Ill and l0l0I0Ill:WaitForChild("PlayerGui") or CoreGui
+for l_l_ll_0_l, OIOl__0OlO in ipairs(III0_III_O_:GetChildren()) do
+	if OIOl__0OlO.Name == "MoonHubUI" or OIOl__0OlO.Name == "Moon1xHitUI" or OIOl__0OlO.Name == "CrimsonHitUI" then
+		OIOl__0OlO:Destroy()
 	end
 end
 if _G.CrimsonPitchConn then
@@ -27,1128 +27,1128 @@ if _G.CrimsonActiveLoop then
 end
 task.wait(0.1)
 _G.CrimsonActiveLoop = true
-local O_0IIl = { Predictor = false, AutoSwing = false, SwingDelay = 0.083, StrikeboxOnly = false, AutoPitch = false }
+local l0lIll = { Predictor = false, AutoSwing = false, SwingDelay = 0.083, StrikeboxOnly = false, AutoPitch = false }
 _G.AutoLockTarget = false
-_G.AutoLockScreenPos = Vector2.new(960 - 960, 808 - 808)
+_G.AutoLockScreenPos = Vector2.new(923 - 923, 208 - 208)
 if not _G.hookedMouseLocation then
 	_G.hookedMouseLocation = true
-	local I0llIO0l
-	I0llIO0l = hookmetamethod(game, "", OIlOlOO_(function(self, ...)
-		local OIl0llO_0 = getnamecallmethod()
-		if OIl0llO_0 == "" and typeof(self) == "" and self.ClassName == "" and _G.AutoLockTarget then
+	local llOO_00IO0
+	llOO_00IO0 = hookmetamethod(game, "__namecall", Ill_lI_I(function(self, ...)
+		local l_OO_O = getnamecallmethod()
+		if l_OO_O == "GetMouseLocation" and typeof(self) == "Instance" and self.ClassName == "UserInputService" and _G.AutoLockTarget then
 			return _G.AutoLockScreenPos
 		end
-		local O____O0II0, IOI0OO0lI, I0lOOI_, Il_I0I, OO_OIOlI0l = I0llIO0l(self, ...)
-		return O____O0II0, IOI0OO0lI, I0lOOI_, Il_I0I, OO_OIOlI0l
+		local l_Ol_I, IOI_I_0_I, IllOll_, ll_I_I, OO0000O_ = llOO_00IO0(self, ...)
+		return l_Ol_I, IOI_I_0_I, IllOll_, ll_I_I, OO0000O_
 	end))
-	local OO_l00IO0
-	OO_l00IO0 = hookmetamethod(game, "", OIlOlOO_(function(self, l0__I_)
+	local O_ll0I0
+	O_ll0I0 = hookmetamethod(game, "__index", Ill_lI_I(function(self, OO0_IOOl_)
 		if _G.AutoLockTarget and not checkcaller() then
-			local I0Oll___ = false
+			local OlI__l000_ = false
 			pcall(function()
-				I0Oll___ = typeof(self) == "" and self.ClassName == ""
+				OlI__l000_ = typeof(self) == "Instance" and self.ClassName == "Mouse"
 			end)
-			if I0Oll___ then
-				if l0__I_ == "" then
+			if OlI__l000_ then
+				if OO0_IOOl_ == "X" then
 					return _G.AutoLockScreenPos.X
 				end
-				if l0__I_ == "" then
+				if OO0_IOOl_ == "Y" then
 					return _G.AutoLockScreenPos.Y
 				end
 			end
 		end
-		local l0IIOIOlOIl = OO_l00IO0(self, l0__I_)
-		return l0IIOIOlOIl
+		local I__OIO = O_ll0I0(self, OO0_IOOl_)
+		return I__OIO
 	end))
 end
-local O0lOOll = { Default = Color3.fromRGB(427 - 187, 1001 - 761, 353 - 113), Crimson = Color3.fromRGB(584 - 364, 756 - 716, 67 - 27), Aqua = Color3.fromRGB(344 - 304, 1121 - 901, 542 - 322), Purple = Color3.fromRGB(626 - 506, 1059 - 979, 569 - 369) }
-local lOlOIlIO = { Theme = "", LightMode = false }
+local IO00l00OOII = { Default = Color3.fromRGB(569 - 329, 487 - 247, 871 - 631), Crimson = Color3.fromRGB(791 - 571, 796 - 756, 634 - 594), Aqua = Color3.fromRGB(94 - 54, 392 - 172, 558 - 338), Purple = Color3.fromRGB(656 - 536, 944 - 864, 325 - 125) }
+local OI_O__O__ = { Theme = "Default", LightMode = false }
 pcall(function()
-	if isfile and readfile and isfile("") then
-		local Oll0l_0_l = game:GetService("")
-		local Il_0IlIOI = Oll0l_0_l:JSONDecode(readfile(""))
-		if Il_0IlIOI then
-			lOlOIlIO = Il_0IlIOI
+	if isfile and readfile and isfile("MoonHubSavedTheme.json") then
+		local IOl_IIOI_O0 = game:GetService("HttpService")
+		local l_l_IIl_0O = IOl_IIOI_O0:JSONDecode(readfile("MoonHubSavedTheme.json"))
+		if l_l_IIl_0O then
+			OI_O__O__ = l_l_IIl_0O
 		end
 	elseif _G.MoonHubSavedTheme then
-		lOlOIlIO = _G.MoonHubSavedTheme
+		OI_O__O__ = _G.MoonHubSavedTheme
 	end
 end)
-local IlOl0_lII = lOlOIlIO.Theme or ""
-local lI_IIO_OOl = lOlOIlIO.LightMode or false
-local function lIIIIl()
-	lOlOIlIO.Theme = IlOl0_lII
-	lOlOIlIO.LightMode = lI_IIO_OOl
+local IOlll0_O = OI_O__O__.Theme or "Default"
+local O0l_l0O = OI_O__O__.LightMode or false
+local function IlO_0O0_O()
+	OI_O__O__.Theme = IOlll0_O
+	OI_O__O__.LightMode = O0l_l0O
 	pcall(function()
 		if writefile then
-			local l__IIOI_I = game:GetService("")
-			writefile("", l__IIOI_I:JSONEncode(lOlOIlIO))
+			local OOOO__000l = game:GetService("HttpService")
+			writefile("MoonHubSavedTheme.json", OOOO__000l:JSONEncode(OI_O__O__))
 		end
 	end)
-	_G.MoonHubSavedTheme = lOlOIlIO
+	_G.MoonHubSavedTheme = OI_O__O__
 end
-local l0OI00IlOI = { Background = lI_IIO_OOl and Color3.fromRGB(494 - 254, 1029 - 789, 406 - 166) or Color3.fromRGB(119 - 107, 149 - 137, 478 - 466), Sidebar = lI_IIO_OOl and Color3.fromRGB(1098 - 873, 740 - 515, 468 - 243) or Color3.fromRGB(905 - 889, 807 - 791, 294 - 278), SectionBg = lI_IIO_OOl and Color3.fromRGB(926 - 691, 273 - 38, 1207 - 972) or Color3.fromRGB(351 - 333, 184 - 166, 245 - 227), Border = lI_IIO_OOl and Color3.fromRGB(603 - 403, 477 - 277, 408 - 208) or Color3.fromRGB(1021 - 993, 706 - 678, 589 - 561), Accent = O0lOOll[IlOl0_lII] or O0lOOll.Default, TextPrimary = lI_IIO_OOl and Color3.fromRGB(633 - 613, 439 - 419, 488 - 468) or Color3.fromRGB(895 - 655, 728 - 488, 522 - 282), TextSecondary = lI_IIO_OOl and Color3.fromRGB(1020 - 920, 684 - 584, 879 - 779) or Color3.fromRGB(1015 - 865, 821 - 671, 974 - 824), ItemBg = lI_IIO_OOl and Color3.fromRGB(1156 - 946, 228 - 18, 397 - 187) or Color3.fromRGB(185 - 161, 744 - 720, 822 - 798), ItemHover = lI_IIO_OOl and Color3.fromRGB(1152 - 962, 778 - 588, 778 - 588) or Color3.fromRGB(809 - 777, 426 - 394, 481 - 449), Font = Enum.Font.Gotham, FontMedium = Enum.Font.GothamMedium, FontBold = Enum.Font.GothamBold }
-local II___0II = { Tabs = {}, ActiveTab = nil, IsVisible = true }
-local lIIIO0Ill = l_0O_l.TouchEnabled and not l_0O_l.MouseEnabled
-local lOl0I0ll = lIIIO0Ill and 1141 - 691 or 679 - 79
-local IOO0__ = lIIIO0Ill and 705 - 425 or 617 - 217
-local OOI0_0O0lll = lIIIO0Ill and 732 - 322 or 956 - 396
-local O0IIl_ = lIIIO0Ill and 1022 - 782 or 718 - 358
-local II_IlI0_ = Instance.new("")
-II_IlI0_.Name = ""
-II_IlI0_.Parent = OI0O_I_O0I
-II_IlI0_.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-II_IlI0_.ResetOnSpawn = false
-II_IlI0_.IgnoreGuiInset = true
-local lOl_OO = Instance.new("")
-lOl_OO.Name = ""
-lOl_OO.AnchorPoint = Vector2.new(0.5, 0.5)
-lOl_OO.Position = UDim2.new(0.5, 558 - 558, 0.5, 163 - 163)
-lOl_OO.Size = UDim2.new(525 - 525, lOl0I0ll, 810 - 810, IOO0__)
-lOl_OO.BackgroundColor3 = l0OI00IlOI.Background
-lOl_OO.BorderSizePixel = 740 - 740
-lOl_OO.ClipsDescendants = true
-lOl_OO.Parent = II_IlI0_
-Instance.new("", lOl_OO).CornerRadius = UDim.new(707 - 707, 690 - 682)
-local lO_OlllO00I = Instance.new("", lOl_OO)
-lO_OlllO00I.Color = l0OI00IlOI.Border
-lO_OlllO00I.Thickness = 313 - 312
-local lI_0I_00Ol = Instance.new("")
-lI_0I_00Ol.Name = ""
-lI_0I_00Ol.AnchorPoint = Vector2.new(0.5, 0.5)
-lI_0I_00Ol.Position = UDim2.new(0.5, 571 - 571, 0.5, 461 - 461)
-lI_0I_00Ol.Size = UDim2.new(596 - 595, 478 - 438, 664 - 663, 142 - 102)
-lI_0I_00Ol.BackgroundTransparency = 978 - 977
-lI_0I_00Ol.Image = ""
-lI_0I_00Ol.ImageColor3 = Color3.new(995 - 995, 459 - 459, 829 - 829)
-lI_0I_00Ol.ImageTransparency = 0.4
-lI_0I_00Ol.ScaleType = Enum.ScaleType.Slice
-lI_0I_00Ol.SliceCenter = Rect.new(591 - 581, 460 - 450, 828 - 710, 140 - 22)
-lI_0I_00Ol.ZIndex = -(527 - 526)
-lI_0I_00Ol.Parent = lOl_OO
-local OOO___l = Instance.new("")
-OOO___l.Name = ""
-OOO___l.Size = UDim2.new(797 - 796, 464 - 464, 290 - 289, -(772 - 736))
-OOO___l.Position = UDim2.new(953 - 953, 576 - 576, 157 - 157, 555 - 519)
-OOO___l.BackgroundTransparency = 863 - 862
-OOO___l.ZIndex = 373 - 373
-OOO___l.ClipsDescendants = true
-OOO___l.Parent = lOl_OO
+local O_0I0OOOO = { Background = O0l_l0O and Color3.fromRGB(925 - 685, 833 - 593, 946 - 706) or Color3.fromRGB(77 - 65, 981 - 969, 759 - 747), Sidebar = O0l_l0O and Color3.fromRGB(1066 - 841, 621 - 396, 732 - 507) or Color3.fromRGB(428 - 412, 622 - 606, 796 - 780), SectionBg = O0l_l0O and Color3.fromRGB(818 - 583, 406 - 171, 470 - 235) or Color3.fromRGB(650 - 632, 597 - 579, 502 - 484), Border = O0l_l0O and Color3.fromRGB(432 - 232, 757 - 557, 279 - 79) or Color3.fromRGB(813 - 785, 258 - 230, 832 - 804), Accent = IO00l00OOII[IOlll0_O] or IO00l00OOII.Default, TextPrimary = O0l_l0O and Color3.fromRGB(611 - 591, 201 - 181, 214 - 194) or Color3.fromRGB(398 - 158, 807 - 567, 837 - 597), TextSecondary = O0l_l0O and Color3.fromRGB(516 - 416, 610 - 510, 553 - 453) or Color3.fromRGB(627 - 477, 327 - 177, 824 - 674), ItemBg = O0l_l0O and Color3.fromRGB(896 - 686, 614 - 404, 312 - 102) or Color3.fromRGB(631 - 607, 223 - 199, 589 - 565), ItemHover = O0l_l0O and Color3.fromRGB(842 - 652, 474 - 284, 708 - 518) or Color3.fromRGB(503 - 471, 463 - 431, 479 - 447), Font = Enum.Font.Gotham, FontMedium = Enum.Font.GothamMedium, FontBold = Enum.Font.GothamBold }
+local l__OOIIIO_O = { Tabs = {}, ActiveTab = nil, IsVisible = true }
+local O000O_ = O0OI000I_Il.TouchEnabled and not O0OI000I_Il.MouseEnabled
+local IlO000__00 = O000O_ and 970 - 520 or 739 - 139
+local OIlOlOIl_II = O000O_ and 1265 - 985 or 863 - 463
+local l___O00I_0 = O000O_ and 1111 - 701 or 1023 - 463
+local lOlIOO_0 = O000O_ and 256 - 16 or 361 - 1
+local I_0ll_O = Instance.new("ScreenGui")
+I_0ll_O.Name = "MoonHubUI"
+I_0ll_O.Parent = III0_III_O_
+I_0ll_O.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+I_0ll_O.ResetOnSpawn = false
+I_0ll_O.IgnoreGuiInset = true
+local IO0O_OOIOl = Instance.new("CanvasGroup")
+IO0O_OOIOl.Name = "MainContainer"
+IO0O_OOIOl.AnchorPoint = Vector2.new(0.5, 0.5)
+IO0O_OOIOl.Position = UDim2.new(0.5, 732 - 732, 0.5, 161 - 161)
+IO0O_OOIOl.Size = UDim2.new(725 - 725, IlO000__00, 142 - 142, OIlOlOIl_II)
+IO0O_OOIOl.BackgroundColor3 = O_0I0OOOO.Background
+IO0O_OOIOl.BorderSizePixel = 653 - 653
+IO0O_OOIOl.ClipsDescendants = true
+IO0O_OOIOl.Parent = I_0ll_O
+Instance.new("UICorner", IO0O_OOIOl).CornerRadius = UDim.new(147 - 147, 595 - 587)
+local l__OIOIII = Instance.new("UIStroke", IO0O_OOIOl)
+l__OIOIII.Color = O_0I0OOOO.Border
+l__OIOIII.Thickness = 649 - 648
+local I0OOOO0__ = Instance.new("ImageLabel")
+I0OOOO0__.Name = "Shadow"
+I0OOOO0__.AnchorPoint = Vector2.new(0.5, 0.5)
+I0OOOO0__.Position = UDim2.new(0.5, 920 - 920, 0.5, 490 - 490)
+I0OOOO0__.Size = UDim2.new(161 - 160, 582 - 542, 321 - 320, 48 - 8)
+I0OOOO0__.BackgroundTransparency = 522 - 521
+I0OOOO0__.Image = "rbxassetid://131692000"
+I0OOOO0__.ImageColor3 = Color3.new(490 - 490, 702 - 702, 518 - 518)
+I0OOOO0__.ImageTransparency = 0.4
+I0OOOO0__.ScaleType = Enum.ScaleType.Slice
+I0OOOO0__.SliceCenter = Rect.new(967 - 957, 224 - 214, 376 - 258, 696 - 578)
+I0OOOO0__.ZIndex = -(687 - 686)
+I0OOOO0__.Parent = IO0O_OOIOl
+local llOl_0I__I0 = Instance.new("Frame")
+llOl_0I__I0.Name = "ParticleContainer"
+llOl_0I__I0.Size = UDim2.new(183 - 182, 529 - 529, 623 - 622, -(727 - 691))
+llOl_0I__I0.Position = UDim2.new(40 - 40, 365 - 365, 311 - 311, 945 - 909)
+llOl_0I__I0.BackgroundTransparency = 348 - 347
+llOl_0I__I0.ZIndex = 333 - 333
+llOl_0I__I0.ClipsDescendants = true
+llOl_0I__I0.Parent = IO0O_OOIOl
 task.spawn(function()
-	local I0I00I0_l_ = Instance.new("")
-	I0I00I0_l_.Size = UDim2.new(335 - 333, 429 - 429, 101 - 99, 769 - 769)
-	I0I00I0_l_.Position = UDim2.new(741 - 741, 273 - 273, 693 - 693, 161 - 161)
-	I0I00I0_l_.BackgroundTransparency = 269 - 268
-	I0I00I0_l_.Parent = OOO___l
-	for llll_O = 660 - 660, 906 - 896 do
-		for OlO0lOO = 424 - 424, 868 - 858 do
-			local O_00IlOOO_l = Instance.new("")
-			local Ol_I0O0 = 835 - 807
-			O_00IlOOO_l.Size = UDim2.new(542 - 542, Ol_I0O0, 22 - 22, Ol_I0O0)
-			O_00IlOOO_l.Position = UDim2.new(llll_O * 0.15, 35 - 35, OlO0lOO * 0.15, 467 - 467)
-			O_00IlOOO_l.BackgroundTransparency = 956 - 955
-			O_00IlOOO_l.Image = ""
-			O_00IlOOO_l.ImageColor3 = l0OI00IlOI.Accent
-			O_00IlOOO_l.ImageTransparency = 0.25
-			O_00IlOOO_l.ZIndex = 741 - 741
-			O_00IlOOO_l.Parent = I0I00I0_l_
+	local lIOO_IO = Instance.new("Frame")
+	lIOO_IO.Size = UDim2.new(497 - 495, 835 - 835, 770 - 768, 751 - 751)
+	lIOO_IO.Position = UDim2.new(693 - 693, 615 - 615, 338 - 338, 694 - 694)
+	lIOO_IO.BackgroundTransparency = 891 - 890
+	lIOO_IO.Parent = llOl_0I__I0
+	for l_O000OOI0_ = 544 - 544, 618 - 608 do
+		for l_OO0O = 974 - 974, 465 - 455 do
+			local OOlIllllI0I = Instance.new("ImageLabel")
+			local O__l_O_ = 107 - 79
+			OOlIllllI0I.Size = UDim2.new(848 - 848, O__l_O_, 740 - 740, O__l_O_)
+			OOlIllllI0I.Position = UDim2.new(l_O000OOI0_ * 0.15, 864 - 864, l_OO0O * 0.15, 479 - 479)
+			OOlIllllI0I.BackgroundTransparency = 243 - 242
+			OOlIllllI0I.Image = "rbxassetid://77005149022898"
+			OOlIllllI0I.ImageColor3 = O_0I0OOOO.Accent
+			OOlIllllI0I.ImageTransparency = 0.25
+			OOlIllllI0I.ZIndex = 291 - 291
+			OOlIllllI0I.Parent = lIOO_IO
 		end
 	end
-	while _G.CrimsonActiveLoop and II_IlI0_.Parent do
-		I0I00I0_l_.Position = UDim2.new(72 - 72, 770 - 770, 597 - 597, 12 - 12)
-		local lIl0_lI_Ill = lI_l00:Create(I0I00I0_l_, TweenInfo.new(869 - 857, Enum.EasingStyle.Linear), { Position = UDim2.new(-0.3, 967 - 967, -0.3, 303 - 303) })
-		lIl0_lI_Ill:Play()
-		lIl0_lI_Ill.Completed:Wait()
+	while _G.CrimsonActiveLoop and I_0ll_O.Parent do
+		lIOO_IO.Position = UDim2.new(257 - 257, 84 - 84, 952 - 952, 423 - 423)
+		local I_0III0 = I0l0O_I:Create(lIOO_IO, TweenInfo.new(778 - 766, Enum.EasingStyle.Linear), { Position = UDim2.new(-0.3, 954 - 954, -0.3, 132 - 132) })
+		I_0III0:Play()
+		I_0III0.Completed:Wait()
 	end
 end)
-local IIlOOI___O = Instance.new("")
-IIlOOI___O.Name = ""
-IIlOOI___O.Size = UDim2.new(299 - 298, 230 - 230, 66 - 66, 115 - 79)
-IIlOOI___O.BackgroundTransparency = 374 - 373
-IIlOOI___O.ZIndex = 539 - 534
-IIlOOI___O.Parent = lOl_OO
-local Ol_0I0IOIO = Instance.new("")
-Ol_0I0IOIO.Name = ""
-Ol_0I0IOIO.Size = UDim2.new(84 - 84, 378 - 352, 874 - 874, 551 - 525)
-Ol_0I0IOIO.Position = UDim2.new(471 - 471, 291 - 279, 0.5, -(531 - 518))
-Ol_0I0IOIO.BackgroundTransparency = 1001 - 1000
-Ol_0I0IOIO.Image = ""
-Ol_0I0IOIO.ImageColor3 = l0OI00IlOI.Accent
-Ol_0I0IOIO.ZIndex = 858 - 853
-Ol_0I0IOIO.Parent = IIlOOI___O
-local O0O_II = Instance.new("")
-O0O_II.Name = ""
-O0O_II.Size = UDim2.new(6 - 5, -(863 - 813), 234 - 233, 714 - 714)
-O0O_II.Position = UDim2.new(162 - 162, 932 - 888, 64 - 64, 916 - 916)
-O0O_II.BackgroundTransparency = 523 - 522
-O0O_II.Text = ""
-O0O_II.TextColor3 = l0OI00IlOI.TextPrimary
-O0O_II.Font = l0OI00IlOI.FontMedium
-O0O_II.TextSize = 181 - 169
-O0O_II.TextXAlignment = Enum.TextXAlignment.Left
-O0O_II.ZIndex = 483 - 478
-O0O_II.Parent = IIlOOI___O
-local l_IlOII = Instance.new("")
-l_IlOII.Name = ""
-l_IlOII.Size = UDim2.new(11 - 11, 270 - 234, 635 - 635, 223 - 187)
-l_IlOII.Position = UDim2.new(178 - 177, -(369 - 333), 361 - 361, 594 - 594)
-l_IlOII.BackgroundTransparency = 576 - 575
-l_IlOII.Text = ""
-l_IlOII.TextColor3 = l0OI00IlOI.TextSecondary
-l_IlOII.Font = l0OI00IlOI.FontBold
-l_IlOII.TextSize = 169 - 155
-l_IlOII.ZIndex = 306 - 301
-l_IlOII.Parent = IIlOOI___O
-l_IlOII.MouseEnter:Connect(function()
-	lI_l00:Create(l_IlOII, TweenInfo.new(0.2), { TextColor3 = Color3.new(62 - 61, 882 - 881, 619 - 618) }):Play()
+local lOOOI0I0___ = Instance.new("Frame")
+lOOOI0I0___.Name = "TitleBar"
+lOOOI0I0___.Size = UDim2.new(933 - 932, 121 - 121, 940 - 940, 944 - 908)
+lOOOI0I0___.BackgroundTransparency = 313 - 312
+lOOOI0I0___.ZIndex = 640 - 635
+lOOOI0I0___.Parent = IO0O_OOIOl
+local O0lIlOI = Instance.new("ImageLabel")
+O0lIlOI.Name = "TitleLogo"
+O0lIlOI.Size = UDim2.new(644 - 644, 737 - 711, 977 - 977, 624 - 598)
+O0lIlOI.Position = UDim2.new(82 - 82, 145 - 133, 0.5, -(798 - 785))
+O0lIlOI.BackgroundTransparency = 386 - 385
+O0lIlOI.Image = "rbxassetid://103314343492991"
+O0lIlOI.ImageColor3 = O_0I0OOOO.Accent
+O0lIlOI.ZIndex = 344 - 339
+O0lIlOI.Parent = lOOOI0I0___
+local l0_I_0IO0l_ = Instance.new("TextLabel")
+l0_I_0IO0l_.Name = "TitleText"
+l0_I_0IO0l_.Size = UDim2.new(455 - 454, -(1019 - 969), 875 - 874, 151 - 151)
+l0_I_0IO0l_.Position = UDim2.new(936 - 936, 457 - 413, 276 - 276, 723 - 723)
+l0_I_0IO0l_.BackgroundTransparency = 695 - 694
+l0_I_0IO0l_.Text = "MOON HUB"
+l0_I_0IO0l_.TextColor3 = O_0I0OOOO.TextPrimary
+l0_I_0IO0l_.Font = O_0I0OOOO.FontMedium
+l0_I_0IO0l_.TextSize = 696 - 684
+l0_I_0IO0l_.TextXAlignment = Enum.TextXAlignment.Left
+l0_I_0IO0l_.ZIndex = 584 - 579
+l0_I_0IO0l_.Parent = lOOOI0I0___
+local OlIl_O = Instance.new("TextButton")
+OlIl_O.Name = "CloseBtn"
+OlIl_O.Size = UDim2.new(748 - 748, 287 - 251, 542 - 542, 511 - 475)
+OlIl_O.Position = UDim2.new(563 - 562, -(723 - 687), 510 - 510, 142 - 142)
+OlIl_O.BackgroundTransparency = 198 - 197
+OlIl_O.Text = "X"
+OlIl_O.TextColor3 = O_0I0OOOO.TextSecondary
+OlIl_O.Font = O_0I0OOOO.FontBold
+OlIl_O.TextSize = 182 - 168
+OlIl_O.ZIndex = 931 - 926
+OlIl_O.Parent = lOOOI0I0___
+OlIl_O.MouseEnter:Connect(function()
+	I0l0O_I:Create(OlIl_O, TweenInfo.new(0.2), { TextColor3 = Color3.new(579 - 578, 515 - 514, 157 - 156) }):Play()
 end)
-l_IlOII.MouseLeave:Connect(function()
-	lI_l00:Create(l_IlOII, TweenInfo.new(0.2), { TextColor3 = l0OI00IlOI.TextSecondary }):Play()
+OlIl_O.MouseLeave:Connect(function()
+	I0l0O_I:Create(OlIl_O, TweenInfo.new(0.2), { TextColor3 = O_0I0OOOO.TextSecondary }):Play()
 end)
-local function l000I0I0OO(ll0llll_)
-	II___0II.IsVisible = ll0llll_
-	if ll0llll_ then
-		II_IlI0_.Enabled = true
-		lI_l00:Create(lOl_OO, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(630 - 630, lOl0I0ll, 376 - 376, IOO0__), GroupTransparency = 468 - 468, Position = UDim2.new(0.5, 184 - 184, 0.5, 145 - 145) }):Play()
+local function l_0_Ill__0(OI_I00Ol)
+	l__OOIIIO_O.IsVisible = OI_I00Ol
+	if OI_I00Ol then
+		I_0ll_O.Enabled = true
+		I0l0O_I:Create(IO0O_OOIOl, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(921 - 921, IlO000__00, 376 - 376, OIlOlOIl_II), GroupTransparency = 91 - 91, Position = UDim2.new(0.5, 426 - 426, 0.5, 585 - 585) }):Play()
 	else
-		local IIlOII00 = lI_l00:Create(lOl_OO, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In), { Size = UDim2.new(889 - 889, OOI0_0O0lll, 95 - 95, O0IIl_), GroupTransparency = 979 - 978, Position = UDim2.new(0.5, 214 - 214, 0.5, 770 - 740) })
-		IIlOII00:Play()
-		IIlOII00.Completed:Connect(function()
-			if not II___0II.IsVisible then
-				II_IlI0_.Enabled = false
+		local l0_IO_00 = I0l0O_I:Create(IO0O_OOIOl, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In), { Size = UDim2.new(592 - 592, l___O00I_0, 94 - 94, lOlIOO_0), GroupTransparency = 678 - 677, Position = UDim2.new(0.5, 278 - 278, 0.5, 306 - 276) })
+		l0_IO_00:Play()
+		l0_IO_00.Completed:Connect(function()
+			if not l__OOIIIO_O.IsVisible then
+				I_0ll_O.Enabled = false
 			end
 		end)
 	end
 end
-l_IlOII.MouseButton1Click:Connect(function()
-	l000I0I0OO(false)
+OlIl_O.MouseButton1Click:Connect(function()
+	l_0_Ill__0(false)
 end)
-if lIIIO0Ill then
-	local IlOlI0OOI_I = Instance.new("")
-	IlOlI0OOI_I.Name = ""
-	IlOlI0OOI_I.Size = UDim2.new(448 - 448, 667 - 622, 405 - 405, 1014 - 969)
-	IlOlI0OOI_I.Position = UDim2.new(0.5, -(828 - 806), 100 - 100, 251 - 241)
-	IlOlI0OOI_I.BackgroundColor3 = l0OI00IlOI.ItemBg
-	IlOlI0OOI_I.Text = ""
-	IlOlI0OOI_I.TextColor3 = l0OI00IlOI.Accent
-	IlOlI0OOI_I.Font = l0OI00IlOI.FontBold
-	IlOlI0OOI_I.TextSize = 1006 - 996
-	IlOlI0OOI_I.Active = true
-	IlOlI0OOI_I.Draggable = true
-	IlOlI0OOI_I.Parent = II_IlI0_
-	Instance.new("", IlOlI0OOI_I).CornerRadius = UDim.new(686 - 686, 745 - 737)
-	local l0lO_O_ = Instance.new("", IlOlI0OOI_I)
-	l0lO_O_.Color = l0OI00IlOI.Border
-	l0lO_O_.Thickness = 117 - 116
-	IlOlI0OOI_I.MouseButton1Click:Connect(function()
-		l000I0I0OO(not II___0II.IsVisible)
+if O000O_ then
+	local llO_l_IO00 = Instance.new("TextButton")
+	llO_l_IO00.Name = "MobileToggleBtn"
+	llO_l_IO00.Size = UDim2.new(887 - 887, 986 - 941, 277 - 277, 436 - 391)
+	llO_l_IO00.Position = UDim2.new(0.5, -(987 - 965), 55 - 55, 182 - 172)
+	llO_l_IO00.BackgroundColor3 = O_0I0OOOO.ItemBg
+	llO_l_IO00.Text = "MOON"
+	llO_l_IO00.TextColor3 = O_0I0OOOO.Accent
+	llO_l_IO00.Font = O_0I0OOOO.FontBold
+	llO_l_IO00.TextSize = 484 - 474
+	llO_l_IO00.Active = true
+	llO_l_IO00.Draggable = true
+	llO_l_IO00.Parent = I_0ll_O
+	Instance.new("UICorner", llO_l_IO00).CornerRadius = UDim.new(533 - 533, 649 - 641)
+	local l00IIOI = Instance.new("UIStroke", llO_l_IO00)
+	l00IIOI.Color = O_0I0OOOO.Border
+	l00IIOI.Thickness = 151 - 150
+	llO_l_IO00.MouseButton1Click:Connect(function()
+		l_0_Ill__0(not l__OOIIIO_O.IsVisible)
 	end)
 end
-_G.CrimsonInputConn = l_0O_l.InputBegan:Connect(function(l0_lOI, O_O0O_)
-	if not O_O0O_ then
-		if l0_lOI.KeyCode == Enum.KeyCode.Zero then
-			l000I0I0OO(not II___0II.IsVisible)
+_G.CrimsonInputConn = O0OI000I_Il.InputBegan:Connect(function(OO0_OI, l0_00I00lOl)
+	if not l0_00I00lOl then
+		if OO0_OI.KeyCode == Enum.KeyCode.Zero then
+			l_0_Ill__0(not l__OOIIIO_O.IsVisible)
 		end
 	end
 end)
-local OllO0O_O = game:GetService("")
-local lO00O0ll_, lI0_OO, I_O_O0, OOIIIIIO0_
-IIlOOI___O.InputBegan:Connect(function(OOI0_00_0_)
-	if OOI0_00_0_.UserInputType == Enum.UserInputType.MouseButton1 or OOI0_00_0_.UserInputType == Enum.UserInputType.Touch then
-		lO00O0ll_ = true
-		I_O_O0 = OOI0_00_0_.Position
-		OOIIIIIO0_ = lOl_OO.Position
+local O_II_O0lO = game:GetService("RunService")
+local OlIIOl0O0l, lO0l0OIIO_I, l0O0I0, IlOOll
+lOOOI0I0___.InputBegan:Connect(function(lIOI_Il0_00)
+	if lIOI_Il0_00.UserInputType == Enum.UserInputType.MouseButton1 or lIOI_Il0_00.UserInputType == Enum.UserInputType.Touch then
+		OlIIOl0O0l = true
+		l0O0I0 = lIOI_Il0_00.Position
+		IlOOll = IO0O_OOIOl.Position
 	end
 end)
-IIlOOI___O.InputEnded:Connect(function(lOlIOOO_)
-	if lOlIOOO_.UserInputType == Enum.UserInputType.MouseButton1 or lOlIOOO_.UserInputType == Enum.UserInputType.Touch then
-		lO00O0ll_ = false
+lOOOI0I0___.InputEnded:Connect(function(OO_O0_Ol)
+	if OO_O0_Ol.UserInputType == Enum.UserInputType.MouseButton1 or OO_O0_Ol.UserInputType == Enum.UserInputType.Touch then
+		OlIIOl0O0l = false
 	end
 end)
-l_0O_l.InputChanged:Connect(function(IlO00_Ol)
-	if IlO00_Ol.UserInputType == Enum.UserInputType.MouseMovement or IlO00_Ol.UserInputType == Enum.UserInputType.Touch then
-		lI0_OO = IlO00_Ol
+O0OI000I_Il.InputChanged:Connect(function(O__llIlO0)
+	if O__llIlO0.UserInputType == Enum.UserInputType.MouseMovement or O__llIlO0.UserInputType == Enum.UserInputType.Touch then
+		lO0l0OIIO_I = O__llIlO0
 	end
 end)
-OllO0O_O.RenderStepped:Connect(function()
-	if lO00O0ll_ and lI0_OO then
-		local IO0l0O = lI0_OO.Position - I_O_O0
-		local IOI0IO = UDim2.new(OOIIIIIO0_.X.Scale, OOIIIIIO0_.X.Offset + IO0l0O.X, OOIIIIIO0_.Y.Scale, OOIIIIIO0_.Y.Offset + IO0l0O.Y)
-		lOl_OO.Position = lOl_OO.Position:Lerp(IOI0IO, 0.25)
+O_II_O0lO.RenderStepped:Connect(function()
+	if OlIIOl0O0l and lO0l0OIIO_I then
+		local l0OI0l00_O = lO0l0OIIO_I.Position - l0O0I0
+		local O_l__l_OI = UDim2.new(IlOOll.X.Scale, IlOOll.X.Offset + l0OI0l00_O.X, IlOOll.Y.Scale, IlOOll.Y.Offset + l0OI0l00_O.Y)
+		IO0O_OOIOl.Position = IO0O_OOIOl.Position:Lerp(O_l__l_OI, 0.25)
 	end
 end)
-local OI_Il_IO = Instance.new("")
-OI_Il_IO.Size = UDim2.new(333 - 332, 3 - 3, 298 - 298, 269 - 268)
-OI_Il_IO.Position = UDim2.new(771 - 771, 506 - 506, 371 - 371, 941 - 905)
-OI_Il_IO.BackgroundColor3 = l0OI00IlOI.Border
-OI_Il_IO.BorderSizePixel = 137 - 137
-OI_Il_IO.ZIndex = 554 - 549
-OI_Il_IO.Parent = lOl_OO
-local OllII_l_0II = Instance.new("")
-OllII_l_0II.Name = ""
-OllII_l_0II.Size = UDim2.new(922 - 921, 36 - 36, 55 - 54, -(958 - 921))
-OllII_l_0II.Position = UDim2.new(495 - 495, 967 - 967, 563 - 563, 414 - 377)
-OllII_l_0II.BackgroundTransparency = 501 - 500
-OllII_l_0II.Parent = lOl_OO
-local O__lIIl0 = Instance.new("")
-O__lIIl0.Name = ""
-O__lIIl0.Size = UDim2.new(261 - 261, 1058 - 918, 829 - 828, 263 - 263)
-O__lIIl0.BackgroundColor3 = l0OI00IlOI.Sidebar
-O__lIIl0.BorderSizePixel = 149 - 149
-O__lIIl0.ZIndex = 144 - 142
-O__lIIl0.Parent = OllII_l_0II
-local I__OO_0 = Instance.new("")
-I__OO_0.Size = UDim2.new(991 - 991, 342 - 341, 657 - 656, 613 - 613)
-I__OO_0.Position = UDim2.new(947 - 947, 836 - 696, 864 - 864, 480 - 480)
-I__OO_0.BackgroundColor3 = l0OI00IlOI.Border
-I__OO_0.BorderSizePixel = 647 - 647
-I__OO_0.ZIndex = 326 - 324
-I__OO_0.Parent = OllII_l_0II
-local I0lO_lI0lI = Instance.new("")
-I0lO_lI0lI.SortOrder = Enum.SortOrder.LayoutOrder
-I0lO_lI0lI.Padding = UDim.new(925 - 925, 342 - 338)
-I0lO_lI0lI.Parent = O__lIIl0
-local Il_llll = Instance.new("")
-Il_llll.PaddingTop = UDim.new(362 - 362, 741 - 729)
-Il_llll.PaddingLeft = UDim.new(592 - 592, 817 - 809)
-Il_llll.PaddingRight = UDim.new(546 - 546, 402 - 394)
-Il_llll.Parent = O__lIIl0
-local IO0O0lO0ll = Instance.new("")
-IO0O0lO0ll.Name = ""
-IO0O0lO0ll.Size = UDim2.new(666 - 665, -(336 - 196), 268 - 267, 30 - 30)
-IO0O0lO0ll.Position = UDim2.new(695 - 695, 531 - 391, 489 - 489, 420 - 420)
-IO0O0lO0ll.BackgroundTransparency = 178 - 177
-IO0O0lO0ll.ZIndex = 991 - 990
-IO0O0lO0ll.Parent = OllII_l_0II
-local function OIl0_lOOl0(O0_IOIlI)
-	local IIIIO0_ = Instance.new("")
-	IIIIO0_.Name = O0_IOIlI
-	IIIIO0_.Size = UDim2.new(762 - 761, 510 - 510, 258 - 258, 949 - 917)
-	IIIIO0_.BackgroundColor3 = l0OI00IlOI.Sidebar
-	IIIIO0_.BackgroundTransparency = 243 - 242
-	IIIIO0_.Text = ""
-	IIIIO0_.AutoButtonColor = false
-	IIIIO0_.Parent = O__lIIl0
-	Instance.new("", IIIIO0_).CornerRadius = UDim.new(596 - 596, 1006 - 1000)
-	local OIOIO0 = Instance.new("")
-	OIOIO0.Size = UDim2.new(579 - 579, 565 - 562, 19 - 19, 419 - 419)
-	OIOIO0.Position = UDim2.new(18 - 18, 924 - 924, 0.5, 176 - 176)
-	OIOIO0.AnchorPoint = Vector2.new(689 - 689, 0.5)
-	OIOIO0.BackgroundColor3 = l0OI00IlOI.Accent
-	OIOIO0.BorderSizePixel = 174 - 174
-	OIOIO0.Parent = IIIIO0_
-	Instance.new("", OIOIO0).CornerRadius = UDim.new(754 - 753, 541 - 541)
-	local OO_I_l = Instance.new("")
-	OO_I_l.Size = UDim2.new(623 - 622, -(757 - 741), 867 - 866, 263 - 263)
-	OO_I_l.Position = UDim2.new(272 - 272, 643 - 631, 432 - 432, 128 - 128)
-	OO_I_l.BackgroundTransparency = 36 - 35
-	OO_I_l.Text = O0_IOIlI
-	OO_I_l.TextColor3 = l0OI00IlOI.TextSecondary
-	OO_I_l.Font = l0OI00IlOI.FontMedium
-	OO_I_l.TextSize = 516 - 503
-	OO_I_l.TextXAlignment = Enum.TextXAlignment.Left
-	OO_I_l.Parent = IIIIO0_
-	local OOl_lIlIO_ = Instance.new("")
-	OOl_lIlIO_.Name = O0_IOIlI .. ""
-	OOl_lIlIO_.Size = UDim2.new(879 - 878, 245 - 245, 126 - 125, 395 - 395)
-	OOl_lIlIO_.BackgroundTransparency = 625 - 624
-	OOl_lIlIO_.BorderSizePixel = 750 - 750
-	OOl_lIlIO_.ScrollBarThickness = 827 - 825
-	OOl_lIlIO_.ScrollBarImageColor3 = l0OI00IlOI.Border
-	OOl_lIlIO_.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	OOl_lIlIO_.Visible = false
-	OOl_lIlIO_.Parent = IO0O0lO0ll
-	local O_lOI_OIl = Instance.new("")
-	O_lOI_OIl.SortOrder = Enum.SortOrder.LayoutOrder
-	O_lOI_OIl.Padding = UDim.new(813 - 813, 856 - 844)
-	O_lOI_OIl.FillDirection = Enum.FillDirection.Vertical
-	O_lOI_OIl.Parent = OOl_lIlIO_
-	local OOOl0O = Instance.new("")
-	OOOl0O.PaddingTop = UDim.new(979 - 979, 289 - 273)
-	OOOl0O.PaddingLeft = UDim.new(525 - 525, 312 - 296)
-	OOOl0O.PaddingRight = UDim.new(850 - 850, 797 - 781)
-	OOOl0O.PaddingBottom = UDim.new(566 - 566, 467 - 451)
-	OOOl0O.Parent = OOl_lIlIO_
-	local l0l_0IlO = { Button = IIIIO0_, Page = OOl_lIlIO_, Indicator = OIOIO0, Label = OO_I_l }
-	table.insert(II___0II.Tabs, l0l_0IlO)
-	IIIIO0_.MouseEnter:Connect(function()
-		if II___0II.ActiveTab ~= l0l_0IlO then
-			lI_l00:Create(OO_I_l, TweenInfo.new(0.2), { TextColor3 = l0OI00IlOI.TextPrimary }):Play()
-			lI_l00:Create(IIIIO0_, TweenInfo.new(0.2), { BackgroundTransparency = 0.5, BackgroundColor3 = l0OI00IlOI.ItemHover }):Play()
-		end
-	end)
-	IIIIO0_.MouseLeave:Connect(function()
-		if II___0II.ActiveTab ~= l0l_0IlO then
-			lI_l00:Create(OO_I_l, TweenInfo.new(0.2), { TextColor3 = l0OI00IlOI.TextSecondary }):Play()
-			lI_l00:Create(IIIIO0_, TweenInfo.new(0.2), { BackgroundTransparency = 115 - 114 }):Play()
+local OIIO_l = Instance.new("Frame")
+OIIO_l.Size = UDim2.new(966 - 965, 846 - 846, 483 - 483, 225 - 224)
+OIIO_l.Position = UDim2.new(338 - 338, 434 - 434, 887 - 887, 786 - 750)
+OIIO_l.BackgroundColor3 = O_0I0OOOO.Border
+OIIO_l.BorderSizePixel = 713 - 713
+OIIO_l.ZIndex = 994 - 989
+OIIO_l.Parent = IO0O_OOIOl
+local O0lIOOlO = Instance.new("Frame")
+O0lIOOlO.Name = "ContentBody"
+O0lIOOlO.Size = UDim2.new(935 - 934, 651 - 651, 135 - 134, -(1001 - 964))
+O0lIOOlO.Position = UDim2.new(656 - 656, 771 - 771, 744 - 744, 405 - 368)
+O0lIOOlO.BackgroundTransparency = 33 - 32
+O0lIOOlO.Parent = IO0O_OOIOl
+local I0_I0O_l0 = Instance.new("Frame")
+I0_I0O_l0.Name = "Sidebar"
+I0_I0O_l0.Size = UDim2.new(608 - 608, 197 - 57, 398 - 397, 416 - 416)
+I0_I0O_l0.BackgroundColor3 = O_0I0OOOO.Sidebar
+I0_I0O_l0.BorderSizePixel = 66 - 66
+I0_I0O_l0.ZIndex = 387 - 385
+I0_I0O_l0.Parent = O0lIOOlO
+local IIl00Ol_ = Instance.new("Frame")
+IIl00Ol_.Size = UDim2.new(737 - 737, 203 - 202, 103 - 102, 958 - 958)
+IIl00Ol_.Position = UDim2.new(111 - 111, 1045 - 905, 204 - 204, 811 - 811)
+IIl00Ol_.BackgroundColor3 = O_0I0OOOO.Border
+IIl00Ol_.BorderSizePixel = 326 - 326
+IIl00Ol_.ZIndex = 364 - 362
+IIl00Ol_.Parent = O0lIOOlO
+local IOI0llO0 = Instance.new("UIListLayout")
+IOI0llO0.SortOrder = Enum.SortOrder.LayoutOrder
+IOI0llO0.Padding = UDim.new(155 - 155, 263 - 259)
+IOI0llO0.Parent = I0_I0O_l0
+local O_l000 = Instance.new("UIPadding")
+O_l000.PaddingTop = UDim.new(800 - 800, 280 - 268)
+O_l000.PaddingLeft = UDim.new(566 - 566, 889 - 881)
+O_l000.PaddingRight = UDim.new(693 - 693, 39 - 31)
+O_l000.Parent = I0_I0O_l0
+local l_0IlllII_I = Instance.new("Frame")
+l_0IlllII_I.Name = "PagesContainer"
+l_0IlllII_I.Size = UDim2.new(258 - 257, -(649 - 509), 442 - 441, 886 - 886)
+l_0IlllII_I.Position = UDim2.new(991 - 991, 833 - 693, 391 - 391, 329 - 329)
+l_0IlllII_I.BackgroundTransparency = 25 - 24
+l_0IlllII_I.ZIndex = 223 - 222
+l_0IlllII_I.Parent = O0lIOOlO
+local function OI0OIl0I00I(II000I)
+	local I_II_lI_OII = Instance.new("TextButton")
+	I_II_lI_OII.Name = II000I
+	I_II_lI_OII.Size = UDim2.new(940 - 939, 398 - 398, 965 - 965, 923 - 891)
+	I_II_lI_OII.BackgroundColor3 = O_0I0OOOO.Sidebar
+	I_II_lI_OII.BackgroundTransparency = 583 - 582
+	I_II_lI_OII.Text = ""
+	I_II_lI_OII.AutoButtonColor = false
+	I_II_lI_OII.Parent = I0_I0O_l0
+	Instance.new("UICorner", I_II_lI_OII).CornerRadius = UDim.new(975 - 975, 344 - 338)
+	local OI_IlIIII = Instance.new("Frame")
+	OI_IlIIII.Size = UDim2.new(115 - 115, 977 - 974, 787 - 787, 189 - 189)
+	OI_IlIIII.Position = UDim2.new(366 - 366, 36 - 36, 0.5, 396 - 396)
+	OI_IlIIII.AnchorPoint = Vector2.new(715 - 715, 0.5)
+	OI_IlIIII.BackgroundColor3 = O_0I0OOOO.Accent
+	OI_IlIIII.BorderSizePixel = 524 - 524
+	OI_IlIIII.Parent = I_II_lI_OII
+	Instance.new("UICorner", OI_IlIIII).CornerRadius = UDim.new(18 - 17, 179 - 179)
+	local OOIO_0 = Instance.new("TextLabel")
+	OOIO_0.Size = UDim2.new(796 - 795, -(911 - 895), 457 - 456, 334 - 334)
+	OOIO_0.Position = UDim2.new(242 - 242, 45 - 33, 810 - 810, 643 - 643)
+	OOIO_0.BackgroundTransparency = 137 - 136
+	OOIO_0.Text = II000I
+	OOIO_0.TextColor3 = O_0I0OOOO.TextSecondary
+	OOIO_0.Font = O_0I0OOOO.FontMedium
+	OOIO_0.TextSize = 93 - 80
+	OOIO_0.TextXAlignment = Enum.TextXAlignment.Left
+	OOIO_0.Parent = I_II_lI_OII
+	local O0Ol0llII = Instance.new("ScrollingFrame")
+	O0Ol0llII.Name = II000I .. "Page"
+	O0Ol0llII.Size = UDim2.new(409 - 408, 117 - 117, 502 - 501, 556 - 556)
+	O0Ol0llII.BackgroundTransparency = 197 - 196
+	O0Ol0llII.BorderSizePixel = 467 - 467
+	O0Ol0llII.ScrollBarThickness = 899 - 897
+	O0Ol0llII.ScrollBarImageColor3 = O_0I0OOOO.Border
+	O0Ol0llII.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	O0Ol0llII.Visible = false
+	O0Ol0llII.Parent = l_0IlllII_I
+	local I___l_0_00 = Instance.new("UIListLayout")
+	I___l_0_00.SortOrder = Enum.SortOrder.LayoutOrder
+	I___l_0_00.Padding = UDim.new(811 - 811, 683 - 671)
+	I___l_0_00.FillDirection = Enum.FillDirection.Vertical
+	I___l_0_00.Parent = O0Ol0llII
+	local IIll_l0I = Instance.new("UIPadding")
+	IIll_l0I.PaddingTop = UDim.new(488 - 488, 286 - 270)
+	IIll_l0I.PaddingLeft = UDim.new(654 - 654, 951 - 935)
+	IIll_l0I.PaddingRight = UDim.new(919 - 919, 175 - 159)
+	IIll_l0I.PaddingBottom = UDim.new(555 - 555, 505 - 489)
+	IIll_l0I.Parent = O0Ol0llII
+	local l__I0_ = { Button = I_II_lI_OII, Page = O0Ol0llII, Indicator = OI_IlIIII, Label = OOIO_0 }
+	table.insert(l__OOIIIO_O.Tabs, l__I0_)
+	I_II_lI_OII.MouseEnter:Connect(function()
+		if l__OOIIIO_O.ActiveTab ~= l__I0_ then
+			I0l0O_I:Create(OOIO_0, TweenInfo.new(0.2), { TextColor3 = O_0I0OOOO.TextPrimary }):Play()
+			I0l0O_I:Create(I_II_lI_OII, TweenInfo.new(0.2), { BackgroundTransparency = 0.5, BackgroundColor3 = O_0I0OOOO.ItemHover }):Play()
 		end
 	end)
-	IIIIO0_.MouseButton1Click:Connect(function()
-		if II___0II.ActiveTab == l0l_0IlO then
+	I_II_lI_OII.MouseLeave:Connect(function()
+		if l__OOIIIO_O.ActiveTab ~= l__I0_ then
+			I0l0O_I:Create(OOIO_0, TweenInfo.new(0.2), { TextColor3 = O_0I0OOOO.TextSecondary }):Play()
+			I0l0O_I:Create(I_II_lI_OII, TweenInfo.new(0.2), { BackgroundTransparency = 180 - 179 }):Play()
+		end
+	end)
+	I_II_lI_OII.MouseButton1Click:Connect(function()
+		if l__OOIIIO_O.ActiveTab == l__I0_ then
 			return
 		end
-		if II___0II.ActiveTab then
-			lI_l00:Create(II___0II.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = l0OI00IlOI.TextSecondary }):Play()
-			lI_l00:Create(II___0II.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 815 - 814 }):Play()
-			lI_l00:Create(II___0II.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(875 - 875, 510 - 507, 491 - 491, 173 - 173) }):Play()
-			II___0II.ActiveTab.Page.Visible = false
+		if l__OOIIIO_O.ActiveTab then
+			I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = O_0I0OOOO.TextSecondary }):Play()
+			I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 96 - 95 }):Play()
+			I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(441 - 441, 26 - 23, 660 - 660, 812 - 812) }):Play()
+			l__OOIIIO_O.ActiveTab.Page.Visible = false
 		end
-		II___0II.ActiveTab = l0l_0IlO
-		II___0II.ActiveTab.Page.Visible = true
-		lI_l00:Create(II___0II.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = l0OI00IlOI.Accent }):Play()
-		lI_l00:Create(II___0II.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 75 - 75, BackgroundColor3 = l0OI00IlOI.ItemBg }):Play()
-		lI_l00:Create(II___0II.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(131 - 131, 698 - 695, 621 - 621, 465 - 449) }):Play()
+		l__OOIIIO_O.ActiveTab = l__I0_
+		l__OOIIIO_O.ActiveTab.Page.Visible = true
+		I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Label, TweenInfo.new(0.2), { TextColor3 = O_0I0OOOO.Accent }):Play()
+		I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Button, TweenInfo.new(0.2), { BackgroundTransparency = 703 - 703, BackgroundColor3 = O_0I0OOOO.ItemBg }):Play()
+		I0l0O_I:Create(l__OOIIIO_O.ActiveTab.Indicator, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(719 - 719, 435 - 432, 82 - 82, 130 - 114) }):Play()
 	end)
-	if #II___0II.Tabs == 164 - 163 then
-		II___0II.ActiveTab = l0l_0IlO
-		II___0II.ActiveTab.Page.Visible = true
-		OO_I_l.TextColor3 = l0OI00IlOI.Accent
-		IIIIO0_.BackgroundTransparency = 649 - 649
-		IIIIO0_.BackgroundColor3 = l0OI00IlOI.ItemBg
-		OIOIO0.Size = UDim2.new(717 - 717, 824 - 821, 316 - 316, 153 - 137)
+	if #l__OOIIIO_O.Tabs == 207 - 206 then
+		l__OOIIIO_O.ActiveTab = l__I0_
+		l__OOIIIO_O.ActiveTab.Page.Visible = true
+		OOIO_0.TextColor3 = O_0I0OOOO.Accent
+		I_II_lI_OII.BackgroundTransparency = 101 - 101
+		I_II_lI_OII.BackgroundColor3 = O_0I0OOOO.ItemBg
+		OI_IlIIII.Size = UDim2.new(382 - 382, 116 - 113, 920 - 920, 278 - 262)
 	end
-	local OIlIl_OI = {}
-	function OIlIl_OI:CreateSection(Il_0_0_)
-		local O_I_0_O0 = Instance.new("")
-		O_I_0_O0.Name = Il_0_0_
-		O_I_0_O0.Size = UDim2.new(334 - 333, 21 - 21, 799 - 799, 899 - 899)
-		O_I_0_O0.AutomaticSize = Enum.AutomaticSize.Y
-		O_I_0_O0.BackgroundColor3 = l0OI00IlOI.SectionBg
-		O_I_0_O0.BorderSizePixel = 376 - 376
-		O_I_0_O0.Parent = OOl_lIlIO_
-		Instance.new("", O_I_0_O0).CornerRadius = UDim.new(114 - 114, 329 - 323)
-		local Il0I__IO = Instance.new("", O_I_0_O0)
-		Il0I__IO.Color = l0OI00IlOI.Border
-		Il0I__IO.Thickness = 26 - 25
-		local Ol_lOOl_0_ = Instance.new("")
-		Ol_lOOl_0_.SortOrder = Enum.SortOrder.LayoutOrder
-		Ol_lOOl_0_.Padding = UDim.new(917 - 917, 701 - 701)
-		Ol_lOOl_0_.Parent = O_I_0_O0
-		local lO_0l00 = Instance.new("")
-		lO_0l00.Size = UDim2.new(892 - 891, -(912 - 888), 82 - 82, 830 - 794)
-		lO_0l00.Position = UDim2.new(539 - 539, 1010 - 998, 611 - 611, 347 - 347)
-		lO_0l00.BackgroundTransparency = 819 - 818
-		lO_0l00.Text = "" .. Il_0_0_
-		lO_0l00.TextColor3 = l0OI00IlOI.TextPrimary
-		lO_0l00.Font = l0OI00IlOI.FontMedium
-		lO_0l00.TextSize = 171 - 158
-		lO_0l00.TextXAlignment = Enum.TextXAlignment.Left
-		lO_0l00.Parent = O_I_0_O0
-		local lI_00O000 = Instance.new("")
-		lI_00O000.Size = UDim2.new(458 - 457, 257 - 257, 238 - 238, 144 - 143)
-		lI_00O000.BackgroundColor3 = l0OI00IlOI.Border
-		lI_00O000.BorderSizePixel = 563 - 563
-		lI_00O000.Parent = O_I_0_O0
-		local IOOO0III_ = Instance.new("")
-		IOOO0III_.Size = UDim2.new(224 - 223, 625 - 625, 976 - 976, 868 - 868)
-		IOOO0III_.AutomaticSize = Enum.AutomaticSize.Y
-		IOOO0III_.BackgroundTransparency = 980 - 979
-		IOOO0III_.Parent = O_I_0_O0
-		local Ol__0I = Instance.new("")
-		Ol__0I.SortOrder = Enum.SortOrder.LayoutOrder
-		Ol__0I.Parent = IOOO0III_
-		local OI0IlOll = {}
-		function OI0IlOll:CreateButton(l_O_l000, I0l_lO)
-			local Il_II_Olll_ = Instance.new("")
-			Il_II_Olll_.Size = UDim2.new(749 - 748, 59 - 59, 95 - 95, 910 - 874)
-			Il_II_Olll_.BackgroundTransparency = 381 - 380
-			Il_II_Olll_.Text = ""
-			Il_II_Olll_.Parent = IOOO0III_
-			local IIII_l = Instance.new("")
-			IIII_l.Size = UDim2.new(957 - 956, -(125 - 101), 220 - 219, 785 - 785)
-			IIII_l.Position = UDim2.new(797 - 797, 368 - 356, 799 - 799, 194 - 194)
-			IIII_l.BackgroundTransparency = 567 - 566
-			IIII_l.Text = l_O_l000
-			IIII_l.TextColor3 = l0OI00IlOI.TextPrimary
-			IIII_l.Font = l0OI00IlOI.FontMedium
-			IIII_l.TextSize = 35 - 22
-			IIII_l.TextXAlignment = Enum.TextXAlignment.Center
-			IIII_l.Parent = Il_II_Olll_
-			local OlOl0IlO_I = Instance.new("")
-			OlOl0IlO_I.Size = UDim2.new(142 - 141, -(903 - 887), 808 - 807, -(207 - 199))
-			OlOl0IlO_I.Position = UDim2.new(860 - 860, 883 - 875, 858 - 858, 962 - 958)
-			OlOl0IlO_I.BackgroundColor3 = l0OI00IlOI.ItemBg
-			OlOl0IlO_I.ZIndex = -(982 - 981)
-			OlOl0IlO_I.Parent = Il_II_Olll_
-			Instance.new("", OlOl0IlO_I).CornerRadius = UDim.new(403 - 403, 707 - 701)
-			Il_II_Olll_.MouseEnter:Connect(function()
-				lI_l00:Create(OlOl0IlO_I, TweenInfo.new(0.2), { BackgroundColor3 = l0OI00IlOI.ItemHover }):Play()
+	local OlO0IIlOO = {}
+	function OlO0IIlOO:CreateSection(Il__000)
+		local llIIIIOll = Instance.new("Frame")
+		llIIIIOll.Name = Il__000
+		llIIIIOll.Size = UDim2.new(20 - 19, 239 - 239, 337 - 337, 981 - 981)
+		llIIIIOll.AutomaticSize = Enum.AutomaticSize.Y
+		llIIIIOll.BackgroundColor3 = O_0I0OOOO.SectionBg
+		llIIIIOll.BorderSizePixel = 918 - 918
+		llIIIIOll.Parent = O0Ol0llII
+		Instance.new("UICorner", llIIIIOll).CornerRadius = UDim.new(606 - 606, 931 - 925)
+		local l_0__I_ = Instance.new("UIStroke", llIIIIOll)
+		l_0__I_.Color = O_0I0OOOO.Border
+		l_0__I_.Thickness = 701 - 700
+		local IlOlll_IOII = Instance.new("UIListLayout")
+		IlOlll_IOII.SortOrder = Enum.SortOrder.LayoutOrder
+		IlOlll_IOII.Padding = UDim.new(588 - 588, 612 - 612)
+		IlOlll_IOII.Parent = llIIIIOll
+		local l__ll_O = Instance.new("TextLabel")
+		l__ll_O.Size = UDim2.new(240 - 239, -(146 - 122), 962 - 962, 958 - 922)
+		l__ll_O.Position = UDim2.new(204 - 204, 781 - 769, 29 - 29, 162 - 162)
+		l__ll_O.BackgroundTransparency = 462 - 461
+		l__ll_O.Text = "  " .. Il__000
+		l__ll_O.TextColor3 = O_0I0OOOO.TextPrimary
+		l__ll_O.Font = O_0I0OOOO.FontMedium
+		l__ll_O.TextSize = 652 - 639
+		l__ll_O.TextXAlignment = Enum.TextXAlignment.Left
+		l__ll_O.Parent = llIIIIOll
+		local llOOOI_I00 = Instance.new("Frame")
+		llOOOI_I00.Size = UDim2.new(803 - 802, 965 - 965, 823 - 823, 349 - 348)
+		llOOOI_I00.BackgroundColor3 = O_0I0OOOO.Border
+		llOOOI_I00.BorderSizePixel = 320 - 320
+		llOOOI_I00.Parent = llIIIIOll
+		local OII0I_IlI_ = Instance.new("Frame")
+		OII0I_IlI_.Size = UDim2.new(927 - 926, 9 - 9, 4 - 4, 722 - 722)
+		OII0I_IlI_.AutomaticSize = Enum.AutomaticSize.Y
+		OII0I_IlI_.BackgroundTransparency = 586 - 585
+		OII0I_IlI_.Parent = llIIIIOll
+		local O0lI_0_0_0O = Instance.new("UIListLayout")
+		O0lI_0_0_0O.SortOrder = Enum.SortOrder.LayoutOrder
+		O0lI_0_0_0O.Parent = OII0I_IlI_
+		local II0O0Ol = {}
+		function II0O0Ol:CreateButton(Ol_O0IOlOlO, Ol__l_O_O)
+			local Il__OI0I_ = Instance.new("TextButton")
+			Il__OI0I_.Size = UDim2.new(383 - 382, 965 - 965, 666 - 666, 737 - 701)
+			Il__OI0I_.BackgroundTransparency = 338 - 337
+			Il__OI0I_.Text = ""
+			Il__OI0I_.Parent = OII0I_IlI_
+			local Il_O0I0I0IO = Instance.new("TextLabel")
+			Il_O0I0I0IO.Size = UDim2.new(919 - 918, -(137 - 113), 447 - 446, 905 - 905)
+			Il_O0I0I0IO.Position = UDim2.new(7 - 7, 97 - 85, 515 - 515, 752 - 752)
+			Il_O0I0I0IO.BackgroundTransparency = 396 - 395
+			Il_O0I0I0IO.Text = Ol_O0IOlOlO
+			Il_O0I0I0IO.TextColor3 = O_0I0OOOO.TextPrimary
+			Il_O0I0I0IO.Font = O_0I0OOOO.FontMedium
+			Il_O0I0I0IO.TextSize = 697 - 684
+			Il_O0I0I0IO.TextXAlignment = Enum.TextXAlignment.Center
+			Il_O0I0I0IO.Parent = Il__OI0I_
+			local lIOI0I_ = Instance.new("Frame")
+			lIOI0I_.Size = UDim2.new(5 - 4, -(605 - 589), 868 - 867, -(384 - 376))
+			lIOI0I_.Position = UDim2.new(805 - 805, 932 - 924, 779 - 779, 570 - 566)
+			lIOI0I_.BackgroundColor3 = O_0I0OOOO.ItemBg
+			lIOI0I_.ZIndex = -(968 - 967)
+			lIOI0I_.Parent = Il__OI0I_
+			Instance.new("UICorner", lIOI0I_).CornerRadius = UDim.new(865 - 865, 825 - 819)
+			Il__OI0I_.MouseEnter:Connect(function()
+				I0l0O_I:Create(lIOI0I_, TweenInfo.new(0.2), { BackgroundColor3 = O_0I0OOOO.ItemHover }):Play()
 			end)
-			Il_II_Olll_.MouseLeave:Connect(function()
-				lI_l00:Create(OlOl0IlO_I, TweenInfo.new(0.2), { BackgroundColor3 = l0OI00IlOI.ItemBg }):Play()
+			Il__OI0I_.MouseLeave:Connect(function()
+				I0l0O_I:Create(lIOI0I_, TweenInfo.new(0.2), { BackgroundColor3 = O_0I0OOOO.ItemBg }):Play()
 			end)
-			Il_II_Olll_.MouseButton1Click:Connect(I0l_lO)
-			return Il_II_Olll_
+			Il__OI0I_.MouseButton1Click:Connect(Ol__l_O_O)
+			return Il__OI0I_
 		end
-		function OI0IlOll:CreateToggle(OI_O_lOO, Ol0__l, O0IllI00OOI)
-			local llOI_0000 = Instance.new("")
-			llOI_0000.Size = UDim2.new(603 - 602, 746 - 746, 178 - 178, 248 - 208)
-			llOI_0000.BackgroundTransparency = 264 - 263
-			llOI_0000.Text = ""
-			llOI_0000.AutoButtonColor = false
-			llOI_0000.Parent = IOOO0III_
-			local IIO0llII = Instance.new("")
-			IIO0llII.Size = UDim2.new(133 - 132, -(590 - 530), 944 - 943, 721 - 721)
-			IIO0llII.Position = UDim2.new(459 - 459, 279 - 267, 6 - 6, 301 - 301)
-			IIO0llII.BackgroundTransparency = 403 - 402
-			IIO0llII.Text = OI_O_lOO
-			IIO0llII.TextColor3 = l0OI00IlOI.TextSecondary
-			IIO0llII.Font = l0OI00IlOI.Font
-			IIO0llII.TextSize = 533 - 520
-			IIO0llII.TextXAlignment = Enum.TextXAlignment.Left
-			IIO0llII.Parent = llOI_0000
-			local lll_I__lOO = Instance.new("")
-			lll_I__lOO.Size = UDim2.new(302 - 302, 515 - 479, 443 - 443, 831 - 813)
-			lll_I__lOO.AnchorPoint = Vector2.new(982 - 981, 0.5)
-			lll_I__lOO.Position = UDim2.new(151 - 150, -(500 - 488), 0.5, 602 - 602)
-			lll_I__lOO.BackgroundColor3 = Ol0__l and l0OI00IlOI.Accent or l0OI00IlOI.ItemBg
-			lll_I__lOO.Parent = llOI_0000
-			Instance.new("", lll_I__lOO).CornerRadius = UDim.new(989 - 988, 527 - 527)
-			local lI00O_Ol = Instance.new("")
-			lI00O_Ol.Size = UDim2.new(99 - 99, 951 - 937, 282 - 282, 274 - 260)
-			lI00O_Ol.AnchorPoint = Vector2.new(664 - 664, 0.5)
-			lI00O_Ol.Position = Ol0__l and UDim2.new(427 - 426, -(832 - 816), 0.5, 228 - 228) or UDim2.new(402 - 402, 705 - 703, 0.5, 232 - 232)
-			lI00O_Ol.BackgroundColor3 = Color3.new(168 - 167, 520 - 519, 474 - 473)
-			lI00O_Ol.Parent = lll_I__lOO
-			Instance.new("", lI00O_Ol).CornerRadius = UDim.new(417 - 416, 886 - 886)
-			local Ol0_Il0 = Ol0__l
-			llOI_0000.MouseButton1Click:Connect(function()
-				Ol0_Il0 = not Ol0_Il0
-				lI_l00:Create(lll_I__lOO, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { BackgroundColor3 = Ol0_Il0 and l0OI00IlOI.Accent or l0OI00IlOI.ItemBg }):Play()
-				lI_l00:Create(lI00O_Ol, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Position = Ol0_Il0 and UDim2.new(608 - 607, -(591 - 575), 0.5, 99 - 99) or UDim2.new(751 - 751, 959 - 957, 0.5, 410 - 410) }):Play()
-				lI_l00:Create(IIO0llII, TweenInfo.new(0.2), { TextColor3 = Ol0_Il0 and l0OI00IlOI.TextPrimary or l0OI00IlOI.TextSecondary }):Play()
-				if Ol0_Il0 then
-					for lOl0IO = 167 - 166, 919 - 914 do
-						local I0_IOl0Ol_ = Instance.new("")
-						I0_IOl0Ol_.Size = UDim2.new(141 - 141, 445 - 437, 752 - 752, 277 - 269)
-						I0_IOl0Ol_.Position = UDim2.new(0.5, 37 - 37, 0.5, 922 - 922)
-						I0_IOl0Ol_.AnchorPoint = Vector2.new(0.5, 0.5)
-						I0_IOl0Ol_.BackgroundColor3 = l0OI00IlOI.Accent
-						I0_IOl0Ol_.BorderSizePixel = 338 - 338
-						I0_IOl0Ol_.ZIndex = 661 - 651
-						Instance.new("", I0_IOl0Ol_).CornerRadius = UDim.new(198 - 197, 986 - 986)
-						I0_IOl0Ol_.Parent = lll_I__lOO
-						local II_OII = math.rad(math.random(71 - 71, 1235 - 875))
-						local l____0I_0I0 = math.random(920 - 902, 460 - 430)
-						local lOOl0l00I0 = UDim2.new(0.5, math.cos(II_OII) * l____0I_0I0, 0.5, math.sin(II_OII) * l____0I_0I0)
-						local lOlOI0lI = lI_l00:Create(I0_IOl0Ol_, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = lOOl0l00I0, BackgroundTransparency = 92 - 91, Size = UDim2.new(147 - 147, 276 - 273, 174 - 174, 471 - 468) })
-						lOlOI0lI:Play()
+		function II0O0Ol:CreateToggle(lO0_lI, OOIIOOIl, ll_O__OIll0)
+			local OIIIlII = Instance.new("TextButton")
+			OIIIlII.Size = UDim2.new(300 - 299, 890 - 890, 805 - 805, 96 - 56)
+			OIIIlII.BackgroundTransparency = 364 - 363
+			OIIIlII.Text = ""
+			OIIIlII.AutoButtonColor = false
+			OIIIlII.Parent = OII0I_IlI_
+			local I_IlOl_IO = Instance.new("TextLabel")
+			I_IlOl_IO.Size = UDim2.new(539 - 538, -(720 - 660), 742 - 741, 565 - 565)
+			I_IlOl_IO.Position = UDim2.new(990 - 990, 108 - 96, 574 - 574, 412 - 412)
+			I_IlOl_IO.BackgroundTransparency = 394 - 393
+			I_IlOl_IO.Text = lO0_lI
+			I_IlOl_IO.TextColor3 = O_0I0OOOO.TextSecondary
+			I_IlOl_IO.Font = O_0I0OOOO.Font
+			I_IlOl_IO.TextSize = 20 - 7
+			I_IlOl_IO.TextXAlignment = Enum.TextXAlignment.Left
+			I_IlOl_IO.Parent = OIIIlII
+			local lOlII_ = Instance.new("Frame")
+			lOlII_.Size = UDim2.new(726 - 726, 588 - 552, 175 - 175, 714 - 696)
+			lOlII_.AnchorPoint = Vector2.new(358 - 357, 0.5)
+			lOlII_.Position = UDim2.new(240 - 239, -(701 - 689), 0.5, 105 - 105)
+			lOlII_.BackgroundColor3 = OOIIOOIl and O_0I0OOOO.Accent or O_0I0OOOO.ItemBg
+			lOlII_.Parent = OIIIlII
+			Instance.new("UICorner", lOlII_).CornerRadius = UDim.new(408 - 407, 183 - 183)
+			local II0lI000I = Instance.new("Frame")
+			II0lI000I.Size = UDim2.new(34 - 34, 705 - 691, 65 - 65, 299 - 285)
+			II0lI000I.AnchorPoint = Vector2.new(612 - 612, 0.5)
+			II0lI000I.Position = OOIIOOIl and UDim2.new(123 - 122, -(840 - 824), 0.5, 966 - 966) or UDim2.new(346 - 346, 434 - 432, 0.5, 313 - 313)
+			II0lI000I.BackgroundColor3 = Color3.new(262 - 261, 255 - 254, 59 - 58)
+			II0lI000I.Parent = lOlII_
+			Instance.new("UICorner", II0lI000I).CornerRadius = UDim.new(759 - 758, 633 - 633)
+			local OOll0lO = OOIIOOIl
+			OIIIlII.MouseButton1Click:Connect(function()
+				OOll0lO = not OOll0lO
+				I0l0O_I:Create(lOlII_, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { BackgroundColor3 = OOll0lO and O_0I0OOOO.Accent or O_0I0OOOO.ItemBg }):Play()
+				I0l0O_I:Create(II0lI000I, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Position = OOll0lO and UDim2.new(995 - 994, -(187 - 171), 0.5, 476 - 476) or UDim2.new(818 - 818, 18 - 16, 0.5, 720 - 720) }):Play()
+				I0l0O_I:Create(I_IlOl_IO, TweenInfo.new(0.2), { TextColor3 = OOll0lO and O_0I0OOOO.TextPrimary or O_0I0OOOO.TextSecondary }):Play()
+				if OOll0lO then
+					for lO___IO = 922 - 921, 170 - 165 do
+						local l_O__l0ll0 = Instance.new("Frame")
+						l_O__l0ll0.Size = UDim2.new(20 - 20, 862 - 854, 873 - 873, 407 - 399)
+						l_O__l0ll0.Position = UDim2.new(0.5, 751 - 751, 0.5, 783 - 783)
+						l_O__l0ll0.AnchorPoint = Vector2.new(0.5, 0.5)
+						l_O__l0ll0.BackgroundColor3 = O_0I0OOOO.Accent
+						l_O__l0ll0.BorderSizePixel = 613 - 613
+						l_O__l0ll0.ZIndex = 867 - 857
+						Instance.new("UICorner", l_O__l0ll0).CornerRadius = UDim.new(605 - 604, 276 - 276)
+						l_O__l0ll0.Parent = lOlII_
+						local lO0_0lOI_ = math.rad(math.random(216 - 216, 733 - 373))
+						local lOOI__ = math.random(734 - 716, 903 - 873)
+						local l00I00lll = UDim2.new(0.5, math.cos(lO0_0lOI_) * lOOI__, 0.5, math.sin(lO0_0lOI_) * lOOI__)
+						local I0OO0I = I0l0O_I:Create(l_O__l0ll0, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = l00I00lll, BackgroundTransparency = 97 - 96, Size = UDim2.new(341 - 341, 235 - 232, 843 - 843, 910 - 907) })
+						I0OO0I:Play()
 						task.delay(0.5, function()
-							if I0_IOl0Ol_ then
-								I0_IOl0Ol_:Destroy()
+							if l_O__l0ll0 then
+								l_O__l0ll0:Destroy()
 							end
 						end)
 					end
 				end
-				O0IllI00OOI(Ol0_Il0)
+				ll_O__OIll0(OOll0lO)
 			end)
-			if Ol0__l then
-				IIO0llII.TextColor3 = l0OI00IlOI.TextPrimary
+			if OOIIOOIl then
+				I_IlOl_IO.TextColor3 = O_0I0OOOO.TextPrimary
 			end
 		end
-		function OI0IlOll:CreateStatusLabel(Ol_OI_O0, O0lI0l__IOI)
-			local lOlI_00__ = Instance.new("")
-			lOlI_00__.Size = UDim2.new(332 - 331, 896 - 896, 483 - 483, 272 - 232)
-			lOlI_00__.BackgroundTransparency = 690 - 689
-			lOlI_00__.Parent = IOOO0III_
-			local I0OlOl0Ol = Instance.new("")
-			I0OlOl0Ol.Size = UDim2.new(978 - 978, 322 - 222, 812 - 811, 612 - 612)
-			I0OlOl0Ol.Position = UDim2.new(980 - 980, 327 - 315, 816 - 816, 487 - 487)
-			I0OlOl0Ol.BackgroundTransparency = 267 - 266
-			I0OlOl0Ol.Text = Ol_OI_O0
-			I0OlOl0Ol.TextColor3 = l0OI00IlOI.TextSecondary
-			I0OlOl0Ol.Font = l0OI00IlOI.Font
-			I0OlOl0Ol.TextSize = 665 - 652
-			I0OlOl0Ol.TextXAlignment = Enum.TextXAlignment.Left
-			I0OlOl0Ol.Parent = lOlI_00__
-			local O_llIOO = Instance.new("")
-			O_llIOO.Size = UDim2.new(342 - 341, -(462 - 338), 161 - 160, 229 - 229)
-			O_llIOO.Position = UDim2.new(634 - 634, 777 - 665, 212 - 212, 28 - 28)
-			O_llIOO.BackgroundTransparency = 66 - 65
-			O_llIOO.Text = O0lI0l__IOI
-			O_llIOO.TextColor3 = l0OI00IlOI.TextPrimary
-			O_llIOO.Font = l0OI00IlOI.FontMedium
-			O_llIOO.TextSize = 68 - 56
-			O_llIOO.TextXAlignment = Enum.TextXAlignment.Right
-			O_llIOO.Parent = lOlI_00__
-			local function llll_O0(lIOlIOOIOlO, OlO__IIO)
-				O_llIOO.Text = lIOlIOOIOlO
-				if OlO__IIO then
-					lI_l00:Create(O_llIOO, TweenInfo.new(0.2), { TextColor3 = OlO__IIO }):Play()
+		function II0O0Ol:CreateStatusLabel(lIO0I__lIO, lOIO_0II)
+			local l0OOO0 = Instance.new("Frame")
+			l0OOO0.Size = UDim2.new(641 - 640, 742 - 742, 160 - 160, 443 - 403)
+			l0OOO0.BackgroundTransparency = 28 - 27
+			l0OOO0.Parent = OII0I_IlI_
+			local IlO0OO = Instance.new("TextLabel")
+			IlO0OO.Size = UDim2.new(32 - 32, 681 - 581, 760 - 759, 591 - 591)
+			IlO0OO.Position = UDim2.new(501 - 501, 215 - 203, 820 - 820, 28 - 28)
+			IlO0OO.BackgroundTransparency = 824 - 823
+			IlO0OO.Text = lIO0I__lIO
+			IlO0OO.TextColor3 = O_0I0OOOO.TextSecondary
+			IlO0OO.Font = O_0I0OOOO.Font
+			IlO0OO.TextSize = 289 - 276
+			IlO0OO.TextXAlignment = Enum.TextXAlignment.Left
+			IlO0OO.Parent = l0OOO0
+			local O_000OlOll = Instance.new("TextLabel")
+			O_000OlOll.Size = UDim2.new(264 - 263, -(127 - 3), 646 - 645, 746 - 746)
+			O_000OlOll.Position = UDim2.new(311 - 311, 328 - 216, 884 - 884, 274 - 274)
+			O_000OlOll.BackgroundTransparency = 601 - 600
+			O_000OlOll.Text = lOIO_0II
+			O_000OlOll.TextColor3 = O_0I0OOOO.TextPrimary
+			O_000OlOll.Font = O_0I0OOOO.FontMedium
+			O_000OlOll.TextSize = 731 - 719
+			O_000OlOll.TextXAlignment = Enum.TextXAlignment.Right
+			O_000OlOll.Parent = l0OOO0
+			local function I0__l0O(lO_l0_0_OI, IO0l_I)
+				O_000OlOll.Text = lO_l0_0_OI
+				if IO0l_I then
+					I0l0O_I:Create(O_000OlOll, TweenInfo.new(0.2), { TextColor3 = IO0l_I }):Play()
 				else
-					O_llIOO.TextColor3 = l0OI00IlOI.TextPrimary
+					O_000OlOll.TextColor3 = O_0I0OOOO.TextPrimary
 				end
 			end
-			return llll_O0
+			return I0__l0O
 		end
-		function OI0IlOll:CreateSlider(Ol0I0OIOO, II00l_0, Ol0l0O0O_, II_0OO_l, OIlOOIIII, IIOIOIlIlI)
-			local II0I_OO0_l0 = Instance.new("")
-			II0I_OO0_l0.Size = UDim2.new(28 - 27, 125 - 125, 192 - 192, 497 - 449)
-			II0I_OO0_l0.BackgroundTransparency = 691 - 690
-			II0I_OO0_l0.Parent = IOOO0III_
-			local Ol000l0_I0I = Instance.new("")
-			Ol000l0_I0I.Size = UDim2.new(594 - 593, -(688 - 628), 994 - 994, 701 - 683)
-			Ol000l0_I0I.Position = UDim2.new(715 - 715, 693 - 681, 332 - 332, 86 - 80)
-			Ol000l0_I0I.BackgroundTransparency = 844 - 843
-			Ol000l0_I0I.Text = Ol0I0OIOO
-			Ol000l0_I0I.TextColor3 = l0OI00IlOI.TextSecondary
-			Ol000l0_I0I.Font = l0OI00IlOI.Font
-			Ol000l0_I0I.TextSize = 969 - 956
-			Ol000l0_I0I.TextXAlignment = Enum.TextXAlignment.Left
-			Ol000l0_I0I.Parent = II0I_OO0_l0
-			local O0lIOOI = Instance.new("")
-			O0lIOOI.Size = UDim2.new(19 - 19, 245 - 205, 118 - 118, 207 - 189)
-			O0lIOOI.Position = UDim2.new(831 - 830, -(705 - 653), 768 - 768, 621 - 615)
-			O0lIOOI.BackgroundTransparency = 824 - 823
-			O0lIOOI.Text = tostring(II_0OO_l / (IIOIOIlIlI or 918 - 917))
-			O0lIOOI.TextColor3 = l0OI00IlOI.TextPrimary
-			O0lIOOI.Font = l0OI00IlOI.FontMedium
-			O0lIOOI.TextSize = 923 - 911
-			O0lIOOI.TextXAlignment = Enum.TextXAlignment.Right
-			O0lIOOI.Parent = II0I_OO0_l0
-			local l_II0I00 = Instance.new("")
-			l_II0I00.Size = UDim2.new(688 - 687, -(159 - 135), 498 - 498, 447 - 435)
-			l_II0I00.Position = UDim2.new(927 - 927, 525 - 513, 942 - 942, 37 - 9)
-			l_II0I00.BackgroundTransparency = 356 - 355
-			l_II0I00.Text = ""
-			l_II0I00.Parent = II0I_OO0_l0
-			local IOlOI_I0ll_ = Instance.new("")
-			IOlOI_I0ll_.Size = UDim2.new(996 - 995, 876 - 876, 265 - 265, 214 - 210)
-			IOlOI_I0ll_.AnchorPoint = Vector2.new(151 - 151, 0.5)
-			IOlOI_I0ll_.Position = UDim2.new(847 - 847, 411 - 411, 0.5, 212 - 212)
-			IOlOI_I0ll_.BackgroundColor3 = l0OI00IlOI.ItemBg
-			IOlOI_I0ll_.Parent = l_II0I00
-			Instance.new("", IOlOI_I0ll_).CornerRadius = UDim.new(309 - 308, 870 - 870)
-			local Il_Ol0_O_l = Instance.new("")
-			local I0I_l00OO = (II_0OO_l - II00l_0) / (Ol0l0O0O_ - II00l_0)
-			Il_Ol0_O_l.Size = UDim2.new(I0I_l00OO, 56 - 56, 750 - 749, 228 - 228)
-			Il_Ol0_O_l.BackgroundColor3 = l0OI00IlOI.Accent
-			Il_Ol0_O_l.Parent = IOlOI_I0ll_
-			Instance.new("", Il_Ol0_O_l).CornerRadius = UDim.new(50 - 49, 317 - 317)
-			local Oll_lO_lI0l = Instance.new("")
-			Oll_lO_lI0l.Size = UDim2.new(283 - 283, 773 - 761, 836 - 836, 510 - 498)
-			Oll_lO_lI0l.AnchorPoint = Vector2.new(0.5, 0.5)
-			Oll_lO_lI0l.Position = UDim2.new(I0I_l00OO, 101 - 101, 0.5, 594 - 594)
-			Oll_lO_lI0l.BackgroundColor3 = Color3.new(220 - 219, 704 - 703, 969 - 968)
-			Oll_lO_lI0l.Parent = IOlOI_I0ll_
-			Instance.new("", Oll_lO_lI0l).CornerRadius = UDim.new(847 - 846, 749 - 749)
-			local lOO0l0IlI_ = false
-			local function OIlO_0l0Oll(l_IlI_)
-				local II_IIO_ = math.clamp((l_IlI_.Position.X - IOlOI_I0ll_.AbsolutePosition.X) / IOlOI_I0ll_.AbsoluteSize.X, 885 - 885, 291 - 290)
-				local I_l__0llI = math.floor(II00l_0 + (Ol0l0O0O_ - II00l_0) * II_IIO_)
-				lI_l00:Create(Il_Ol0_O_l, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Size = UDim2.new(II_IIO_, 683 - 683, 61 - 60, 2 - 2) }):Play()
-				lI_l00:Create(Oll_lO_lI0l, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Position = UDim2.new(II_IIO_, 733 - 733, 0.5, 648 - 648) }):Play()
-				O0lIOOI.Text = tostring(I_l__0llI / (IIOIOIlIlI or 387 - 386))
-				OIlOOIIII(I_l__0llI)
+		function II0O0Ol:CreateSlider(l_OlO_0lO_l, l__OO_O_OlI, l_0__0l0_, lIllIIl0, lOOOlO, I0_l_0)
+			local IllI000OI_ = Instance.new("Frame")
+			IllI000OI_.Size = UDim2.new(388 - 387, 306 - 306, 817 - 817, 893 - 845)
+			IllI000OI_.BackgroundTransparency = 919 - 918
+			IllI000OI_.Parent = OII0I_IlI_
+			local IIl__l0I0O = Instance.new("TextLabel")
+			IIl__l0I0O.Size = UDim2.new(576 - 575, -(771 - 711), 332 - 332, 269 - 251)
+			IIl__l0I0O.Position = UDim2.new(310 - 310, 217 - 205, 29 - 29, 420 - 414)
+			IIl__l0I0O.BackgroundTransparency = 374 - 373
+			IIl__l0I0O.Text = l_OlO_0lO_l
+			IIl__l0I0O.TextColor3 = O_0I0OOOO.TextSecondary
+			IIl__l0I0O.Font = O_0I0OOOO.Font
+			IIl__l0I0O.TextSize = 354 - 341
+			IIl__l0I0O.TextXAlignment = Enum.TextXAlignment.Left
+			IIl__l0I0O.Parent = IllI000OI_
+			local OO_IO_I = Instance.new("TextLabel")
+			OO_IO_I.Size = UDim2.new(106 - 106, 48 - 8, 211 - 211, 62 - 44)
+			OO_IO_I.Position = UDim2.new(185 - 184, -(897 - 845), 496 - 496, 215 - 209)
+			OO_IO_I.BackgroundTransparency = 666 - 665
+			OO_IO_I.Text = tostring(lIllIIl0 / (I0_l_0 or 196 - 195))
+			OO_IO_I.TextColor3 = O_0I0OOOO.TextPrimary
+			OO_IO_I.Font = O_0I0OOOO.FontMedium
+			OO_IO_I.TextSize = 638 - 626
+			OO_IO_I.TextXAlignment = Enum.TextXAlignment.Right
+			OO_IO_I.Parent = IllI000OI_
+			local OIl_0I_l_ = Instance.new("TextButton")
+			OIl_0I_l_.Size = UDim2.new(30 - 29, -(814 - 790), 573 - 573, 546 - 534)
+			OIl_0I_l_.Position = UDim2.new(471 - 471, 890 - 878, 781 - 781, 215 - 187)
+			OIl_0I_l_.BackgroundTransparency = 303 - 302
+			OIl_0I_l_.Text = ""
+			OIl_0I_l_.Parent = IllI000OI_
+			local OI0l_lIllO = Instance.new("Frame")
+			OI0l_lIllO.Size = UDim2.new(339 - 338, 329 - 329, 569 - 569, 220 - 216)
+			OI0l_lIllO.AnchorPoint = Vector2.new(50 - 50, 0.5)
+			OI0l_lIllO.Position = UDim2.new(489 - 489, 246 - 246, 0.5, 643 - 643)
+			OI0l_lIllO.BackgroundColor3 = O_0I0OOOO.ItemBg
+			OI0l_lIllO.Parent = OIl_0I_l_
+			Instance.new("UICorner", OI0l_lIllO).CornerRadius = UDim.new(541 - 540, 922 - 922)
+			local I0OO__OIO__ = Instance.new("Frame")
+			local O__l0l_0lO0 = (lIllIIl0 - l__OO_O_OlI) / (l_0__0l0_ - l__OO_O_OlI)
+			I0OO__OIO__.Size = UDim2.new(O__l0l_0lO0, 806 - 806, 425 - 424, 600 - 600)
+			I0OO__OIO__.BackgroundColor3 = O_0I0OOOO.Accent
+			I0OO__OIO__.Parent = OI0l_lIllO
+			Instance.new("UICorner", I0OO__OIO__).CornerRadius = UDim.new(97 - 96, 726 - 726)
+			local I__IOO_ = Instance.new("Frame")
+			I__IOO_.Size = UDim2.new(107 - 107, 820 - 808, 983 - 983, 602 - 590)
+			I__IOO_.AnchorPoint = Vector2.new(0.5, 0.5)
+			I__IOO_.Position = UDim2.new(O__l0l_0lO0, 490 - 490, 0.5, 223 - 223)
+			I__IOO_.BackgroundColor3 = Color3.new(558 - 557, 424 - 423, 685 - 684)
+			I__IOO_.Parent = OI0l_lIllO
+			Instance.new("UICorner", I__IOO_).CornerRadius = UDim.new(97 - 96, 323 - 323)
+			local I_I0Oll_I_l = false
+			local function Il_IO0l(I0lI000)
+				local I_OlI0IOl = math.clamp((I0lI000.Position.X - OI0l_lIllO.AbsolutePosition.X) / OI0l_lIllO.AbsoluteSize.X, 924 - 924, 457 - 456)
+				local lOOl_I = math.floor(l__OO_O_OlI + (l_0__0l0_ - l__OO_O_OlI) * I_OlI0IOl)
+				I0l0O_I:Create(I0OO__OIO__, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Size = UDim2.new(I_OlI0IOl, 751 - 751, 840 - 839, 995 - 995) }):Play()
+				I0l0O_I:Create(I__IOO_, TweenInfo.new(0.1, Enum.EasingStyle.Sine), { Position = UDim2.new(I_OlI0IOl, 802 - 802, 0.5, 618 - 618) }):Play()
+				OO_IO_I.Text = tostring(lOOl_I / (I0_l_0 or 483 - 482))
+				lOOOlO(lOOl_I)
 			end
-			l_II0I00.InputBegan:Connect(function(OI0I_0)
-				if OI0I_0.UserInputType == Enum.UserInputType.MouseButton1 or OI0I_0.UserInputType == Enum.UserInputType.Touch then
-					lOO0l0IlI_ = true
-					OIlO_0l0Oll(OI0I_0)
+			OIl_0I_l_.InputBegan:Connect(function(llOIl_)
+				if llOIl_.UserInputType == Enum.UserInputType.MouseButton1 or llOIl_.UserInputType == Enum.UserInputType.Touch then
+					I_I0Oll_I_l = true
+					Il_IO0l(llOIl_)
 				end
 			end)
-			l_0O_l.InputEnded:Connect(function(OI_0_OIl)
-				if OI_0_OIl.UserInputType == Enum.UserInputType.MouseButton1 or OI_0_OIl.UserInputType == Enum.UserInputType.Touch then
-					lOO0l0IlI_ = false
+			O0OI000I_Il.InputEnded:Connect(function(IOOl_IO_l_I)
+				if IOOl_IO_l_I.UserInputType == Enum.UserInputType.MouseButton1 or IOOl_IO_l_I.UserInputType == Enum.UserInputType.Touch then
+					I_I0Oll_I_l = false
 				end
 			end)
-			l_0O_l.InputChanged:Connect(function(OO_0OIIO)
-				if lOO0l0IlI_ and (OO_0OIIO.UserInputType == Enum.UserInputType.MouseMovement or OO_0OIIO.UserInputType == Enum.UserInputType.Touch) then
-					OIlO_0l0Oll(OO_0OIIO)
+			O0OI000I_Il.InputChanged:Connect(function(l0l0O0l)
+				if I_I0Oll_I_l and (l0l0O0l.UserInputType == Enum.UserInputType.MouseMovement or l0l0O0l.UserInputType == Enum.UserInputType.Touch) then
+					Il_IO0l(l0l0O0l)
 				end
 			end)
-			return II0I_OO0_l0
+			return IllI000OI_
 		end
-		function OI0IlOll:CreateDropdown(OO_O000, OO_I_IO0l, OIOlO0O0___, O0OlIIlO)
-			local O0I__lI_OIl = Instance.new("")
-			O0I__lI_OIl.Size = UDim2.new(122 - 121, 913 - 913, 89 - 89, 499 - 451)
-			O0I__lI_OIl.BackgroundTransparency = 49 - 48
-			O0I__lI_OIl.Parent = IOOO0III_
-			local IlIlOl = Instance.new("")
-			IlIlOl.Size = UDim2.new(405 - 404, -(233 - 113), 75 - 75, 566 - 548)
-			IlIlOl.Position = UDim2.new(804 - 804, 518 - 506, 430 - 430, 973 - 958)
-			IlIlOl.BackgroundTransparency = 518 - 517
-			IlIlOl.Text = OO_O000
-			IlIlOl.TextColor3 = l0OI00IlOI.TextSecondary
-			IlIlOl.Font = l0OI00IlOI.Font
-			IlIlOl.TextSize = 480 - 467
-			IlIlOl.TextXAlignment = Enum.TextXAlignment.Left
-			IlIlOl.Parent = O0I__lI_OIl
-			local IOl0OIOI = Instance.new("")
-			IOl0OIOI.Size = UDim2.new(666 - 666, 119 - 19, 215 - 215, 492 - 468)
-			IOl0OIOI.Position = UDim2.new(869 - 868, -(826 - 714), 558 - 558, 742 - 730)
-			IOl0OIOI.BackgroundColor3 = l0OI00IlOI.ItemBg
-			IOl0OIOI.Text = ""
-			IOl0OIOI.AutoButtonColor = false
-			IOl0OIOI.Parent = O0I__lI_OIl
-			Instance.new("", IOl0OIOI).CornerRadius = UDim.new(904 - 904, 33 - 29)
-			local lIl_00I = Instance.new("")
-			lIl_00I.Size = UDim2.new(815 - 814, -(968 - 948), 147 - 146, 458 - 458)
-			lIl_00I.Position = UDim2.new(494 - 494, 296 - 288, 21 - 21, 750 - 750)
-			lIl_00I.BackgroundTransparency = 541 - 540
-			lIl_00I.Text = OIOlO0O0___
-			lIl_00I.TextColor3 = l0OI00IlOI.TextPrimary
-			lIl_00I.Font = l0OI00IlOI.Font
-			lIl_00I.TextSize = 252 - 240
-			lIl_00I.TextXAlignment = Enum.TextXAlignment.Left
-			lIl_00I.Parent = IOl0OIOI
-			local Ol_lIllI_ = Instance.new("")
-			Ol_lIllI_.Size = UDim2.new(805 - 805, 605 - 585, 5 - 4, 519 - 519)
-			Ol_lIllI_.Position = UDim2.new(496 - 495, -(934 - 914), 13 - 13, 520 - 520)
-			Ol_lIllI_.BackgroundTransparency = 239 - 238
-			Ol_lIllI_.Text = ""
-			Ol_lIllI_.TextColor3 = l0OI00IlOI.TextSecondary
-			Ol_lIllI_.Font = l0OI00IlOI.Font
-			Ol_lIllI_.TextSize = 466 - 456
-			Ol_lIllI_.Parent = IOl0OIOI
-			local I_Ill00lIOO = Instance.new("")
-			I_Ill00lIOO.Size = UDim2.new(582 - 582, 530 - 430, 631 - 631, 300 - 300)
-			I_Ill00lIOO.Position = UDim2.new(275 - 274, -(791 - 679), 34 - 34, 348 - 308)
-			I_Ill00lIOO.BackgroundColor3 = l0OI00IlOI.ItemBg
-			I_Ill00lIOO.ZIndex = 216 - 206
-			I_Ill00lIOO.ClipsDescendants = true
-			I_Ill00lIOO.Parent = O0I__lI_OIl
-			Instance.new("", I_Ill00lIOO).CornerRadius = UDim.new(868 - 868, 752 - 748)
-			local I00_lO00O00 = Instance.new("")
-			I00_lO00O00.SortOrder = Enum.SortOrder.LayoutOrder
-			I00_lO00O00.Parent = I_Ill00lIOO
-			local O_I_lOOOO = false
-			local l0Olll = math.min(#OO_I_IO0l * (759 - 735), 498 - 378)
-			local function OIlll_lI0()
-				O_I_lOOOO = not O_I_lOOOO
-				lI_l00:Create(Ol_lIllI_, TweenInfo.new(0.2), { Rotation = O_I_lOOOO and 259 - 79 or 195 - 195 }):Play()
-				lI_l00:Create(I_Ill00lIOO, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(847 - 847, 1014 - 914, 807 - 807, O_I_lOOOO and l0Olll or 639 - 639) }):Play()
-				if O_I_lOOOO then
-					O0I__lI_OIl.Size = UDim2.new(385 - 384, 537 - 537, 371 - 371, 266 - 218 + l0Olll + (790 - 786))
+		function II0O0Ol:CreateDropdown(O_0IOll___, O_I_lI_0OO, I_lll00II, II0I___lll)
+			local OI_00000I = Instance.new("Frame")
+			OI_00000I.Size = UDim2.new(561 - 560, 370 - 370, 499 - 499, 322 - 274)
+			OI_00000I.BackgroundTransparency = 956 - 955
+			OI_00000I.Parent = OII0I_IlI_
+			local II__I0 = Instance.new("TextLabel")
+			II__I0.Size = UDim2.new(192 - 191, -(607 - 487), 19 - 19, 862 - 844)
+			II__I0.Position = UDim2.new(721 - 721, 797 - 785, 105 - 105, 949 - 934)
+			II__I0.BackgroundTransparency = 627 - 626
+			II__I0.Text = O_0IOll___
+			II__I0.TextColor3 = O_0I0OOOO.TextSecondary
+			II__I0.Font = O_0I0OOOO.Font
+			II__I0.TextSize = 229 - 216
+			II__I0.TextXAlignment = Enum.TextXAlignment.Left
+			II__I0.Parent = OI_00000I
+			local Il_IOlOII0 = Instance.new("TextButton")
+			Il_IOlOII0.Size = UDim2.new(119 - 119, 516 - 416, 15 - 15, 862 - 838)
+			Il_IOlOII0.Position = UDim2.new(868 - 867, -(391 - 279), 215 - 215, 180 - 168)
+			Il_IOlOII0.BackgroundColor3 = O_0I0OOOO.ItemBg
+			Il_IOlOII0.Text = ""
+			Il_IOlOII0.AutoButtonColor = false
+			Il_IOlOII0.Parent = OI_00000I
+			Instance.new("UICorner", Il_IOlOII0).CornerRadius = UDim.new(418 - 418, 120 - 116)
+			local OlIIOl = Instance.new("TextLabel")
+			OlIIOl.Size = UDim2.new(764 - 763, -(483 - 463), 452 - 451, 542 - 542)
+			OlIIOl.Position = UDim2.new(445 - 445, 610 - 602, 977 - 977, 862 - 862)
+			OlIIOl.BackgroundTransparency = 57 - 56
+			OlIIOl.Text = I_lll00II
+			OlIIOl.TextColor3 = O_0I0OOOO.TextPrimary
+			OlIIOl.Font = O_0I0OOOO.Font
+			OlIIOl.TextSize = 104 - 92
+			OlIIOl.TextXAlignment = Enum.TextXAlignment.Left
+			OlIIOl.Parent = Il_IOlOII0
+			local llOI_0I_ = Instance.new("TextLabel")
+			llOI_0I_.Size = UDim2.new(243 - 243, 662 - 642, 215 - 214, 764 - 764)
+			llOI_0I_.Position = UDim2.new(409 - 408, -(509 - 489), 458 - 458, 824 - 824)
+			llOI_0I_.BackgroundTransparency = 226 - 225
+			llOI_0I_.Text = "â–¼"
+			llOI_0I_.TextColor3 = O_0I0OOOO.TextSecondary
+			llOI_0I_.Font = O_0I0OOOO.Font
+			llOI_0I_.TextSize = 270 - 260
+			llOI_0I_.Parent = Il_IOlOII0
+			local O_I00_0_Ol = Instance.new("Frame")
+			O_I00_0_Ol.Size = UDim2.new(218 - 218, 977 - 877, 716 - 716, 229 - 229)
+			O_I00_0_Ol.Position = UDim2.new(223 - 222, -(909 - 797), 791 - 791, 493 - 453)
+			O_I00_0_Ol.BackgroundColor3 = O_0I0OOOO.ItemBg
+			O_I00_0_Ol.ZIndex = 173 - 163
+			O_I00_0_Ol.ClipsDescendants = true
+			O_I00_0_Ol.Parent = OI_00000I
+			Instance.new("UICorner", O_I00_0_Ol).CornerRadius = UDim.new(487 - 487, 380 - 376)
+			local O_0OO0I0_IO = Instance.new("UIListLayout")
+			O_0OO0I0_IO.SortOrder = Enum.SortOrder.LayoutOrder
+			O_0OO0I0_IO.Parent = O_I00_0_Ol
+			local OI_lll0I0O_ = false
+			local IOOIl0 = math.min(#O_I_lI_0OO * (395 - 371), 550 - 430)
+			local function lllOlI0I_()
+				OI_lll0I0O_ = not OI_lll0I0O_
+				I0l0O_I:Create(llOI_0I_, TweenInfo.new(0.2), { Rotation = OI_lll0I0O_ and 937 - 757 or 940 - 940 }):Play()
+				I0l0O_I:Create(O_I00_0_Ol, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(462 - 462, 396 - 296, 796 - 796, OI_lll0I0O_ and IOOIl0 or 810 - 810) }):Play()
+				if OI_lll0I0O_ then
+					OI_00000I.Size = UDim2.new(461 - 460, 456 - 456, 432 - 432, 717 - 669 + IOOIl0 + (628 - 624))
 				else
-					O0I__lI_OIl.Size = UDim2.new(779 - 778, 264 - 264, 760 - 760, 522 - 474)
+					OI_00000I.Size = UDim2.new(404 - 403, 201 - 201, 637 - 637, 380 - 332)
 				end
 			end
-			IOl0OIOI.MouseButton1Click:Connect(OIlll_lI0)
-			for OOOl_I_ll_, OOOOl_l_lI_ in ipairs(OO_I_IO0l) do
-				local O0l0_0_ = Instance.new("")
-				O0l0_0_.Size = UDim2.new(383 - 382, 648 - 648, 110 - 110, 41 - 17)
-				O0l0_0_.BackgroundColor3 = l0OI00IlOI.ItemBg
-				O0l0_0_.BackgroundTransparency = 38 - 37
-				O0l0_0_.Text = "" .. OOOOl_l_lI_
-				O0l0_0_.TextColor3 = l0OI00IlOI.TextSecondary
-				O0l0_0_.Font = l0OI00IlOI.Font
-				O0l0_0_.TextSize = 263 - 251
-				O0l0_0_.TextXAlignment = Enum.TextXAlignment.Left
-				O0l0_0_.AutoButtonColor = false
-				O0l0_0_.ZIndex = 40 - 29
-				O0l0_0_.Parent = I_Ill00lIOO
-				O0l0_0_.MouseEnter:Connect(function()
-					lI_l00:Create(O0l0_0_, TweenInfo.new(0.1), { BackgroundTransparency = 697 - 697, BackgroundColor3 = l0OI00IlOI.ItemHover, TextColor3 = l0OI00IlOI.TextPrimary }):Play()
+			Il_IOlOII0.MouseButton1Click:Connect(lllOlI0I_)
+			for OO0_Il00I, IOlO0O0lll in ipairs(O_I_lI_0OO) do
+				local lIl0IO = Instance.new("TextButton")
+				lIl0IO.Size = UDim2.new(647 - 646, 111 - 111, 584 - 584, 325 - 301)
+				lIl0IO.BackgroundColor3 = O_0I0OOOO.ItemBg
+				lIl0IO.BackgroundTransparency = 575 - 574
+				lIl0IO.Text = "  " .. IOlO0O0lll
+				lIl0IO.TextColor3 = O_0I0OOOO.TextSecondary
+				lIl0IO.Font = O_0I0OOOO.Font
+				lIl0IO.TextSize = 668 - 656
+				lIl0IO.TextXAlignment = Enum.TextXAlignment.Left
+				lIl0IO.AutoButtonColor = false
+				lIl0IO.ZIndex = 844 - 833
+				lIl0IO.Parent = O_I00_0_Ol
+				lIl0IO.MouseEnter:Connect(function()
+					I0l0O_I:Create(lIl0IO, TweenInfo.new(0.1), { BackgroundTransparency = 713 - 713, BackgroundColor3 = O_0I0OOOO.ItemHover, TextColor3 = O_0I0OOOO.TextPrimary }):Play()
 				end)
-				O0l0_0_.MouseLeave:Connect(function()
-					lI_l00:Create(O0l0_0_, TweenInfo.new(0.1), { BackgroundTransparency = 1001 - 1000, TextColor3 = l0OI00IlOI.TextSecondary }):Play()
+				lIl0IO.MouseLeave:Connect(function()
+					I0l0O_I:Create(lIl0IO, TweenInfo.new(0.1), { BackgroundTransparency = 676 - 675, TextColor3 = O_0I0OOOO.TextSecondary }):Play()
 				end)
-				O0l0_0_.MouseButton1Click:Connect(function()
-					lIl_00I.Text = OOOOl_l_lI_
-					OIlll_lI0()
-					O0OlIIlO(OOOOl_l_lI_)
+				lIl0IO.MouseButton1Click:Connect(function()
+					OlIIOl.Text = IOlO0O0lll
+					lllOlI0I_()
+					II0I___lll(IOlO0O0lll)
 				end)
 			end
 		end
-		return OI0IlOll
+		return II0O0Ol
 	end
-	return OIlIl_OI
+	return OlO0IIlOO
 end
-local lO00Il = OIl0_lOOl0("")
-local OIO_OO = lO00Il:CreateSection("")
-OIO_OO:CreateToggle("", O_0IIl.Predictor, function(O0IIlI0l_Ol)
-	O_0IIl.Predictor = O0IIlI0l_Ol
+local I_l_I0OO = OI0OIl0I00I("Baseball Universe")
+local IOl0l0l0l0 = I_l_I0OO:CreateSection("Hitting")
+IOl0l0l0l0:CreateToggle("Ball ESP (Predictor)", l0lIll.Predictor, function(IO0_IO_IO0O)
+	l0lIll.Predictor = IO0_IO_IO0O
 end)
-OIO_OO:CreateToggle("", O_0IIl.AutoSwing, function(lIl00Ol_Ol)
-	O_0IIl.AutoSwing = lIl00Ol_Ol
+IOl0l0l0l0:CreateToggle("Auto Swing", l0lIll.AutoSwing, function(OOO_I0_lI)
+	l0lIll.AutoSwing = OOO_I0_lI
 end)
-OIO_OO:CreateToggle("", O_0IIl.StrikeboxOnly, function(ll0IIIl_)
-	O_0IIl.StrikeboxOnly = ll0IIIl_
+IOl0l0l0l0:CreateToggle("Strikebox Only (RECOMMENDED)", l0lIll.StrikeboxOnly, function(l_OI_OOO0)
+	l0lIll.StrikeboxOnly = l_OI_OOO0
 end)
 _G.UseCustomOffsets = false
-_G.PciOffsetX = 670 - 670
-_G.PciOffsetY = 514 - 514
-local ll0llII
-local O0lIOII0lIO
-OIO_OO:CreateToggle("", false, function(Ill___O_)
-	_G.UseCustomOffsets = Ill___O_
-	if ll0llII and O0lIOII0lIO then
-		ll0llII.Visible = Ill___O_
-		O0lIOII0lIO.Visible = Ill___O_
+_G.PciOffsetX = 80 - 80
+_G.PciOffsetY = 756 - 756
+local O_I0lI0O_
+local l0I0O_llO0
+IOl0l0l0l0:CreateToggle("Custom PCI Offsets", false, function(Oll0OIl_lI)
+	_G.UseCustomOffsets = Oll0OIl_lI
+	if O_I0lI0O_ and l0I0O_llO0 then
+		O_I0lI0O_.Visible = Oll0OIl_lI
+		l0I0O_llO0.Visible = Oll0OIl_lI
 	end
 end)
-ll0llII = OIO_OO:CreateSlider("", -(986 - 966), 492 - 472, 112 - 112, function(Ol0lI_lO)
-	_G.PciOffsetX = Ol0lI_lO / (739 - 639)
-end, 947 - 847)
-ll0llII.Visible = false
-O0lIOII0lIO = OIO_OO:CreateSlider("", -(549 - 529), 372 - 352, 255 - 255, function(IOllII0)
-	_G.PciOffsetY = IOllII0 / (659 - 559)
-end, 382 - 282)
-O0lIOII0lIO.Visible = false
-_G.UserTimingOffset = 95 - 85
+O_I0lI0O_ = IOl0l0l0l0:CreateSlider("PCI Offset X (Left â†” Right)", -(72 - 52), 284 - 264, 253 - 253, function(IO_ll0)
+	_G.PciOffsetX = IO_ll0 / (861 - 761)
+end, 884 - 784)
+O_I0lI0O_.Visible = false
+l0I0O_llO0 = IOl0l0l0l0:CreateSlider("PCI Offset Y (Up â†• Down)", -(881 - 861), 542 - 522, 837 - 837, function(O_IlO_0I_)
+	_G.PciOffsetY = O_IlO_0I_ / (174 - 74)
+end, 683 - 583)
+l0I0O_llO0.Visible = false
+_G.UserTimingOffset = 28 - 18
 _G.UseCustomTiming = false
-local O_0I0IOlIlO
-OIO_OO:CreateToggle("", false, function(lOOOO00_)
-	_G.UseCustomTiming = lOOOO00_
-	if not lOOOO00_ then
-		_G.UserTimingOffset = 620 - 610
+local l0IlOOl
+IOl0l0l0l0:CreateToggle("Custom Ping Timing", false, function(I_lI0I__lO_)
+	_G.UseCustomTiming = I_lI0I__lO_
+	if not I_lI0I__lO_ then
+		_G.UserTimingOffset = 635 - 625
 	end
-	if O_0I0IOlIlO then
-		O_0I0IOlIlO.Visible = lOOOO00_
+	if l0IlOOl then
+		l0IlOOl.Visible = I_lI0I__lO_
 	end
 end)
-O_0I0IOlIlO = OIO_OO:CreateSlider("", -(1007 - 907), 336 - 236, 585 - 575, function(Ol_IlI0_0)
+l0IlOOl = IOl0l0l0l0:CreateSlider("Timing Offset (Ping)", -(777 - 677), 235 - 135, 522 - 512, function(OOO_I0O0)
 	if _G.UseCustomTiming then
-		_G.UserTimingOffset = Ol_IlI0_0
+		_G.UserTimingOffset = OOO_I0O0
 	end
 end)
-O_0I0IOlIlO.Visible = false
-local lOOllIlO = lO00Il:CreateSection("")
-lOOllIlO:CreateToggle("", O_0IIl.AutoPitch, function(lO0lOll__O)
-	O_0IIl.AutoPitch = lO0lOll__O
+l0IlOOl.Visible = false
+local l00__lI = I_l_I0OO:CreateSection("Pitching")
+l00__lI:CreateToggle("Auto Pitch", l0lIll.AutoPitch, function(III_lOl)
+	l0lIll.AutoPitch = III_lOl
 end)
-local IOOO0OO0 = OIl0_lOOl0("")
-local O0lIl0_0 = IOOO0OO0:CreateSection("")
-O0lIl0_0:CreateSlider("", 281 - 265, 995 - 895, 740 - 724, function(I__l_Ol00O)
-	_G.MoonHubWalkSpeed = I__l_Ol00O
+local l__I_OO__ = OI0OIl0I00I("Player")
+local lOO0_OI = l__I_OO__:CreateSection("Stats")
+lOO0_OI:CreateSlider("Walk Speed", 986 - 970, 1026 - 926, 704 - 688, function(O0I_I0_0)
+	_G.MoonHubWalkSpeed = O0I_I0_0
 end)
-O0lIl0_0:CreateSlider("", 660 - 610, 1123 - 923, 391 - 341, function(lOO_I_OO_l_)
-	_G.MoonHubJumpPower = lOO_I_OO_l_
+lOO0_OI:CreateSlider("Jump Power", 216 - 166, 346 - 146, 965 - 915, function(l___lI0l)
+	_G.MoonHubJumpPower = l___lI0l
 end)
-local l_l__l_l = OIl0_lOOl0("")
-local ll0IO0 = l_l__l_l:CreateSection("")
-ll0IO0:CreateDropdown("", { "", "", "", "" }, IlOl0_lII, function(Ill0OII__I_)
-	local I_lI0_ = l0OI00IlOI.Accent
-	IlOl0_lII = Ill0OII__I_
-	lIIIIl()
-	local Ol0llO_O = O0lOOll[Ill0OII__I_] or O0lOOll.Default
-	l0OI00IlOI.Accent = Ol0llO_O
-	local function O_O0_0O_I(OOI0Ol0_O_, l_Ol_000)
-		return math.abs(OOI0Ol0_O_.R - l_Ol_000.R) < 0.02 and math.abs(OOI0Ol0_O_.G - l_Ol_000.G) < 0.02 and math.abs(OOI0Ol0_O_.B - l_Ol_000.B) < 0.02
+local O_0_l__III_ = OI0OIl0I00I("Settings")
+local lOIl0IO_ = O_0_l__III_:CreateSection("Theme")
+lOIl0IO_:CreateDropdown("Accent Theme", { "Default", "Crimson", "Aqua", "Purple" }, IOlll0_O, function(Il_ll0lI_)
+	local lO0OIlIll = O_0I0OOOO.Accent
+	IOlll0_O = Il_ll0lI_
+	IlO_0O0_O()
+	local OI0lI00I = IO00l00OOII[Il_ll0lI_] or IO00l00OOII.Default
+	O_0I0OOOO.Accent = OI0lI00I
+	local function l_00OOIIll(I0lI0l_IOI0, l0Ol__)
+		return math.abs(I0lI0l_IOI0.R - l0Ol__.R) < 0.02 and math.abs(I0lI0l_IOI0.G - l0Ol__.G) < 0.02 and math.abs(I0lI0l_IOI0.B - l0Ol__.B) < 0.02
 	end
-	for l_llI__IO, lI0l0O_OI_ in ipairs(II_IlI0_:GetDescendants()) do
-		if lI0l0O_OI_:IsA("") then
+	for O____lOlIl, I__O00OO in ipairs(I_0ll_O:GetDescendants()) do
+		if I__O00OO:IsA("GuiObject") then
 			pcall(function()
-				local O_OOOI = lI0l0O_OI_:GetAttribute("") or lI0l0O_OI_.BackgroundColor3
-				if O_O0_0O_I(O_OOOI, I_lI0_) then
-					lI0l0O_OI_:SetAttribute("", Ol0llO_O)
-					lI_l00:Create(lI0l0O_OI_, TweenInfo.new(0.3), { BackgroundColor3 = Ol0llO_O }):Play()
+				local llI0_O = I__O00OO:GetAttribute("TargetBg") or I__O00OO.BackgroundColor3
+				if l_00OOIIll(llI0_O, lO0OIlIll) then
+					I__O00OO:SetAttribute("TargetBg", OI0lI00I)
+					I0l0O_I:Create(I__O00OO, TweenInfo.new(0.3), { BackgroundColor3 = OI0lI00I }):Play()
 				end
-				if lI0l0O_OI_:IsA("") or lI0l0O_OI_:IsA("") or lI0l0O_OI_:IsA("") then
-					local III_00_lOl = lI0l0O_OI_:GetAttribute("") or lI0l0O_OI_.TextColor3
-					if O_O0_0O_I(III_00_lOl, I_lI0_) then
-						lI0l0O_OI_:SetAttribute("", Ol0llO_O)
-						lI_l00:Create(lI0l0O_OI_, TweenInfo.new(0.3), { TextColor3 = Ol0llO_O }):Play()
+				if I__O00OO:IsA("TextLabel") or I__O00OO:IsA("TextButton") or I__O00OO:IsA("TextBox") then
+					local OO0II_I = I__O00OO:GetAttribute("TargetText") or I__O00OO.TextColor3
+					if l_00OOIIll(OO0II_I, lO0OIlIll) then
+						I__O00OO:SetAttribute("TargetText", OI0lI00I)
+						I0l0O_I:Create(I__O00OO, TweenInfo.new(0.3), { TextColor3 = OI0lI00I }):Play()
 					end
 				end
-				if lI0l0O_OI_:IsA("") or lI0l0O_OI_:IsA("") then
-					local lIl000__ll0 = lI0l0O_OI_:GetAttribute("") or lI0l0O_OI_.ImageColor3
-					if O_O0_0O_I(lIl000__ll0, I_lI0_) then
-						lI0l0O_OI_:SetAttribute("", Ol0llO_O)
-						lI_l00:Create(lI0l0O_OI_, TweenInfo.new(0.3), { ImageColor3 = Ol0llO_O }):Play()
+				if I__O00OO:IsA("ImageLabel") or I__O00OO:IsA("ImageButton") then
+					local OI0OOl0IOOI = I__O00OO:GetAttribute("TargetImage") or I__O00OO.ImageColor3
+					if l_00OOIIll(OI0OOl0IOOI, lO0OIlIll) then
+						I__O00OO:SetAttribute("TargetImage", OI0lI00I)
+						I0l0O_I:Create(I__O00OO, TweenInfo.new(0.3), { ImageColor3 = OI0lI00I }):Play()
 					end
 				end
 			end)
 		end
 	end
 end)
-local Illl0I_0_lO = l_l__l_l:CreateSection("")
-setStatus = Illl0I_0_lO:CreateStatusLabel("", "")
-Illl0I_0_lO:CreateStatusLabel("", "")
-local lI__II = Instance.new("")
-lI__II.Name = ""
-lI__II.Size = UDim2.new(682 - 682, 556 - 511, 800 - 800, 146 - 101)
-lI__II.AlwaysOnTop = true
-lI__II.Parent = OI0O_I_O0I
-local IlIO0l_OI = Instance.new("")
-IlIO0l_OI.Size = UDim2.new(465 - 464, 585 - 585, 115 - 114, 645 - 645)
-IlIO0l_OI.BackgroundColor3 = l0OI00IlOI.Accent
-IlIO0l_OI.BackgroundTransparency = 0.3
-IlIO0l_OI.Parent = lI__II
-Instance.new("", IlIO0l_OI).CornerRadius = UDim.new(359 - 358, 35 - 35)
-local lOI0_OO_0 = Instance.new("")
-lOI0_OO_0.Color = Color3.new(517 - 516, 800 - 799, 163 - 162)
-lOI0_OO_0.Thickness = 217 - 215
-lOI0_OO_0.Parent = IlIO0l_OI
-lI__II.Enabled = false
-local function lO_OlO00()
-	local I0O0_OlOlI = workspace:FindFirstChild("")
-	if I0O0_OlOlI and I0O0_OlOlI:FindFirstChild("") then
-		local lOOII_O = I0O0_OlOlI.Strikezone:FindFirstChild("")
-		if lOOII_O then
-			return lOOII_O.Position.Z
+local l0lIOII = O_0_l__III_:CreateSection("Information")
+setStatus = l0lIOII:CreateStatusLabel("Status", "WAITING FOR PITCH...")
+l0lIOII:CreateStatusLabel("Keybind", "[0] Hide UI")
+local lIlOl__0l = Instance.new("BillboardGui")
+lIlOl__0l.Name = "PredictorGui"
+lIlOl__0l.Size = UDim2.new(515 - 515, 991 - 946, 730 - 730, 917 - 872)
+lIlOl__0l.AlwaysOnTop = true
+lIlOl__0l.Parent = III0_III_O_
+local lI_0OOOI_ = Instance.new("Frame")
+lI_0OOOI_.Size = UDim2.new(540 - 539, 489 - 489, 471 - 470, 130 - 130)
+lI_0OOOI_.BackgroundColor3 = O_0I0OOOO.Accent
+lI_0OOOI_.BackgroundTransparency = 0.3
+lI_0OOOI_.Parent = lIlOl__0l
+Instance.new("UICorner", lI_0OOOI_).CornerRadius = UDim.new(57 - 56, 677 - 677)
+local IlOIOl = Instance.new("UIStroke")
+IlOIOl.Color = Color3.new(449 - 448, 735 - 734, 30 - 29)
+IlOIOl.Thickness = 116 - 114
+IlOIOl.Parent = lI_0OOOI_
+lIlOl__0l.Enabled = false
+local function Ol____0I0_()
+	local O0l_0___0lI = workspace:FindFirstChild("Repository")
+	if O0l_0___0lI and O0l_0___0lI:FindFirstChild("Strikezone") then
+		local O_0_lO_0 = O0l_0___0lI.Strikezone:FindFirstChild("Strikezone")
+		if O_0_lO_0 then
+			return O_0_lO_0.Position.Z
 		end
 	end
 	return 112.147
 end
-local function l0lOI0O_()
-	local lI_I_I_IO = lll0I__Illl.Character
-	if not lI_I_I_IO then
+local function O_lIO___Il()
+	local OlI0_II0IO0 = l0l0I0Ill.Character
+	if not OlI0_II0IO0 then
 		return false
 	end
-	local OlO_I0OOOl = lI_I_I_IO:FindFirstChild("")
-	if not OlO_I0OOOl then
+	local IOlIII00I = OlI0_II0IO0:FindFirstChild("HumanoidRootPart")
+	if not IOlIII00I then
 		return false
 	end
-	local OO_Ill_ = workspace:FindFirstChild("")
-	if OO_Ill_ and OO_Ill_:FindFirstChild("") and OO_Ill_.Strikezone:FindFirstChild("") then
-		local I_0O00 = OO_Ill_.Strikezone.Strikezone
-		local OlI0__IIl__ = (OlO_I0OOOl.Position - I_0O00.Position).Magnitude
-		if OlI0__IIl__ > 608 - 588 then
+	local O___OI0_0I = workspace:FindFirstChild("Repository")
+	if O___OI0_0I and O___OI0_0I:FindFirstChild("Strikezone") and O___OI0_0I.Strikezone:FindFirstChild("Strikezone") then
+		local lOlI0I0 = O___OI0_0I.Strikezone.Strikezone
+		local Olll0_Ill = (IOlIII00I.Position - lOlI0I0.Position).Magnitude
+		if Olll0_Ill > 168 - 148 then
 			return false
 		end
 	end
 	return true
 end
-local function O_O_llI0(lIIO_____I)
-	local lOl0IO_ = workspace:FindFirstChild("")
-	if lOl0IO_ and lOl0IO_:FindFirstChild("") and lOl0IO_.Strikezone:FindFirstChild("") then
-		local II_OI00IIO = lOl0IO_.Strikezone.Strikezone
-		local OI_O0O = II_OI00IIO.CFrame:PointToObjectSpace(lIIO_____I)
-		local II__I0 = II_OI00IIO.Size
-		local OllOO00O0 = 0.15
-		if math.abs(OI_O0O.X) <= II__I0.X / (301 - 299) + OllOO00O0 and math.abs(OI_O0O.Y) <= II__I0.Y / (730 - 728) + OllOO00O0 and math.abs(OI_O0O.Z) <= II__I0.Z / (433 - 431) then
+local function OO0llI_(lIllI_00_0I)
+	local O_OlO_0OI = workspace:FindFirstChild("Repository")
+	if O_OlO_0OI and O_OlO_0OI:FindFirstChild("Strikezone") and O_OlO_0OI.Strikezone:FindFirstChild("Strikezone") then
+		local OlII00_ = O_OlO_0OI.Strikezone.Strikezone
+		local I___IlIlOOl = OlII00_.CFrame:PointToObjectSpace(lIllI_00_0I)
+		local I0Il0l = OlII00_.Size
+		local O00IOl0OlO0 = 0.15
+		if math.abs(I___IlIlOOl.X) <= I0Il0l.X / (908 - 906) + O00IOl0OlO0 and math.abs(I___IlIlOOl.Y) <= I0Il0l.Y / (730 - 728) + O00IOl0OlO0 and math.abs(I___IlIlOOl.Z) <= I0Il0l.Z / (926 - 924) then
 			return true
 		end
 	end
 	return false
 end
-local function I_lI_l_Il0(OllllO0)
-	local llI000_IIO = workspace:FindFirstChild("")
-	if llI000_IIO and llI000_IIO:FindFirstChild("") and llI000_IIO.Strikezone:FindFirstChild("") then
-		local OI_lOOO = llI000_IIO.Strikezone.Strikezone
-		local Il_ll_ = OI_lOOO.CFrame:PointToObjectSpace(OllllO0)
-		local Ol___l0IO_ = OI_lOOO.Size
-		local OI0I__IIl = 1.75
-		local I00O0_0lIOO = 1.75
-		if math.abs(Il_ll_.X) <= Ol___l0IO_.X / (79 - 77) + OI0I__IIl and math.abs(Il_ll_.Y) <= Ol___l0IO_.Y / (559 - 557) + I00O0_0lIOO and math.abs(Il_ll_.Z) <= Ol___l0IO_.Z / (634 - 632) then
+local function lOOl_O(IlIOIl_00)
+	local l0_I0_l0O0l = workspace:FindFirstChild("Repository")
+	if l0_I0_l0O0l and l0_I0_l0O0l:FindFirstChild("Strikezone") and l0_I0_l0O0l.Strikezone:FindFirstChild("Strikezone") then
+		local O__0__00l = l0_I0_l0O0l.Strikezone.Strikezone
+		local lO00IOII = O__0__00l.CFrame:PointToObjectSpace(IlIOIl_00)
+		local Oll0l00_ = O__0__00l.Size
+		local O0_0Il000 = 1.75
+		local l0OlI_ = 1.75
+		if math.abs(lO00IOII.X) <= Oll0l00_.X / (125 - 123) + O0_0Il000 and math.abs(lO00IOII.Y) <= Oll0l00_.Y / (604 - 602) + l0OlI_ and math.abs(lO00IOII.Z) <= Oll0l00_.Z / (961 - 959) then
 			return true
 		end
 	end
 	return false
 end
-local function I___l0II0O(lO00I0OOI0_, ll00_IIlO_I, l_OlI_ll0I)
-	print("", type(ll00_IIlO_I))
-	if type(ll00_IIlO_I) == "" and ll00_IIlO_I[980 - 978] and ll00_IIlO_I[35 - 32] and ll00_IIlO_I[861 - 857] and ll00_IIlO_I[372 - 367] then
-		local lIIOI_ = ll00_IIlO_I[281 - 279]
-		local OII_0l0_l = ll00_IIlO_I[889 - 886]
-		local OOOO_0 = ll00_IIlO_I[766 - 762]
-		local IlIOIO0O00 = ll00_IIlO_I[134 - 129]
-		local I0IllI__lI = lO_OlO00()
-		local OOIIl0O = lIIOI_.Z - (856 - 854) * OII_0l0_l.Z + OOOO_0.Z
-		local II_I_O = -(726 - 724) * lIIOI_.Z + (466 - 464) * OII_0l0_l.Z
-		local I0__0IlO_ = lIIOI_.Z - I0IllI__lI
-		local l0IO0I = 127 - 126
-		local IO_00I0O_0 = II_I_O * II_I_O - (356 - 352) * OOIIl0O * I0__0IlO_
-		if IO_00I0O_0 >= 24 - 24 then
-			local l0I0IIII = (-II_I_O + math.sqrt(IO_00I0O_0)) / ((398 - 396) * OOIIl0O)
-			local OI00O0lI = (-II_I_O - math.sqrt(IO_00I0O_0)) / ((707 - 705) * OOIIl0O)
-			l0IO0I = l0I0IIII >= 267 - 267 and l0I0IIII <= 117 - 116 and l0I0IIII or OI00O0lI
+local function ll00OOl_l0I(OlOOIl, Olll__0lOO_, Ol_l0_00Ill)
+	print("[MOON HUB DEBUG] OnPitchFired TRIGGERED! Received pitch data:", type(Olll__0lOO_))
+	if type(Olll__0lOO_) == "table" and Olll__0lOO_[907 - 905] and Olll__0lOO_[817 - 814] and Olll__0lOO_[391 - 387] and Olll__0lOO_[744 - 739] then
+		local I___IOIl0l = Olll__0lOO_[570 - 568]
+		local IlOl_OIl00 = Olll__0lOO_[111 - 108]
+		local O0IO0_0I0l = Olll__0lOO_[221 - 217]
+		local OIO_ll0l0 = Olll__0lOO_[948 - 943]
+		local O0_O_O = Ol____0I0_()
+		local lO_II_ = I___IOIl0l.Z - (689 - 687) * IlOl_OIl00.Z + O0IO0_0I0l.Z
+		local I_0OI_OI___ = -(509 - 507) * I___IOIl0l.Z + (637 - 635) * IlOl_OIl00.Z
+		local I_I_IlO_ = I___IOIl0l.Z - O0_O_O
+		local Il0O__II = 136 - 135
+		local l00l00 = I_0OI_OI___ * I_0OI_OI___ - (896 - 892) * lO_II_ * I_I_IlO_
+		if l00l00 >= 585 - 585 then
+			local OIlO00_lII = (-I_0OI_OI___ + math.sqrt(l00l00)) / ((294 - 292) * lO_II_)
+			local lII_II = (-I_0OI_OI___ - math.sqrt(l00l00)) / ((694 - 692) * lO_II_)
+			Il0O__II = OIlO00_lII >= 928 - 928 and OIlO00_lII <= 400 - 399 and OIlO00_lII or lII_II
 		end
-		local O00_l0_ = (666 - 665 - l0IO0I) ^ (786 - 784) * lIIOI_ + (159 - 157) * (827 - 826 - l0IO0I) * l0IO0I * OII_0l0_l + l0IO0I ^ (784 - 782) * OOOO_0
-		local IO_0_I0 = IlIOIO0O00 > 0.6 and OII_0l0_l.Y > (lIIOI_.Y + OOOO_0.Y) / (222 - 220)
-		if IO_0_I0 then
-			O00_l0_ = O00_l0_ - Vector3.new(366 - 366, 0.1, 895 - 895)
+		local OlO_Il0 = (932 - 931 - Il0O__II) ^ (134 - 132) * I___IOIl0l + (862 - 860) * (412 - 411 - Il0O__II) * Il0O__II * IlOl_OIl00 + Il0O__II ^ (478 - 476) * O0IO0_0I0l
+		local IIl0lOlO00I = OIO_ll0l0 > 0.6 and IlOl_OIl00.Y > (I___IOIl0l.Y + O0IO0_0I0l.Y) / (752 - 750)
+		if IIl0lOlO00I then
+			OlO_Il0 = OlO_Il0 - Vector3.new(486 - 486, 0.1, 894 - 894)
 		end
-		local OlO_OO_ = O_O_llI0(O00_l0_)
-		local I_II_OIOI = I_lI_l_Il0(O00_l0_)
-		if O_0IIl.Predictor then
-			if not l0lOI0O_() then
+		local IOOIll = OO0llI_(OlO_Il0)
+		local IOI00__O = lOOl_O(OlO_Il0)
+		if l0lIll.Predictor then
+			if not O_lIO___Il() then
 				return
 			end
-			local II0Il0__I0O = Instance.new("")
-			II0Il0__I0O.Transparency = 970 - 969
-			II0Il0__I0O.Anchored = true
-			II0Il0__I0O.CanCollide = false
-			II0Il0__I0O.Position = O00_l0_
-			II0Il0__I0O.Parent = workspace
-			lI__II.Adornee = II0Il0__I0O
-			lI__II.Enabled = true
-			if OlO_OO_ then
-				IlIO0l_OI.BackgroundColor3 = l0OI00IlOI.Accent
-				setStatus("", l0OI00IlOI.Accent)
+			local l_I_O0OIOl = Instance.new("Part")
+			l_I_O0OIOl.Transparency = 992 - 991
+			l_I_O0OIOl.Anchored = true
+			l_I_O0OIOl.CanCollide = false
+			l_I_O0OIOl.Position = OlO_Il0
+			l_I_O0OIOl.Parent = workspace
+			lIlOl__0l.Adornee = l_I_O0OIOl
+			lIlOl__0l.Enabled = true
+			if IOOIll then
+				lI_0OOOI_.BackgroundColor3 = O_0I0OOOO.Accent
+				setStatus("PITCH: STRIKE (ZONE)", O_0I0OOOO.Accent)
 			else
-				IlIO0l_OI.BackgroundColor3 = Color3.fromRGB(659 - 579, 202 - 122, 1027 - 947)
-				setStatus("", Color3.fromRGB(1116 - 956, 819 - 659, 510 - 350))
+				lI_0OOOI_.BackgroundColor3 = Color3.fromRGB(941 - 861, 883 - 803, 611 - 531)
+				setStatus("PITCH: BALL", Color3.fromRGB(743 - 583, 274 - 114, 726 - 566))
 			end
-			task.delay(IlIOIO0O00 + (198 - 197), function()
-				lI__II.Enabled = false
-				if II0Il0__I0O then
-					II0Il0__I0O:Destroy()
+			task.delay(OIO_ll0l0 + (220 - 219), function()
+				lIlOl__0l.Enabled = false
+				if l_I_O0OIOl then
+					l_I_O0OIOl:Destroy()
 				end
 			end)
 		end
-		if O_0IIl.AutoSwing and l0lOI0O_() then
-			local l____O0O = O_0IIl.StrikeboxOnly and OlO_OO_ or not O_0IIl.StrikeboxOnly and I_II_OIOI
-			if l____O0O then
-				setStatus("", Color3.fromRGB(750 - 495, 214 - 14, 821 - 566))
+		if l0lIll.AutoSwing and O_lIO___Il() then
+			local IOI_lOOO = l0lIll.StrikeboxOnly and IOOIll or not l0lIll.StrikeboxOnly and IOI00__O
+			if IOI_lOOO then
+				setStatus("WAITING FOR BALL RELEASE...", Color3.fromRGB(392 - 137, 844 - 644, 871 - 616))
 				task.spawn(function()
-					local l0IOO_ = false
-					local I0_Ill_I_l = os.clock()
-					if workspace:FindFirstChild("") or workspace:FindFirstChild("") then
-						l0IOO_ = true
+					local OlO_l_ = false
+					local lIIIOIlOlOl = os.clock()
+					if workspace:FindFirstChild("ClientBall") or workspace:FindFirstChild("Placebo") then
+						OlO_l_ = true
 					else
-						local l__0I0I0 = Instance.new("")
-						local lO0l_l__0
-						lO0l_l__0 = workspace.ChildAdded:Connect(function(OOI0OO0I)
-							if OOI0OO0I.Name == "" or OOI0OO0I.Name == "" then
-								l0IOO_ = true
-								l__0I0I0:Fire()
+						local III0l__IOIl = Instance.new("BindableEvent")
+						local OIl_l_00_l0
+						OIl_l_00_l0 = workspace.ChildAdded:Connect(function(llOl0_lII_)
+							if llOl0_lII_.Name == "ClientBall" or llOl0_lII_.Name == "Placebo" then
+								OlO_l_ = true
+								III0l__IOIl:Fire()
 							end
 						end)
-						task.delay(33 - 27, function()
-							if not l0IOO_ then
-								l__0I0I0:Fire()
+						task.delay(472 - 466, function()
+							if not OlO_l_ then
+								III0l__IOIl:Fire()
 							end
 						end)
-						l__0I0I0.Event:Wait()
-						lO0l_l__0:Disconnect()
-						l__0I0I0:Destroy()
+						III0l__IOIl.Event:Wait()
+						OIl_l_00_l0:Disconnect()
+						III0l__IOIl:Destroy()
 					end
-					if l0IOO_ and _G.CrimsonActiveLoop and l0lOI0O_() then
-						local Ol_O00OO_0 = _G.CrimsonTimingOffset or 31.5
-						local IIO0O0lI_0 = 690 - 690
-						if IlIOIO0O00 < 0.55 then
-							IIO0O0lI_0 = (0.55 - IlIOIO0O00) * (114 - 54)
+					if OlO_l_ and _G.CrimsonActiveLoop and O_lIO___Il() then
+						local I0_OllO_O_ = _G.CrimsonTimingOffset or 31.5
+						local lI0_0O_ = 173 - 173
+						if OIO_ll0l0 < 0.55 then
+							lI0_0O_ = (0.55 - OIO_ll0l0) * (752 - 692)
 						end
-						local IOI0ll0OIOl = _G.UserTimingOffset or 351 - 351
-						local Ol__0ll_0Il = (Ol_O00OO_0 + IIO0O0lI_0 + IOI0ll0OIOl) / (1174 - 174)
-						local l_0OOO = l0IO0I * IlIOIO0O00
-						local O_O_l0Ol = O_0IIl.SwingDelay or 0.083
-						local IIlO_O_lI = l_0OOO - O_O_l0Ol + Ol__0ll_0Il
-						setStatus(string.format("", IIlO_O_lI), Color3.fromRGB(1053 - 798, 1043 - 843, 1246 - 991))
-						task.wait(math.max(147 - 147, IIlO_O_lI))
-						if not _G.CrimsonActiveLoop or not l0lOI0O_() then
+						local Ill_IllOIlO = _G.UserTimingOffset or 888 - 888
+						local I_0OIlOO0 = (I0_OllO_O_ + lI0_0O_ + Ill_IllOIlO) / (1435 - 435)
+						local l00Ill0OI = Il0O__II * OIO_ll0l0
+						local O_0OI_00II = l0lIll.SwingDelay or 0.083
+						local OIO_lOO0O0I = l00Ill0OI - O_0OI_00II + I_0OIlOO0
+						setStatus(string.format("SWING SCHEDULED IN %.3fS", OIO_lOO0O0I), Color3.fromRGB(601 - 346, 313 - 113, 1031 - 776))
+						task.wait(math.max(202 - 202, OIO_lOO0O0I))
+						if not _G.CrimsonActiveLoop or not O_lIO___Il() then
 							return
 						end
-						local OllOIOlI = require(lOlI___:WaitForChild(""):WaitForChild(""))
-						local lIlOII0IOI = OllOIOlI.GetController("")
-						local lOO0Il = OllOIOlI.GetController("")
-						local l_00II0OI = OllOIOlI.GetController("")
-						local Ol0OllO_0I = workspace:FindFirstChild("")
-						if Ol0OllO_0I and Ol0OllO_0I:FindFirstChild("") then
-							local IO0_I000OOl = Ol0OllO_0I.Strikezone:FindFirstChild("")
-							if IO0_I000OOl then
-								local OOlI0lIO = IO0_I000OOl.CFrame:PointToObjectSpace(O00_l0_)
-								local IO_ll____l, l0lOI_lOO = IO0_I000OOl.Size.X, IO0_I000OOl.Size.Y
-								local I__OlO0I = OOlI0lIO.X / IO_ll____l + 0.5 - (_G.UseCustomOffsets and _G.PciOffsetX or 454 - 454)
-								local IlOIIllI = 0.5 - OOlI0lIO.Y / l0lOI_lOO + (_G.UseCustomOffsets and _G.PciOffsetY or 133 - 133)
-								local l_0__O0 = Vector2.new(I__OlO0I, IlOIIllI)
-								local OOII00I = Vector3.new((I__OlO0I - 0.5) * IO_ll____l, (0.5 - IlOIIllI) * l0lOI_lOO, OOlI0lIO.Z)
-								local OllllIO = IO0_I000OOl.CFrame * OOII00I
-								local Oll_OlI = ""
-								if lOO0Il.DetermineZoneSpecificity then
-									local O0llO__lOl = OOlI0lIO.X / IO_ll____l + 0.5
-									local lI_IIl_I_0 = 0.5 - OOlI0lIO.Y / l0lOI_lOO
-									Oll_OlI = lOO0Il:DetermineZoneSpecificity(Vector2.new(O0llO__lOl, lI_IIl_I_0))
+						local IlOl_I = require(OI_O__II:WaitForChild("Packages"):WaitForChild("Knit"))
+						local II_0_00 = IlOl_I.GetController("GameController")
+						local IOO0l0 = IlOl_I.GetController("BattingController")
+						local l0I00IO00l0 = IlOl_I.GetController("AnimationController")
+						local lIIOO_lI_lI = workspace:FindFirstChild("Repository")
+						if lIIOO_lI_lI and lIIOO_lI_lI:FindFirstChild("Strikezone") then
+							local I00IlO__0lI = lIIOO_lI_lI.Strikezone:FindFirstChild("Boundary")
+							if I00IlO__0lI then
+								local lIlI0O_l = I00IlO__0lI.CFrame:PointToObjectSpace(OlO_Il0)
+								local OlOIOOll0O, O00O_IO0 = I00IlO__0lI.Size.X, I00IlO__0lI.Size.Y
+								local ll_l0O0 = lIlI0O_l.X / OlOIOOll0O + 0.5 - (_G.UseCustomOffsets and _G.PciOffsetX or 520 - 520)
+								local l0000lI0I = 0.5 - lIlI0O_l.Y / O00O_IO0 + (_G.UseCustomOffsets and _G.PciOffsetY or 350 - 350)
+								local lOlO0I0ll_ = Vector2.new(ll_l0O0, l0000lI0I)
+								local ll0_0lIOIl = Vector3.new((ll_l0O0 - 0.5) * OlOIOOll0O, (0.5 - l0000lI0I) * O00O_IO0, lIlI0O_l.Z)
+								local OO0lI0_II_I = I00IlO__0lI.CFrame * ll0_0lIOIl
+								local lO0__OOlI = "MM"
+								if IOO0l0.DetermineZoneSpecificity then
+									local OOI0_0IOl = lIlI0O_l.X / OlOIOOll0O + 0.5
+									local O0Ol00_00IO = 0.5 - lIlI0O_l.Y / O00O_IO0
+									lO0__OOlI = IOO0l0:DetermineZoneSpecificity(Vector2.new(OOI0_0IOl, O0Ol00_00IO))
 								end
 								pcall(function()
-									l_00II0OI:Stop(lll0I__Illl.Name, "", "")
-									l_00II0OI:Play(lll0I__Illl, "", "", Oll_OlI)
+									l0I00IO00l0:Stop(l0l0I0Ill.Name, "Batter", "Windup")
+									l0I00IO00l0:Play(l0l0I0Ill, "Batter", "Swing", lO0__OOlI)
 								end)
-								local function I_Ol0O_OII()
-									local Ol__OO, ll_lII_II_I = game.Workspace.CurrentCamera:WorldToScreenPoint(OllllIO)
-									_G.AutoLockScreenPos = Vector2.new(Ol__OO.X, Ol__OO.Y)
+								local function OI_0l_()
+									local lOO_IO_, I_0_lO_l_OI = game.Workspace.CurrentCamera:WorldToScreenPoint(OO0lI0_II_I)
+									_G.AutoLockScreenPos = Vector2.new(lOO_IO_.X, lOO_IO_.Y)
 									_G.AutoLockTarget = true
-									local I0I0lO_l = lIlOII0IOI.IsConsole
-									lIlOII0IOI.IsConsole = true
+									local l0_0Ill__lI = II_0_00.IsConsole
+									II_0_00.IsConsole = true
 									if _G.OriginalHandleSwing then
-										_G.OriginalHandleSwing(lOO0Il, l_0__O0)
+										_G.OriginalHandleSwing(IOO0l0, lOlO0I0ll_)
 									else
 										pcall(function()
-											lOO0Il:HandleSwing(l_0__O0)
+											IOO0l0:HandleSwing(lOlO0I0ll_)
 										end)
 									end
-									lIlOII0IOI.IsConsole = I0I0lO_l
+									II_0_00.IsConsole = l0_0Ill__lI
 									task.wait(0.1)
 									_G.AutoLockTarget = false
 								end
-								I_Ol0O_OII()
+								OI_0l_()
 							end
 						end
-						setStatus("", l0OI00IlOI.Accent)
+						setStatus("SWUNG! (PERFECT TIMING)", O_0I0OOOO.Accent)
 					else
-						setStatus("", Color3.fromRGB(872 - 617, 1086 - 986, 529 - 429))
+						setStatus("RELEASE TIMED OUT/CANCELED", Color3.fromRGB(841 - 586, 1009 - 909, 507 - 407))
 					end
 				end)
 			else
-				setStatus("", Color3.fromRGB(664 - 504, 1128 - 968, 735 - 575))
+				setStatus("PITCH: BALL - AUTO-SWING SKIPPED", Color3.fromRGB(505 - 345, 1071 - 911, 264 - 104))
 			end
 		end
 	end
 end
 task.spawn(function()
-	local l0l_lI__O = lOlI___:WaitForChild("", 135 - 125)
-	if not l0l_lI__O then
+	local l_0_l0 = OI_O__II:WaitForChild("Packages", 985 - 975)
+	if not l_0_l0 then
 		return
 	end
-	local O_IOOlI_l0 = l0l_lI__O:WaitForChild("", 503 - 493)
-	if not O_IOOlI_l0 then
+	local OIO00__l_ = l_0_l0:WaitForChild("Knit", 781 - 771)
+	if not OIO00__l_ then
 		return
 	end
-	local lIO_l_ = O_IOOlI_l0:WaitForChild("", 226 - 216)
-	if not lIO_l_ then
-		warn("")
+	local OlOll__ = OIO00__l_:WaitForChild("Services", 357 - 347)
+	if not OlOll__ then
+		warn("[MOON HUB] Could not find Knit Services folder!")
 		return
 	end
-	local Il_OI0 = lIO_l_:WaitForChild("", 405 - 395):WaitForChild("", 42 - 32):WaitForChild("", 767 - 757)
-	if not Il_OI0 then
-		warn("")
+	local II_l0_O = OlOll__:WaitForChild("PitchingService", 148 - 138):WaitForChild("RE", 884 - 874):WaitForChild("Pitch", 990 - 980)
+	if not II_l0_O then
+		warn("[MOON HUB] Could not find Pitch RemoteEvent!")
 		return
 	end
 	if _G.CrimsonPitchConn then
 		_G.CrimsonPitchConn:Disconnect()
 	end
-	_G.CrimsonPitchConn = Il_OI0.OnClientEvent:Connect(function(OO0I_0_0l, O00lI__0I_, OlI_0lI)
-		I___l0II0O(OO0I_0_0l, O00lI__0I_, OlI_0lI)
+	_G.CrimsonPitchConn = II_l0_O.OnClientEvent:Connect(function(I0IlIlOl0I, I0OIOl_0II, OOll_IO0O__)
+		ll00OOl_l0I(I0IlIlOl0I, I0OIOl_0II, OOll_IO0O__)
 	end)
-	print("")
+	print("[MOON HUB] Successfully connected directly to Pitch RemoteEvent!")
 end)
 task.spawn(function()
-	local Il_II_ = lOlI___:WaitForChild("", 856 - 846)
-	if not Il_II_ then
+	local lO_OO0_O = OI_O__II:WaitForChild("Packages", 634 - 624)
+	if not lO_OO0_O then
 		return
 	end
-	local O0IlIOlI = Il_II_:WaitForChild("", 239 - 229)
-	if not O0IlIOlI then
+	local IlO__I = lO_OO0_O:WaitForChild("Knit", 357 - 347)
+	if not IlO__I then
 		return
 	end
-	local l_0_O0_I = require(O0IlIOlI)
-	if l_0_O0_I then
-		local IIlIOl = l_0_O0_I.GetService("")
-		if IIlIOl and IIlIOl.RequestThrowPitch then
+	local lIOl_0II = require(IlO__I)
+	if lIOl_0II then
+		local I0O0_0l00 = lIOl_0II.GetService("PitchingService")
+		if I0O0_0l00 and I0O0_0l00.RequestThrowPitch then
 			if not _G.OriginalRequestThrowPitch then
-				_G.OriginalRequestThrowPitch = IIlIOl.RequestThrowPitch
+				_G.OriginalRequestThrowPitch = I0O0_0l00.RequestThrowPitch
 			end
-			IIlIOl.RequestThrowPitch = OIlOlOO_(function(self, llIllI, IOII0I0, O0_IOl_OlOI, I_OO0I00Ol_)
-				if O_0IIl.AutoPitch and O0_IOl_OlOI and I_OO0I00Ol_ then
-					O0_IOl_OlOI = 266 - 265
-					I_OO0I00Ol_ = 858 - 857
+			I0O0_0l00.RequestThrowPitch = Ill_lI_I(function(self, l0__lO, l_II_IIllO, OOIl00Ol0_I, lll0_ll)
+				if l0lIll.AutoPitch and OOIl00Ol0_I and lll0_ll then
+					OOIl00Ol0_I = 894 - 893
+					lll0_ll = 918 - 917
 				end
-				return _G.OriginalRequestThrowPitch(self, llIllI, IOII0I0, O0_IOl_OlOI, I_OO0I00Ol_)
+				return _G.OriginalRequestThrowPitch(self, l0__lO, l_II_IIllO, OOIl00Ol0_I, lll0_ll)
 			end)
-			print("")
+			print("[MOON HUB] Successfully hooked Auto Pitch!")
 		end
 	end
 end)
 task.spawn(function()
-	local OI0_II_IOI0
-	while _G.CrimsonActiveLoop and II_IlI0_.Parent do
-		if lll0I__Illl.Character and lll0I__Illl.Character:FindFirstChild("") then
-			local IlO_Il___ = lll0I__Illl.Character.Humanoid
-			if _G.MoonHubWalkSpeed and _G.MoonHubWalkSpeed > 908 - 892 then
-				IlO_Il___.WalkSpeed = _G.MoonHubWalkSpeed
+	local I__l_O0
+	while _G.CrimsonActiveLoop and I_0ll_O.Parent do
+		if l0l0I0Ill.Character and l0l0I0Ill.Character:FindFirstChild("Humanoid") then
+			local l0I0_I__O0l = l0l0I0Ill.Character.Humanoid
+			if _G.MoonHubWalkSpeed and _G.MoonHubWalkSpeed > 389 - 373 then
+				l0I0_I__O0l.WalkSpeed = _G.MoonHubWalkSpeed
 			end
-			if _G.MoonHubJumpPower and _G.MoonHubJumpPower > 149 - 99 then
-				IlO_Il___.UseJumpPower = true
-				IlO_Il___.JumpPower = _G.MoonHubJumpPower
+			if _G.MoonHubJumpPower and _G.MoonHubJumpPower > 710 - 660 then
+				l0I0_I__O0l.UseJumpPower = true
+				l0I0_I__O0l.JumpPower = _G.MoonHubJumpPower
 			end
 		end
 		task.wait(0.1)
 	end
-	if OI0_II_IOI0 then
-		OI0_II_IOI0:Destroy()
+	if I__l_O0 then
+		I__l_O0:Destroy()
 	end
 end)
-print("")
+print("MOON HUB UI Loaded.")
